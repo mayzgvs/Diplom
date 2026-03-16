@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="Service.Views.ClientView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Service.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="600" d:DesignWidth="800"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Utility/Style.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="20">
+            <TextBox Width="250" Margin="0,0,10,0"
+                     ToolTip="Введите фамилию, имя или телефон"
+                     Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Button Content="Очистить" 
+                    Command="{Binding ClearFiltersCommand}" 
+                    Width="80"/>
+        </StackPanel>
+
+        <ListView Grid.Row="1" Margin="20"
+                  ItemsSource="{Binding FilteredClients}"
+                  SelectedItem="{Binding CurrentClient, Mode=TwoWay}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="ID" Width="50" 
+                                    DisplayMemberBinding="{Binding Id}"/>
+
+                    <GridViewColumn Header="Фамилия" Width="120" 
+                                    DisplayMemberBinding="{Binding LastName}"/>
+
+                    <GridViewColumn Header="Имя" Width="120" 
+                                    DisplayMemberBinding="{Binding FirstName}"/>
+
+                    <GridViewColumn Header="Отчество" Width="120" 
+                                    DisplayMemberBinding="{Binding Patronymic}"/>
+
+                    <GridViewColumn Header="Телефон" Width="120" 
+                                    DisplayMemberBinding="{Binding ContactNumber}"/>
+
+                    <GridViewColumn Header="Email" Width="150" 
+                                    DisplayMemberBinding="{Binding Email}"/>
+
+                    <GridViewColumn Header="Скидка" Width="80">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="3" Padding="3">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="LightGray"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Discount}" Value="0">
+                                                    <Setter Property="Background" Value="LightGray"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Discount}" Value="5">
+                                                    <Setter Property="Background" Value="LightBlue"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Discount}" Value="10">
+                                                    <Setter Property="Background" Value="LightGreen"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Discount}" Value="15">
+                                                    <Setter Property="Background" Value="Gold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{Binding Discount, StringFormat={}{0}%}" 
+                                               HorizontalAlignment="Center"/>
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Автомобилей" Width="80" 
+                                    DisplayMemberBinding="{Binding CarsCount}"/>
+
+                    <GridViewColumn Header="Дата регистрации" Width="120" 
+                                    DisplayMemberBinding="{Binding RegistrationDate, StringFormat={}{0:dd.MM.yyyy}}"/>
+                </GridView>
+            </ListView.View>
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="32,0,0,20">
+            <Button Content="Добавить" 
+                    Style="{StaticResource AddButtonWithIconStyle}" 
+                    Width="113" 
+                    Margin="0,0,10,0" 
+                    Command="{Binding AddCommand}"/>
+
+            <Button Content="Изменить" 
+                    Style="{DynamicResource EditButtonWithIconStyle}" 
+                    Width="115" 
+                    Margin="0,0,10,0" 
+                    Command="{Binding EditCommand}"/>
+
+            <Button Content="Удалить" 
+                    Style="{DynamicResource DeleteButtonWithIconStyle}" 
+                    Width="99" 
+                    Command="{Binding DeleteCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

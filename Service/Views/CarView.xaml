@@ -1,0 +1,115 @@
+﻿<UserControl x:Class="Service.Views.CarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="Transparent">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Utility/Style.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="20">
+            <ComboBox Width="150" Margin="0,0,10,0"
+                      ItemsSource="{Binding Statuses}"
+                      SelectedItem="{Binding CurrentStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                      DisplayMemberPath="Name"/>
+
+            <TextBox Width="200" Margin="0,0,10,0"
+                     ToolTip="Введите номер, VIN, марку или модель">
+                <TextBox.Text>
+                    <Binding Path="SearchText"
+                             Mode="TwoWay"
+                             UpdateSourceTrigger="PropertyChanged"/>
+                </TextBox.Text>
+            </TextBox>
+
+            <Button Content="Очистить" Command="{Binding ClearFiltersCommand}" Width="80"/>
+        </StackPanel>
+
+        <ListView Grid.Row="1" Margin="20"
+                  ItemsSource="{Binding FilteredCars}"
+                  SelectedItem="{Binding CurrentCar, Mode=TwoWay}"
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Марка" Width="120" 
+                                    DisplayMemberBinding="{Binding Brand}"/>
+
+                    <GridViewColumn Header="Модель" Width="120" 
+                                    DisplayMemberBinding="{Binding Model}"/>
+
+                    <GridViewColumn Header="Рег. номер" Width="100" 
+                                    DisplayMemberBinding="{Binding RegistrationNumber}"/>
+
+                    <GridViewColumn Header="VIN" Width="170" 
+                                    DisplayMemberBinding="{Binding VIN}"/>
+
+                    <GridViewColumn Header="Владелец" Width="200">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Client.FullName}" 
+                                           ToolTip="{Binding Client.Phone}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Телефон" Width="120" 
+                                    DisplayMemberBinding="{Binding Client.Phone}"/>
+
+                    <GridViewColumn Header="Статус" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="3" Padding="3">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Background" Value="LightGray"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding CarStatus}" Value="Активен">
+                                                    <Setter Property="Background" Value="LightGreen"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CarStatus}" Value="В ремонте">
+                                                    <Setter Property="Background" Value="Orange"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding CarStatus}" Value="Продан">
+                                                    <Setter Property="Background" Value="LightBlue"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{Binding CarStatus}" 
+                                               HorizontalAlignment="Center"/>
+                                </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="32,0,0,20">
+            <Button Content="Добавить" Style="{StaticResource AddButtonWithIconStyle}" Width="113" Margin="0,0,10,0" Command="{Binding AddCommand}"/>
+            <Button Content="Изменить" Style="{DynamicResource EditButtonWithIconStyle}" Width="115" Margin="0,0,10,0" Command="{Binding EditCommand}"/>
+            <Button Content="Удалить" Style="{DynamicResource DeleteButtonWithIconStyle}" Width="99" Command="{Binding DeleteCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

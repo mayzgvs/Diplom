@@ -1,0 +1,267 @@
+﻿<Window x:Class="Service.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        Title="Автосервис: управление сервисом"
+        Width="1300" Height="867"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        FontFamily="Segoe UI"
+        mc:Ignorable="d">
+
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Utility/Style.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <Window.Effect>
+        <DropShadowEffect BlurRadius="20" Opacity="0.3" ShadowDepth="2" Color="#888888"/>
+    </Window.Effect>
+
+    <Border Background="{StaticResource WindowBackgroundBrush}" 
+            CornerRadius="15" 
+            Margin="5">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="0" Color="#000000"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" 
+                    Background="{StaticResource PrimaryDarkBrush}" 
+                    CornerRadius="15,15,0,0" 
+                    Padding="20,15">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <TextBlock Text="🔧" FontSize="28" Foreground="{StaticResource TealBrush}" Margin="0,0,10,0"/>
+                        <StackPanel>
+                            <TextBlock Text="АВТОСЕРВИС" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Text="профессиональное обслуживание" FontSize="12" Foreground="#BDC3C7" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="Сегодня: " FontSize="14" Foreground="#BDC3C7" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding CurrentDate, FallbackValue='03 марта 2026'}" 
+                                   FontSize="14" Foreground="White" FontWeight="SemiBold" 
+                                   VerticalAlignment="Center" Margin="0,0,20,0"/>
+                        <TextBlock Text="{Binding CurrentTime, FallbackValue='14:30'}" 
+                                   FontSize="20" FontWeight="Bold" Foreground="{StaticResource TealBrush}" 
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button x:Name="MinimizeButton" 
+                                Content="─" 
+                                Style="{StaticResource WindowControlButtonStyle}"/>
+
+                        <Button x:Name="MaximizeButton" 
+                                Content="□" 
+                                Style="{StaticResource WindowControlButtonStyle}"/>
+
+                        <Button x:Name="CloseButton" 
+                                Style="{StaticResource CloseButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1" Background="White">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="260"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" 
+                        Background="{StaticResource MenuBackgroundBrush}" 
+                        CornerRadius="0,0,0,15">
+                    <Border BorderThickness="0,0,1,0" 
+                            BorderBrush="{StaticResource BorderBrush}">
+                        <StackPanel Margin="15">
+
+                            <TextBlock Text="НАВИГАЦИЯ" 
+                                       Style="{StaticResource SectionHeaderStyle}"/>
+
+                            <Button Tag="Clients" 
+                                    Style="{StaticResource NavigationMenuButtonStyle}"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="Clients">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" 
+                                            Style="{StaticResource MenuIconStyle}"
+                                            Background="{StaticResource PrimaryBrush}">
+                                        <TextBlock Text="👥" FontSize="20" Foreground="White" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Клиенты" Style="{StaticResource MenuTitleStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <Button Tag="Cars" Style="{StaticResource NavigationMenuButtonStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" 
+                                            Style="{StaticResource MenuIconStyle}"
+                                            Background="{StaticResource WarningBrush}">
+                                        <TextBlock Text="🚗" FontSize="20" Foreground="White" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Автомобили" Style="{StaticResource MenuTitleStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <Button Tag="RepairRequests" Style="{StaticResource NavigationMenuButtonStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" 
+                                            Style="{StaticResource MenuIconStyle}"
+                                            Background="{StaticResource SuccessBrush}">
+                                        <TextBlock Text="📋" FontSize="20" Foreground="White" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Заявки" Style="{StaticResource MenuTitleStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <Button Tag="Services" Style="{StaticResource NavigationMenuButtonStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" 
+                                            Style="{StaticResource MenuIconStyle}"
+                                            Background="{StaticResource PurpleBrush}">
+                                        <TextBlock Text="⚙️" FontSize="20" Foreground="White" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Услуги" Style="{StaticResource MenuTitleStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <Button Tag="Consumables" Style="{StaticResource NavigationMenuButtonStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" 
+                                            Style="{StaticResource MenuIconStyle}"
+                                            Background="{StaticResource OrangeBrush}">
+                                        <TextBlock Text="🔩" FontSize="20" Foreground="White" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Расходники" Style="{StaticResource MenuTitleStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <Button Tag="Employees" Style="{StaticResource NavigationMenuButtonStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" 
+                                            Style="{StaticResource MenuIconStyle}"
+                                            Background="{StaticResource TealBrush}">
+                                        <TextBlock Text="👨‍🔧" FontSize="20" Foreground="White" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Сотрудники" Style="{StaticResource MenuTitleStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <Button Tag="Reports" Style="{StaticResource NavigationMenuButtonStyle}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Border Grid.Column="0" 
+                                            Style="{StaticResource MenuIconStyle}"
+                                            Background="{StaticResource DangerBrush}">
+                                        <TextBlock Text="📊" FontSize="20" Foreground="White" 
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <TextBlock Text="Отчёты" Style="{StaticResource MenuTitleStyle}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+                </Border>
+
+                <ScrollViewer Grid.Column="1" 
+                              VerticalScrollBarVisibility="Auto" 
+                              HorizontalScrollBarVisibility="Disabled" 
+                              Background="White">
+                    <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="25">
+                        <ContentControl.ContentTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <TextBlock Text="Добро пожаловать в систему управления автосервисом" 
+                                               FontSize="24" FontWeight="Light" 
+                                               Foreground="{StaticResource DarkTextBrush}"
+                                               HorizontalAlignment="Center" 
+                                               VerticalAlignment="Center"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ContentControl.ContentTemplate>
+                    </ContentControl>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
