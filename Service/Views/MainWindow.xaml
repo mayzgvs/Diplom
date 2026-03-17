@@ -3,6 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModels="clr-namespace:Service.ViewModels"
+        xmlns:views="clr-namespace:Service.Views"
         Title="Автосервис: управление сервисом"
         Width="1300" Height="867"
         WindowStartupLocation="CenterScreen"
@@ -97,6 +99,7 @@
                             <TextBlock Text="НАВИГАЦИЯ" 
                                        Style="{StaticResource SectionHeaderStyle}"/>
 
+                            <!-- Кнопка "Клиенты" -->
                             <Button Tag="Clients" 
                                     Style="{StaticResource NavigationMenuButtonStyle}"
                                     Command="{Binding NavigateCommand}"
@@ -120,7 +123,11 @@
                                 </Grid>
                             </Button>
 
-                            <Button Tag="Cars" Style="{StaticResource NavigationMenuButtonStyle}">
+                            <!-- Кнопка "Автомобили" -->
+                            <Button Tag="Cars" 
+                                    Style="{StaticResource NavigationMenuButtonStyle}"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="Cars">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -140,7 +147,11 @@
                                 </Grid>
                             </Button>
 
-                            <Button Tag="RepairRequests" Style="{StaticResource NavigationMenuButtonStyle}">
+                            <!-- Кнопка "Заявки" -->
+                            <Button Tag="RepairRequests" 
+                                    Style="{StaticResource NavigationMenuButtonStyle}"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="RepairRequests">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -148,8 +159,8 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Border Grid.Column="0" 
-                                            Style="{StaticResource MenuIconStyle}"
-                                            Background="{StaticResource SuccessBrush}">
+                Style="{StaticResource MenuIconStyle}"
+                Background="{StaticResource SuccessBrush}">
                                         <TextBlock Text="📋" FontSize="20" Foreground="White" 
                                                    HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
@@ -160,7 +171,11 @@
                                 </Grid>
                             </Button>
 
-                            <Button Tag="Services" Style="{StaticResource NavigationMenuButtonStyle}">
+                            <!-- Кнопка "Услуги" -->
+                            <Button Tag="Services" 
+                                    Style="{StaticResource NavigationMenuButtonStyle}"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="Services">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -180,7 +195,11 @@
                                 </Grid>
                             </Button>
 
-                            <Button Tag="Consumables" Style="{StaticResource NavigationMenuButtonStyle}">
+                            <!-- Кнопка "Расходники" -->
+                            <Button Tag="Consumables" 
+                                    Style="{StaticResource NavigationMenuButtonStyle}"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="Consumables">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -200,7 +219,11 @@
                                 </Grid>
                             </Button>
 
-                            <Button Tag="Employees" Style="{StaticResource NavigationMenuButtonStyle}">
+                            <!-- Кнопка "Сотрудники" -->
+                            <Button Tag="Employees" 
+                                    Style="{StaticResource NavigationMenuButtonStyle}"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="Employees">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -220,7 +243,11 @@
                                 </Grid>
                             </Button>
 
-                            <Button Tag="Reports" Style="{StaticResource NavigationMenuButtonStyle}">
+                            <!-- Кнопка "Отчёты" -->
+                            <Button Tag="Reports" 
+                                    Style="{StaticResource NavigationMenuButtonStyle}"
+                                    Command="{Binding NavigateCommand}"
+                                    CommandParameter="Reports">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
@@ -244,21 +271,91 @@
                 </Border>
 
                 <ScrollViewer Grid.Column="1" 
-                              VerticalScrollBarVisibility="Auto" 
-                              HorizontalScrollBarVisibility="Disabled" 
-                              Background="White">
-                    <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" Margin="25">
-                        <ContentControl.ContentTemplate>
-                            <DataTemplate>
+              VerticalScrollBarVisibility="Auto" 
+              HorizontalScrollBarVisibility="Disabled" 
+              Background="White">
+
+                    <!-- Контент теперь привязан к Navigation.CurrentViewModel -->
+                    <ContentControl Content="{Binding Navigation.CurrentViewModel}" Margin="25">
+
+                        <!-- Ресурсы для сопоставления ViewModel и View -->
+                        <ContentControl.Resources>
+                            <!-- Приветственная страница (когда CurrentViewModel = null) -->
+                            <DataTemplate x:Key="WelcomeTemplate">
                                 <Grid>
-                                    <TextBlock Text="Добро пожаловать в систему управления автосервисом" 
-                                               FontSize="24" FontWeight="Light" 
-                                               Foreground="{StaticResource DarkTextBrush}"
-                                               HorizontalAlignment="Center" 
-                                               VerticalAlignment="Center"/>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Иконка -->
+                                    <TextBlock Grid.Row="0" 
+                               Text="🔧" 
+                               FontSize="120" 
+                               Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,50,0,20"/>
+
+                                    <!-- Заголовок -->
+                                    <TextBlock Grid.Row="1" 
+                               Text="Добро пожаловать в систему управления автосервисом" 
+                               FontSize="32" 
+                               FontWeight="Light" 
+                               Foreground="{StaticResource DarkTextBrush}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="20,0,20,20"/>
+
+                                    <!-- Подзаголовок -->
+                                    <TextBlock Grid.Row="2" 
+                               Text="Выберите раздел в меню слева для начала работы" 
+                               FontSize="18" 
+                               Foreground="{StaticResource LightTextBrush}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="20,0,20,50"/>
                                 </Grid>
                             </DataTemplate>
-                        </ContentControl.ContentTemplate>
+
+                            <!-- Шаблоны для ViewModel -->
+                            <DataTemplate DataType="{x:Type viewModels:ClientViewModel}">
+                                <views:ClientView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:CarViewModel}">
+                                <views:CarView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:RepairRequestViewModel}">
+                                <views:RepairView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:ServiceViewModel}">
+                                <views:ServiceView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:ConsumableViewModel}">
+                                <views:ConsumablesView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:EmployeeViewModel}">
+                                <views:EmployeeView/>
+                            </DataTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:ReportsViewModel}">
+                                <views:ReportView/>
+                            </DataTemplate>
+                        </ContentControl.Resources>
+
+                        <!-- Выбор шаблона в зависимости от значения CurrentViewModel
+                        <ContentControl.Style>
+                            <Style TargetType="ContentControl">
+                                <Setter Property="ContentTemplate" Value="{StaticResource WelcomeTemplate}"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Navigation.CurrentViewModel}" Value="{x:Null}">
+                                        <Setter Property="ContentTemplate" Value="{StaticResource WelcomeTemplate}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ContentControl.Style>  -->
+
                     </ContentControl>
                 </ScrollViewer>
             </Grid>

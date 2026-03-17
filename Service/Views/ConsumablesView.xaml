@@ -19,87 +19,117 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
-            <TextBlock Text="Управление расходными материалами" 
+            <TextBlock Text="Управление расходниками" 
                        FontSize="28" 
                        FontWeight="Light" 
                        Foreground="{StaticResource DarkTextBrush}"
                        Margin="0,0,0,15"/>
-
-            <Border CornerRadius="8" 
-                    Padding="15"
-                    BorderBrush="{StaticResource BorderBrush}" 
-                    BorderThickness="1">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto" MinWidth="199"/>
-                    </Grid.ColumnDefinitions>
-
-                    <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <Border Background="White" 
-                                CornerRadius="5" 
-                                BorderBrush="{StaticResource BorderBrush}" 
-                                BorderThickness="1"
-                                Margin="0,0,10,0">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" 
-                                           Text="🔍" 
-                                           Margin="10,8" 
-                                           Foreground="{StaticResource LightTextBrush}"/>
-                                <TextBox 
-                                         Width="250" 
-                                         BorderThickness="0"
-                                         Background="Transparent"
-                                         Padding="0,8,10,8"
-                                         ToolTip="Введите наименование расходного материала"
-                                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.ColumnSpan="2" Margin="36,0,0,0"/>
-                            </Grid>
-                        </Border>
-
-                        <Border Background="White" 
-                                CornerRadius="5" 
-                                BorderBrush="{StaticResource BorderBrush}" 
-                                BorderThickness="1"
-                                Margin="0,0,10,0" Width="229">
-                            <Grid Width="241">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" 
-                                           Text="📋" 
-                                           Margin="10,8" 
-                                           Foreground="{StaticResource LightTextBrush}"/>
-                                <ComboBox 
-                                          BorderThickness="0"
-                                          Background="Transparent"
-                                          ItemsSource="{Binding Categories}"
-                                          SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                          ToolTip="Фильтр по категории" Margin="2,0,18,0" Grid.Column="1">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Name}" 
-                                                       Margin="5,3"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </Grid>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-            </Border>
         </StackPanel>
 
-        <ListView Grid.Row="1" 
+        <!-- Панель фильтрации -->
+        <Border Grid.Row="1" 
+                Background="White" 
+                CornerRadius="8" 
+                Padding="15"
+                Margin="20,0,20,15"
+                BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" 
+                        Background="{StaticResource LightBackgroundBrush}" 
+                        CornerRadius="5" 
+                        BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="1"
+                        Height="35"
+                        Margin="0,0,10,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" 
+                                   Text="🔍" 
+                                   Margin="10,0" 
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource LightTextBrush}"/>
+
+                        <TextBox Grid.Column="1" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Padding="0"
+                                 VerticalAlignment="Center"
+                                 ToolTip="Введите наименование расходного материала"
+                                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <Button Grid.Column="2"
+                                Content="✖"
+                                Width="25"
+                                Height="25"
+                                Margin="0,0,5,0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource LightTextBrush}"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Cursor="Hand"
+                                Command="{Binding ClearSearchCommand}"
+                                ToolTip="Очистить поиск"/>
+                    </Grid>
+                </Border>
+
+                <StackPanel Grid.Column="1" 
+                            Orientation="Horizontal"
+                            Margin="0,0,10,0">
+                    <Border Background="{StaticResource LightBackgroundBrush}" 
+                            CornerRadius="5" 
+                            BorderBrush="{StaticResource BorderBrush}" 
+                            BorderThickness="1"
+                            Height="35"
+                            Width="180">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Grid.Column="0" 
+                                       Text="📋" 
+                                       Margin="10,0" 
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource LightTextBrush}"/>
+
+                            <ComboBox Grid.Column="1"
+                                      BorderThickness="0"
+                                      Background="Transparent"
+                                      ItemsSource="{Binding Categories}"
+                                      SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      ToolTip="Фильтр по категории"
+                                      VerticalAlignment="Center"
+                                      Margin="0,0,5,0"
+                                      DisplayMemberPath="Name"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Список расходников с кнопками в строке -->
+        <ListView Grid.Row="2" 
                   Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredConsumables}"
                   SelectedItem="{Binding CurrentConsumable, Mode=TwoWay}"
@@ -123,21 +153,49 @@
                                 <Border CornerRadius="15" Padding="8,3">
                                     <Border.Style>
                                         <Style TargetType="Border">
-                                            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                                            <Setter Property="Background" Value="{StaticResource OrangeBrush}"/>
                                             <Setter Property="Opacity" Value="0.1"/>
                                         </Style>
                                     </Border.Style>
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="● " 
-                                                   Foreground="{StaticResource PrimaryBrush}"
+                                                   Foreground="{StaticResource OrangeBrush}"
                                                    FontSize="14"
                                                    VerticalAlignment="Center"/>
                                         <TextBlock Text="{Binding ConsumableCategory.Name}" 
-                                                   Foreground="{StaticResource PrimaryBrush}"
+                                                   Foreground="{StaticResource OrangeBrush}"
                                                    FontWeight="SemiBold"
                                                    VerticalAlignment="Center"/>
                                     </StackPanel>
                                 </Border>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Колонка с действиями -->
+                    <GridViewColumn Header="" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Редактировать"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="✏️" FontSize="16" Foreground="#FFA500"/>
+                                    </Button>
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Удалить"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="🗑️" FontSize="16" Foreground="#FF4444"/>
+                                    </Button>
+                                </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -150,11 +208,11 @@
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
                     <Setter Property="Padding" Value="8"/>
-                    <Setter Property="MinHeight" Value="40"/>
+                    <Setter Property="MinHeight" Value="45"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource OrangeBrush}"/>
                             <Setter Property="BorderThickness" Value="2"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -165,7 +223,8 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <Border Grid.Row="2" 
+        <!-- Кнопка добавления -->
+        <Border Grid.Row="3" 
                 Background="White" 
                 CornerRadius="8" 
                 Padding="15"
@@ -176,19 +235,7 @@
                 <Button Content="➕ Добавить"
                         Style="{StaticResource AddButtonWithIconStyle}" 
                         Width="120" 
-                        Margin="0,0,10,0" 
                         Command="{Binding AddCommand}"/>
-
-                <Button Content="✏️ Изменить"
-                        Style="{DynamicResource EditButtonWithIconStyle}" 
-                        Width="120" 
-                        Margin="0,0,10,0" 
-                        Command="{Binding EditCommand}"/>
-
-                <Button Content="🗑️ Удалить"
-                        Style="{DynamicResource DeleteButtonWithIconStyle}" 
-                        Width="120" 
-                        Command="{Binding DeleteCommand}"/>
             </StackPanel>
         </Border>
     </Grid>

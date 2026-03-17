@@ -19,25 +19,90 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Margin="20">
-            <TextBox Width="250" Margin="0,0,10,0"
-                     ToolTip="Введите фамилию, имя или телефон"
-                     Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-            <Button Content="Очистить" 
-                    Command="{Binding ClearFiltersCommand}" 
-                    Width="80"/>
+        <!-- Заголовок -->
+        <StackPanel Grid.Row="0" Margin="20,20,20,10">
+            <TextBlock Text="Управление клиентами" 
+                       FontSize="28" 
+                       FontWeight="Light" 
+                       Foreground="{StaticResource DarkTextBrush}"
+                       Margin="0,0,0,15"/>
         </StackPanel>
 
-        <ListView Grid.Row="1" Margin="20"
+        <!-- Панель фильтрации -->
+        <Border Grid.Row="1" 
+                Background="White" 
+                CornerRadius="8" 
+                Padding="15"
+                Margin="20,0,20,15"
+                BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" 
+                        Background="{StaticResource LightBackgroundBrush}" 
+                        CornerRadius="5" 
+                        BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="1"
+                        Height="35"
+                        Margin="0,0,10,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Grid.Column="0" 
+                                   Text="🔍" 
+                                   Margin="10,0" 
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource LightTextBrush}"/>
+
+                        <TextBox Grid.Column="1" 
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 Padding="0"
+                                 VerticalAlignment="Center"
+                                 ToolTip="Введите фамилию, имя или телефон"
+                                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <Button Grid.Column="2"
+                                Content="✖"
+                                Width="25"
+                                Height="25"
+                                Margin="0,0,5,0"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Foreground="{StaticResource LightTextBrush}"
+                                FontSize="14"
+                                FontWeight="Bold"
+                                Cursor="Hand"
+                                Command="{Binding ClearFiltersCommand}"
+                                ToolTip="Очистить поиск"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Список клиентов с кнопками в строке -->
+        <ListView Grid.Row="2" 
+                  Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredClients}"
                   SelectedItem="{Binding CurrentClient, Mode=TwoWay}"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                  ScrollViewer.VerticalScrollBarVisibility="Auto">
+                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                  Background="White"
+                  BorderBrush="{StaticResource BorderBrush}"
+                  BorderThickness="1">
 
             <ListView.View>
                 <GridView>
@@ -50,50 +115,48 @@
                     <GridViewColumn Header="Имя" Width="120" 
                                     DisplayMemberBinding="{Binding FirstName}"/>
 
-                    <GridViewColumn Header="Отчество" Width="120" 
-                                    DisplayMemberBinding="{Binding Patronymic}"/>
-
-                    <GridViewColumn Header="Телефон" Width="120" 
+                    <GridViewColumn Header="Телефон" Width="130" 
                                     DisplayMemberBinding="{Binding ContactNumber}"/>
-
-                    <GridViewColumn Header="Email" Width="150" 
-                                    DisplayMemberBinding="{Binding Email}"/>
 
                     <GridViewColumn Header="Скидка" Width="80">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border CornerRadius="3" Padding="3">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Background" Value="LightGray"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Discount}" Value="0">
-                                                    <Setter Property="Background" Value="LightGray"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Discount}" Value="5">
-                                                    <Setter Property="Background" Value="LightBlue"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Discount}" Value="10">
-                                                    <Setter Property="Background" Value="LightGreen"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Discount}" Value="15">
-                                                    <Setter Property="Background" Value="Gold"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
+                                <Border CornerRadius="3" Padding="5,2" Background="#E6F7FF">
                                     <TextBlock Text="{Binding Discount, StringFormat={}{0}%}" 
-                                               HorizontalAlignment="Center"/>
+                                               HorizontalAlignment="Center"
+                                               Foreground="#0077CC"/>
                                 </Border>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Автомобилей" Width="80" 
-                                    DisplayMemberBinding="{Binding CarsCount}"/>
-
-                    <GridViewColumn Header="Дата регистрации" Width="120" 
-                                    DisplayMemberBinding="{Binding RegistrationDate, StringFormat={}{0:dd.MM.yyyy}}"/>
+                    <!-- Колонка с действиями -->
+                    <GridViewColumn Header="" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Редактировать"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="✏️" FontSize="16" Foreground="#FFA500"/>
+                                    </Button>
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Удалить"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="🗑️" FontSize="16" Foreground="#FF4444"/>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
 
@@ -102,27 +165,36 @@
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
+                    <Setter Property="Padding" Value="8"/>
+                    <Setter Property="MinHeight" Value="45"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                            <Setter Property="BorderThickness" Value="2"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="32,0,0,20">
-            <Button Content="Добавить" 
-                    Style="{StaticResource AddButtonWithIconStyle}" 
-                    Width="113" 
-                    Margin="0,0,10,0" 
-                    Command="{Binding AddCommand}"/>
-
-            <Button Content="Изменить" 
-                    Style="{DynamicResource EditButtonWithIconStyle}" 
-                    Width="115" 
-                    Margin="0,0,10,0" 
-                    Command="{Binding EditCommand}"/>
-
-            <Button Content="Удалить" 
-                    Style="{DynamicResource DeleteButtonWithIconStyle}" 
-                    Width="99" 
-                    Command="{Binding DeleteCommand}"/>
-        </StackPanel>
+        <!-- Кнопка добавления -->
+        <Border Grid.Row="3" 
+                Background="White" 
+                CornerRadius="8" 
+                Padding="15"
+                Margin="20,0,20,20"
+                BorderBrush="{StaticResource BorderBrush}" 
+                BorderThickness="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="➕ Добавить"
+                        Style="{StaticResource AddButtonWithIconStyle}" 
+                        Width="120" 
+                        Command="{Binding AddCommand}"/>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>

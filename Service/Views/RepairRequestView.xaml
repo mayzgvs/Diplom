@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Service.Views"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800"
              Background="Transparent">
@@ -24,6 +23,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
             <TextBlock Text="Управление заявками на ремонт" 
                        FontSize="28" 
@@ -32,6 +32,7 @@
                        Margin="0,0,0,15"/>
         </StackPanel>
 
+        <!-- Панель фильтрации -->
         <Border Grid.Row="1" 
                 Background="White" 
                 CornerRadius="8" 
@@ -44,7 +45,6 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" 
@@ -86,7 +86,7 @@
                                 FontSize="14"
                                 FontWeight="Bold"
                                 Cursor="Hand"
-                                Command="{Binding ClearSearchCommand}"
+                                Command="{Binding ClearFilterCommand}"
                                 ToolTip="Очистить поиск"/>
                     </Grid>
                 </Border>
@@ -94,7 +94,6 @@
                 <StackPanel Grid.Column="1" 
                             Orientation="Horizontal"
                             Margin="0,0,10,0">
-
                     <Border Background="{StaticResource LightBackgroundBrush}" 
                             CornerRadius="5" 
                             BorderBrush="{StaticResource BorderBrush}" 
@@ -117,170 +116,109 @@
                                       BorderThickness="0"
                                       Background="Transparent"
                                       ItemsSource="{Binding Statuses}"
-                                      SelectedItem="{Binding SelectedStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      SelectedItem="{Binding SelectedFilterStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       ToolTip="Фильтр по статусу"
                                       VerticalAlignment="Center"
-                                      Margin="0,0,5,0">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="3">
-                                            <Border Width="10" Height="10" 
-                                                    CornerRadius="2"
-                                                    Margin="0,0,5,0"/>
-                                            <TextBlock Text="{Binding Name}"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                      Margin="0,0,5,0"
+                                      DisplayMemberPath="Name"/>
                         </Grid>
                     </Border>
                 </StackPanel>
             </Grid>
         </Border>
 
+        <!-- Список заявок с кнопками в строке -->
         <ListView Grid.Row="2" 
                   Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredRequests}"
-                  SelectedItem="{Binding CurrentRequest, Mode=TwoWay}"
+                  SelectedItem="{Binding SelectedRepairRequest, Mode=TwoWay}"
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                   Background="White"
                   BorderBrush="{StaticResource BorderBrush}"
                   BorderThickness="1">
+
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="№" Width="50" 
+                    <GridViewColumn Header="ID" Width="50" 
                                     DisplayMemberBinding="{Binding Id}"/>
 
-                    <GridViewColumn Header="Автомобиль" Width="120" 
+                    <GridViewColumn Header="Автомобиль" Width="180">
+                        <!--<GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Car.Brand, Car.Model}" 
+                                           FontWeight="SemiBold"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>-->
+                    </GridViewColumn>
+
+                    <GridViewColumn Header="Госномер" Width="100" 
                                     DisplayMemberBinding="{Binding Car.RegistrationNumber}"/>
 
-                    <GridViewColumn Header="Марка/Модель" Width="150">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Car.Brand}"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
+                    <GridViewColumn Header="Клиент" Width="150" 
+                                    DisplayMemberBinding="{Binding Client}"/>
 
-                    <GridViewColumn Header="Клиент" Width="200">
+                    <GridViewColumn Header="Статус" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Client.FullName}" 
-                                               FontWeight="SemiBold"/>
-                                    <TextBlock Text="{Binding Client.Phone}" 
-                                               FontSize="11"
-                                               Foreground="{StaticResource LightTextBrush}"/>
-                                </StackPanel>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-
-                    <GridViewColumn Header="Начало" Width="100">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding StartDate, StringFormat='dd.MM.yyyy'}"
-                                           FontSize="12"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-
-                    <GridViewColumn Header="Окончание" Width="100">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding EndDate, StringFormat='dd.MM.yyyy'}"
-                                           FontSize="12"/>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>
-                    </GridViewColumn>
-
-                    <GridViewColumn Header="Статус" Width="120">
-                        <GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <Border CornerRadius="4" Padding="5,2">
+                                <Border CornerRadius="3" Padding="3">
                                     <Border.Style>
                                         <Style TargetType="Border">
                                             <Setter Property="Background" Value="#FFF0F0F0"/>
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Status.Name}" Value="Завершен">
-                                                    <Setter Property="Background" Value="#FFFFE6E6"/>
+                                                <DataTrigger Binding="{Binding Status.Name}" Value="В работе">
+                                                    <Setter Property="Background" Value="#FFE6F7FF"/>
                                                 </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status.Name}" Value="В процессе">
-                                                    <Setter Property="Background" Value="#FFE6FFE6"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status.Name}" Value="Ожидает">
+                                                <DataTrigger Binding="{Binding Status.Name}" Value="В ожидании">
                                                     <Setter Property="Background" Value="#FFFFF0E6"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status.Name}" Value="Завершена">
+                                                    <Setter Property="Background" Value="#FFE6FFE6"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Border.Style>
-
-                                    <StackPanel Orientation="Horizontal">
-                                        <Border Width="8" Height="8" 
-                            CornerRadius="4"
-                            Margin="0,0,5,0"
-                            VerticalAlignment="Center">
-                                            <Border.Style>
-                                                <Style TargetType="Border">
-                                                    <Setter Property="Background" Value="Gray"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Status.Name}" Value="Завершен">
-                                                            <Setter Property="Background" Value="Red"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Status.Name}" Value="В процессе">
-                                                            <Setter Property="Background" Value="Green"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Status.Name}" Value="Ожидает">
-                                                            <Setter Property="Background" Value="Orange"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                        </Border>
-
-                                        <TextBlock Text="{Binding Status.Name}" FontWeight="SemiBold">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Setter Property="Foreground" Value="Gray"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Status.Name}" Value="Завершен">
-                                                            <Setter Property="Foreground" Value="Red"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Status.Name}" Value="В процессе">
-                                                            <Setter Property="Foreground" Value="Green"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Status.Name}" Value="Ожидает">
-                                                            <Setter Property="Foreground" Value="Orange"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </StackPanel>
+                                    <TextBlock Text="{Binding Status.Name}" 
+                                               HorizontalAlignment="Center"/>
                                 </Border>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Сумма" Width="120">
+                    <GridViewColumn Header="Стоимость" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding TotalCost, StringFormat={}{0:C2}}" 
-                                               FontWeight="Bold"
-                                               Foreground="{StaticResource SuccessBrush}"/>
-                                </StackPanel>
+                                <TextBlock Text="{Binding TotalCost, StringFormat={}{0:C2}}" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource SuccessBrush}"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
 
-                    <GridViewColumn Header="Механик" Width="150">
+                    <!-- Колонка с действиями -->
+                    <GridViewColumn Header="" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Mechanic.FullName}"
-                                           Foreground="{StaticResource LightTextBrush}"
-                                           FontSize="12"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Редактировать"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="✏️" FontSize="16" Foreground="#FFA500"/>
+                                    </Button>
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Удалить"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="🗑️" FontSize="16" Foreground="#FF4444"/>
+                                    </Button>
+                                </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -293,11 +231,11 @@
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
                     <Setter Property="Padding" Value="8"/>
-                    <Setter Property="MinHeight" Value="55"/>
+                    <Setter Property="MinHeight" Value="45"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                            <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
                             <Setter Property="BorderThickness" Value="2"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -308,6 +246,7 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
+        <!-- Кнопка добавления -->
         <Border Grid.Row="3" 
                 Background="White" 
                 CornerRadius="8" 
@@ -316,25 +255,10 @@
                 BorderBrush="{StaticResource BorderBrush}" 
                 BorderThickness="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Content="➕ Создать заявку"
+                <Button Content="➕ Добавить"
                         Style="{StaticResource AddButtonWithIconStyle}" 
-                        Width="140" 
-                        Margin="0,0,10,0" 
-                        Command="{Binding AddCommand}"/>
-                <Button Content="✏️ Редактировать"
-                        Style="{StaticResource EditButtonWithIconStyle}" 
-                        Width="140" 
-                        Margin="0,0,10,0" 
-                        Command="{Binding EditCommand}"/>
-                <Button Content="📋 Детали"
-                        Style="{StaticResource CancelButtonStyle}" 
                         Width="120" 
-                        Margin="0,0,10,0" 
-                        Command="{Binding ViewDetailsCommand}"/>
-                <Button Content="🗑️ Удалить"
-                        Style="{StaticResource DeleteButtonWithIconStyle}" 
-                        Width="100" 
-                        Command="{Binding DeleteCommand}"/>
+                        Command="{Binding AddCommand}"/>
             </StackPanel>
         </Border>
     </Grid>

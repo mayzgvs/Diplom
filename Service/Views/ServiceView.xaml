@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Service.Views"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800"
              Background="Transparent">
@@ -25,6 +23,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
             <TextBlock Text="Управление услугами" 
                        FontSize="28" 
@@ -33,11 +32,12 @@
                        Margin="0,0,0,15"/>
         </StackPanel>
 
+        <!-- Панель фильтрации -->
         <Border Grid.Row="1" 
                 Background="White" 
                 CornerRadius="8" 
                 Padding="15"
-                Margin="20,0,20,10"
+                Margin="20,0,20,15"
                 BorderBrush="{StaticResource BorderBrush}" 
                 BorderThickness="1">
             <Grid>
@@ -45,10 +45,10 @@
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0"
+                <Border Grid.Column="0" 
+                        Background="{StaticResource LightBackgroundBrush}" 
                         CornerRadius="5" 
                         BorderBrush="{StaticResource BorderBrush}" 
                         BorderThickness="1"
@@ -94,7 +94,8 @@
                 <StackPanel Grid.Column="1" 
                             Orientation="Horizontal"
                             Margin="0,0,10,0">
-                    <Border CornerRadius="5" 
+                    <Border Background="{StaticResource LightBackgroundBrush}" 
+                            CornerRadius="5" 
                             BorderBrush="{StaticResource BorderBrush}" 
                             BorderThickness="1"
                             Height="35"
@@ -118,19 +119,15 @@
                                       SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                       ToolTip="Фильтр по категории"
                                       VerticalAlignment="Center"
-                                      Margin="0,0,5,0">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Name}" Margin="3"/>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
+                                      Margin="0,0,5,0"
+                                      DisplayMemberPath="Name"/>
                         </Grid>
                     </Border>
                 </StackPanel>
             </Grid>
         </Border>
 
+        <!-- Список услуг с кнопками в строке -->
         <ListView Grid.Row="2" 
                   Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredServices}"
@@ -140,6 +137,7 @@
                   Background="White"
                   BorderBrush="{StaticResource BorderBrush}"
                   BorderThickness="1">
+
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="ID" Width="50" 
@@ -176,10 +174,36 @@
                     <GridViewColumn Header="Стоимость" Width="150">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Cost, StringFormat={}{0:C2}}" 
-                                               FontWeight="SemiBold"
-                                               Foreground="{StaticResource SuccessBrush}"/>
+                                <TextBlock Text="{Binding Cost, StringFormat={}{0:C2}}" 
+                                           FontWeight="Bold"
+                                           Foreground="{StaticResource SuccessBrush}"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+
+                    <!-- Колонка с действиями -->
+                    <GridViewColumn Header="" Width="100">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Редактировать"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="✏️" FontSize="16" Foreground="#FFA500"/>
+                                    </Button>
+                                    <Button Width="30" Height="30" Margin="2"
+                                            ToolTip="Удалить"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            Cursor="Hand"
+                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock Text="🗑️" FontSize="16" Foreground="#FF4444"/>
+                                    </Button>
                                 </StackPanel>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -206,31 +230,22 @@
                     </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
+        </ListView>
 
-            <Border Grid.Row="3" 
+        <!-- Кнопка добавления -->
+        <Border Grid.Row="3" 
                 Background="White" 
                 CornerRadius="8" 
                 Padding="15"
                 Margin="20,0,20,20"
                 BorderBrush="{StaticResource BorderBrush}" 
                 BorderThickness="1">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Content="➕ Добавить"
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="➕ Добавить"
                         Style="{StaticResource AddButtonWithIconStyle}" 
-                        Width="140" 
-                        Margin="0,0,10,0" 
+                        Width="120" 
                         Command="{Binding AddCommand}"/>
-                    <Button Content="✏️ Редактировать"
-                        Style="{DynamicResource EditButtonWithIconStyle}" 
-                        Width="140" 
-                        Margin="0,0,10,0" 
-                        Command="{Binding EditCommand}"/>
-                    <Button Content="🗑️ Удалить"
-                        Style="{DynamicResource DeleteButtonWithIconStyle}" 
-                        Width="100" 
-                        Command="{Binding DeleteCommand}"/>
-                </StackPanel>
-            </Border>
-        </ListView>
+            </StackPanel>
+        </Border>
     </Grid>
 </UserControl>
