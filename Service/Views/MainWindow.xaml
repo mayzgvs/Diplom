@@ -344,7 +344,7 @@
                             </DataTemplate>
                         </ContentControl.Resources>
 
-                        <!-- Выбор шаблона в зависимости от значения CurrentViewModel
+                        
                         <ContentControl.Style>
                             <Style TargetType="ContentControl">
                                 <Setter Property="ContentTemplate" Value="{StaticResource WelcomeTemplate}"/>
@@ -354,7 +354,7 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </ContentControl.Style>  -->
+                        </ContentControl.Style>  
 
                     </ContentControl>
                 </ScrollViewer>
