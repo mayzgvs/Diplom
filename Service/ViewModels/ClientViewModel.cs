@@ -1,5 +1,6 @@
 ﻿using Service.Data;
 using Service.ViewModels;
+using Service.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -204,20 +205,20 @@ namespace Service.ViewModels
 
         private void AddNewClient(object obj)
         {
-            EditingClient = new Client
-            {
-                Discount = 0
-            };
-            SelectedClient = null;
-            CurrentClient = null;
-            IsEditMode = true;
+            var editWindow = new AddClient();
+            editWindow.DataContext = this; // Передаем текущую ViewModel
+            EditingClient = new Client { Discount = 0 };
+            editWindow.ShowDialog(); // Открываем как диалог
         }
 
         private void EditClient(object obj)
         {
             if (SelectedClient != null)
             {
-                IsEditMode = true;
+                var editWindow = new AddClient();
+                editWindow.DataContext = this;
+                editWindow.Title = "Редактирование клиента";
+                editWindow.ShowDialog();
             }
         }
 

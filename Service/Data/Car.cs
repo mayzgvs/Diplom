@@ -70,7 +70,6 @@ namespace Service.Data
         }
 
         private int _ownerId;
-        [ForeignKey("Client")]
         public int OwnerId
         {
             get => _ownerId;

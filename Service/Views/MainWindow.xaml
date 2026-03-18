@@ -275,12 +275,9 @@
               HorizontalScrollBarVisibility="Disabled" 
               Background="White">
 
-                    <!-- Контент теперь привязан к Navigation.CurrentViewModel -->
-                    <ContentControl Content="{Binding Navigation.CurrentViewModel}" Margin="25">
+                    <!--<ContentControl Content="{Binding Navigation.CurrentViewModel}" Margin="25">
 
-                        <!-- Ресурсы для сопоставления ViewModel и View -->
                         <ContentControl.Resources>
-                            <!-- Приветственная страница (когда CurrentViewModel = null) -->
                             <DataTemplate x:Key="WelcomeTemplate">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -289,7 +286,7 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    <!-- Иконка -->
+                                    --><!-- Иконка --><!--
                                     <TextBlock Grid.Row="0" 
                                Text="🔧" 
                                FontSize="120" 
@@ -297,7 +294,7 @@
                                HorizontalAlignment="Center"
                                Margin="0,50,0,20"/>
 
-                                    <!-- Заголовок -->
+                                    --><!-- Заголовок --><!--
                                     <TextBlock Grid.Row="1" 
                                Text="Добро пожаловать в систему управления автосервисом" 
                                FontSize="32" 
@@ -308,7 +305,7 @@
                                HorizontalAlignment="Center"
                                Margin="20,0,20,20"/>
 
-                                    <!-- Подзаголовок -->
+                                    --><!-- Подзаголовок --><!--
                                     <TextBlock Grid.Row="2" 
                                Text="Выберите раздел в меню слева для начала работы" 
                                FontSize="18" 
@@ -320,7 +317,7 @@
                                 </Grid>
                             </DataTemplate>
 
-                            <!-- Шаблоны для ViewModel -->
+                            --><!-- Шаблоны для ViewModel --><!--
                             <DataTemplate DataType="{x:Type viewModels:ClientViewModel}">
                                 <views:ClientView/>
                             </DataTemplate>
@@ -355,8 +352,7 @@
                                 </Style.Triggers>
                             </Style>
                         </ContentControl.Style>  
-
-                    </ContentControl>
+                    </ContentControl>-->
                 </ScrollViewer>
             </Grid>
         </Grid>

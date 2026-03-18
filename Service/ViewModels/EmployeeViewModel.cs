@@ -14,7 +14,7 @@ namespace Service.ViewModels
     {
         private readonly ApplicationContext _context;
 
-        // Коллекция для отображения в DataGrid
+        // Коллекция для отображения в DataGrid (ВСЕ сотрудники)
         private ObservableCollection<Employee> _employees;
         public ObservableCollection<Employee> Employees
         {
@@ -23,6 +23,33 @@ namespace Service.ViewModels
             {
                 _employees = value;
                 OnPropertyChanged();
+                // При изменении списка всех сотрудников обновляем и фильтрованный список
+                FilterEmployees();
+            }
+        }
+
+        // ОТФИЛЬТРОВАННАЯ коллекция для отображения в DataGrid
+        private ObservableCollection<Employee> _filteredEmployees;
+        public ObservableCollection<Employee> FilteredEmployees
+        {
+            get => _filteredEmployees;
+            set
+            {
+                _filteredEmployees = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // Текст поиска (привязан к TextBox в XAML)
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                FilterEmployees(); // Фильтруем при каждом изменении текста
             }
         }
 
@@ -35,6 +62,7 @@ namespace Service.ViewModels
             {
                 _selectedEmployee = value;
                 OnPropertyChanged();
+
                 // Копируем выбранного сотрудника для редактирования
                 if (value != null)
                 {
@@ -112,6 +140,7 @@ namespace Service.ViewModels
             }
         }
 
+        // Команды
         public ICommand LoadedCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
@@ -119,11 +148,13 @@ namespace Service.ViewModels
         public ICommand CancelEditCommand { get; }
         public ICommand DeleteCommand { get; }
         public ICommand RefreshCommand { get; }
+        public ICommand ClearSearchCommand { get; } // Новая команда для очистки поиска
 
         public EmployeeViewModel()
         {
             _context = new ApplicationContext();
             Employees = new ObservableCollection<Employee>();
+            FilteredEmployees = new ObservableCollection<Employee>();
 
             LoadedCommand = new RelayCommand(async (obj) => await LoadDataAsync());
             AddCommand = new RelayCommand(AddNewEmployee);
@@ -132,8 +163,10 @@ namespace Service.ViewModels
             CancelEditCommand = new RelayCommand(CancelEdit);
             DeleteCommand = new RelayCommand(async (obj) => await DeleteEmployeeAsync(), CanEditOrDelete);
             RefreshCommand = new RelayCommand(async (obj) => await LoadDataAsync());
+            ClearSearchCommand = new RelayCommand(ClearSearch); // Инициализация команды очистки
         }
 
+        // Загрузка данных из БД
         private async Task LoadDataAsync()
         {
             IsLoading = true;
@@ -144,7 +177,11 @@ namespace Service.ViewModels
                     .OrderBy(e => e.LastName)
                     .ThenBy(e => e.FirstName)
                     .ToListAsync();
+
                 Employees = new ObservableCollection<Employee>(employees);
+
+                // После загрузки применяем фильтрацию (пока текст поиска пустой)
+                FilterEmployees();
 
                 // Обновляем статистику
                 UpdateStatistics();
@@ -160,6 +197,42 @@ namespace Service.ViewModels
             }
         }
 
+        // Метод фильтрации сотрудников
+        private void FilterEmployees()
+        {
+            if (Employees == null) return;
+
+            // Начинаем со всех сотрудников
+            var filtered = Employees.AsEnumerable();
+
+            // Если есть текст для поиска - фильтруем
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var searchLower = SearchText.ToLower().Trim();
+                filtered = filtered.Where(e =>
+                    (e.LastName?.ToLower().Contains(searchLower) == true) ||
+                    (e.FirstName?.ToLower().Contains(searchLower) == true) ||
+                    (e.ContactNumber?.ToLower().Contains(searchLower) == true)
+                );
+            }
+
+            // Сортируем отфильтрованные результаты
+            filtered = filtered.OrderBy(e => e.LastName).ThenBy(e => e.FirstName);
+
+            // Создаем новую отфильтрованную коллекцию
+            FilteredEmployees = new ObservableCollection<Employee>(filtered);
+
+            // Обновляем заголовок с количеством найденных записей
+            OnPropertyChanged(nameof(FilteredEmployees));
+        }
+
+        // Очистка поиска
+        private void ClearSearch(object obj)
+        {
+            SearchText = string.Empty; // Это автоматически вызовет FilterEmployees()
+        }
+
+        // Обновление статистики
         private async void UpdateStatistics()
         {
             try
@@ -179,6 +252,7 @@ namespace Service.ViewModels
             }
         }
 
+        // Добавление нового сотрудника
         private void AddNewEmployee(object obj)
         {
             EditingEmployee = new Employee();
@@ -186,15 +260,18 @@ namespace Service.ViewModels
             IsEditMode = true;
         }
 
+        // Редактирование сотрудника
         private void EditEmployee(object obj)
         {
             IsEditMode = true;
         }
 
+        // Сохранение сотрудника
         private async Task SaveEmployeeAsync()
         {
             if (EditingEmployee == null) return;
 
+            // Валидация
             if (string.IsNullOrWhiteSpace(EditingEmployee.LastName))
             {
                 MessageBox.Show("Фамилия обязательна для заполнения.", "Предупреждение",
@@ -209,6 +286,7 @@ namespace Service.ViewModels
                 return;
             }
 
+            // Проверка телефона (если указан)
             if (!string.IsNullOrWhiteSpace(EditingEmployee.ContactNumber))
             {
                 var phone = EditingEmployee.ContactNumber.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", "");
@@ -223,13 +301,15 @@ namespace Service.ViewModels
             IsLoading = true;
             try
             {
-                if (EditingEmployee.Id == 0)
+                if (EditingEmployee.Id == 0) // Новый сотрудник
                 {
                     _context.Employees.Add(EditingEmployee);
                     await _context.SaveChangesAsync();
+
+                    // Добавляем в общую коллекцию
                     Employees.Add(EditingEmployee);
                 }
-                else 
+                else // Редактирование существующего
                 {
                     var employeeToUpdate = await _context.Employees.FindAsync(EditingEmployee.Id);
                     if (employeeToUpdate != null)
@@ -240,6 +320,7 @@ namespace Service.ViewModels
 
                         await _context.SaveChangesAsync();
 
+                        // Обновляем в коллекции
                         var existingEmployee = Employees.FirstOrDefault(e => e.Id == EditingEmployee.Id);
                         if (existingEmployee != null)
                         {
@@ -250,8 +331,13 @@ namespace Service.ViewModels
                     }
                 }
 
+                // Обновляем отфильтрованный список
+                FilterEmployees();
+
+                // Обновляем статистику
                 UpdateStatistics();
 
+                // Выходим из режима редактирования
                 EditingEmployee = null;
                 SelectedEmployee = null;
                 IsEditMode = false;
@@ -267,6 +353,7 @@ namespace Service.ViewModels
             }
         }
 
+        // Отмена редактирования
         private void CancelEdit(object obj)
         {
             EditingEmployee = null;
@@ -274,10 +361,12 @@ namespace Service.ViewModels
             IsEditMode = false;
         }
 
+        // Удаление сотрудника
         private async Task DeleteEmployeeAsync()
         {
             if (SelectedEmployee == null) return;
 
+            // Проверяем, есть ли у сотрудника назначенные работы
             var hasWorkItems = await _context.WorkItems
                 .AnyAsync(w => w.EmployeeId == SelectedEmployee.Id);
 
@@ -304,11 +393,18 @@ namespace Service.ViewModels
                     _context.Employees.Remove(employeeToDelete);
                     await _context.SaveChangesAsync();
 
+                    // Удаляем из общей коллекции
                     Employees.Remove(SelectedEmployee);
+
+                    // Обновляем отфильтрованный список
+                    FilterEmployees();
+
+                    // Очищаем выделение
                     SelectedEmployee = null;
                     EditingEmployee = null;
                     IsEditMode = false;
 
+                    // Обновляем статистику
                     UpdateStatistics();
                 }
             }
@@ -323,11 +419,13 @@ namespace Service.ViewModels
             }
         }
 
+        // Проверка возможности редактирования/удаления
         private bool CanEditOrDelete(object obj)
         {
             return SelectedEmployee != null;
         }
 
+        // Проверка возможности сохранения
         private bool CanSaveEmployee(object obj)
         {
             return EditingEmployee != null && !IsLoading;

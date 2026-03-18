@@ -142,6 +142,20 @@ namespace Service.ViewModels
 
         private void EditCar(object obj)
         {
+            if (SelectedCar != null)
+            {
+                // Создаем копию для редактирования
+                EditingCar = new Car
+                {
+                    Id = SelectedCar.Id,
+                    Brand = SelectedCar.Brand,
+                    Model = SelectedCar.Model,
+                    RegistrationNumber = SelectedCar.RegistrationNumber,
+                    VIN = SelectedCar.VIN,
+                    OwnerId = SelectedCar.OwnerId,
+                    Client = SelectedCar.Client
+                };
+            }
         }
 
         private async Task SaveCarAsync()
@@ -253,6 +267,47 @@ namespace Service.ViewModels
         private bool CanSaveCar(object obj)
         {
             return EditingCar != null && !IsLoading;
+        }
+        private void FilterCars()
+        {
+            if (Cars == null) return;
+
+            var filtered = Cars.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var search = SearchText.ToLower();
+                filtered = filtered.Where(c =>
+                    (c.Brand?.ToLower().Contains(search) == true) ||
+                    (c.Model?.ToLower().Contains(search) == true) ||
+                    (c.RegistrationNumber?.ToLower().Contains(search) == true) ||
+                    (c.VIN?.ToLower().Contains(search) == true));
+            }
+
+            FilteredCars = new ObservableCollection<Car>(filtered);
+        }
+
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                FilterCars(); // вызывать фильтрацию при изменении
+            }
+        }
+
+        private ObservableCollection<Car> _filteredCars;
+        public ObservableCollection<Car> FilteredCars
+        {
+            get => _filteredCars;
+            set
+            {
+                _filteredCars = value;
+                OnPropertyChanged();
+            }
         }
     }
 }
