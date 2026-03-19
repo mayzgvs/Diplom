@@ -275,9 +275,9 @@
               HorizontalScrollBarVisibility="Disabled" 
               Background="White">
 
-                    <!--<ContentControl Content="{Binding Navigation.CurrentViewModel}" Margin="25">
-
+                    <ContentControl Content="{Binding Navigation.CurrentViewModel}" Margin="25">
                         <ContentControl.Resources>
+                            <!-- Шаблон для приветствия -->
                             <DataTemplate x:Key="WelcomeTemplate">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -286,38 +286,35 @@
                                         <RowDefinition Height="Auto"/>
                                     </Grid.RowDefinitions>
 
-                                    --><!-- Иконка --><!--
                                     <TextBlock Grid.Row="0" 
-                               Text="🔧" 
-                               FontSize="120" 
-                               Foreground="{StaticResource PrimaryBrush}"
-                               HorizontalAlignment="Center"
-                               Margin="0,50,0,20"/>
+                           Text="🔧" 
+                           FontSize="120" 
+                           Foreground="{StaticResource PrimaryBrush}"
+                           HorizontalAlignment="Center"
+                           Margin="0,50,0,20"/>
 
-                                    --><!-- Заголовок --><!--
                                     <TextBlock Grid.Row="1" 
-                               Text="Добро пожаловать в систему управления автосервисом" 
-                               FontSize="32" 
-                               FontWeight="Light" 
-                               Foreground="{StaticResource DarkTextBrush}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Margin="20,0,20,20"/>
+                           Text="Добро пожаловать в систему управления автосервисом" 
+                           FontSize="32" 
+                           FontWeight="Light" 
+                           Foreground="{StaticResource DarkTextBrush}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="20,0,20,20"/>
 
-                                    --><!-- Подзаголовок --><!--
                                     <TextBlock Grid.Row="2" 
-                               Text="Выберите раздел в меню слева для начала работы" 
-                               FontSize="18" 
-                               Foreground="{StaticResource LightTextBrush}"
-                               TextWrapping="Wrap"
-                               TextAlignment="Center"
-                               HorizontalAlignment="Center"
-                               Margin="20,0,20,50"/>
+                           Text="Выберите раздел в меню слева для начала работы" 
+                           FontSize="18" 
+                           Foreground="{StaticResource LightTextBrush}"
+                           TextWrapping="Wrap"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"
+                           Margin="20,0,20,50"/>
                                 </Grid>
                             </DataTemplate>
 
-                            --><!-- Шаблоны для ViewModel --><!--
+                            <!-- Шаблоны для каждой ViewModel -->
                             <DataTemplate DataType="{x:Type viewModels:ClientViewModel}">
                                 <views:ClientView/>
                             </DataTemplate>
@@ -341,18 +338,18 @@
                             </DataTemplate>
                         </ContentControl.Resources>
 
-                        
+                        <!-- Простой и рабочий вариант -->
                         <ContentControl.Style>
                             <Style TargetType="ContentControl">
-                                <Setter Property="ContentTemplate" Value="{StaticResource WelcomeTemplate}"/>
+                                <Setter Property="ContentTemplate" Value="{x:Null}"/>
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Navigation.CurrentViewModel}" Value="{x:Null}">
                                         <Setter Property="ContentTemplate" Value="{StaticResource WelcomeTemplate}"/>
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </ContentControl.Style>  
-                    </ContentControl>-->
+                        </ContentControl.Style>
+                    </ContentControl>
                 </ScrollViewer>
             </Grid>
         </Grid>

@@ -309,5 +309,11 @@ namespace Service.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        // Публичный метод для загрузки данных (для вызова из навигации)
+        public async void LoadData()
+        {
+            await LoadDataAsync();
+        }
     }
 }

@@ -106,9 +106,6 @@
 
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="ID" Width="50" 
-                                    DisplayMemberBinding="{Binding Id}"/>
-
                     <GridViewColumn Header="Фамилия" Width="150" 
                                     DisplayMemberBinding="{Binding LastName}"/>
 
