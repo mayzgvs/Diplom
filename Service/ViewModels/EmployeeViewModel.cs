@@ -252,18 +252,31 @@ namespace Service.ViewModels
             }
         }
 
-        // Добавление нового сотрудника
         private void AddNewEmployee(object obj)
         {
-            EditingEmployee = new Employee();
-            SelectedEmployee = null;
-            IsEditMode = true;
+            var addWindow = new Views.AddEmployeeView();
+            var viewModel = new AddEmployeeViewModel(_context);
+            addWindow.DataContext = viewModel;
+
+            if (addWindow.ShowDialog() == true)
+            {
+                _ = LoadDataAsync();
+            }
         }
 
-        // Редактирование сотрудника
         private void EditEmployee(object obj)
         {
-            IsEditMode = true;
+            if (SelectedEmployee != null)
+            {
+                var editWindow = new Views.AddEmployeeView();
+                var viewModel = new AddEmployeeViewModel(_context, SelectedEmployee);
+                editWindow.DataContext = viewModel;
+
+                if (editWindow.ShowDialog() == true)
+                {
+                    _ = LoadDataAsync();
+                }
+            }
         }
 
         // Сохранение сотрудника

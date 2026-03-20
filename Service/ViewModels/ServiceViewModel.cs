@@ -227,18 +227,29 @@ namespace Service.ViewModels
 
         private void AddNewService(object obj)
         {
-            EditingService = new ServiceModel
+            var addWindow = new Views.AddServiceView();
+            var viewModel = new AddServiceViewModel(_context);
+            addWindow.DataContext = viewModel;
+
+            if (addWindow.ShowDialog() == true)
             {
-                ServiceCategoryId = Categories.FirstOrDefault()?.Id ?? 0,
-                Cost = 0
-            };
-            SelectedService = null;
-            IsEditMode = true;
+                _ = LoadDataAsync();
+            }
         }
 
         private void EditService(object obj)
         {
-            IsEditMode = true;
+            if (SelectedService != null)
+            {
+                var editWindow = new Views.AddServiceView();
+                var viewModel = new AddServiceViewModel(_context, SelectedService);
+                editWindow.DataContext = viewModel;
+
+                if (editWindow.ShowDialog() == true)
+                {
+                    _ = LoadDataAsync();
+                }
+            }
         }
 
         private async Task SaveServiceAsync()

@@ -22,16 +22,9 @@
         </ResourceDictionary>
     </Window.Resources>
 
-    <Window.Effect>
-        <DropShadowEffect BlurRadius="20" Opacity="0.3" ShadowDepth="2" Color="#888888"/>
-    </Window.Effect>
-
     <Border Background="{StaticResource WindowBackgroundBrush}" 
             CornerRadius="15" 
             Margin="5">
-        <Border.Effect>
-            <DropShadowEffect BlurRadius="10" Opacity="0.1" ShadowDepth="0" Color="#000000"/>
-        </Border.Effect>
 
         <Grid>
             <Grid.RowDefinitions>
@@ -59,12 +52,12 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock Text="Сегодня: " FontSize="14" Foreground="#BDC3C7" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding CurrentDate, FallbackValue='03 марта 2026'}" 
-                                   FontSize="14" Foreground="White" FontWeight="SemiBold" 
-                                   VerticalAlignment="Center" Margin="0,0,20,0"/>
-                        <TextBlock Text="{Binding CurrentTime, FallbackValue='14:30'}" 
-                                   FontSize="20" FontWeight="Bold" Foreground="{StaticResource TealBrush}" 
+                        <TextBlock Text="Сегодня: " FontSize="15" Foreground="#BDC3C7" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding CurrentDate}" 
+                                   FontSize="15" Foreground="White" FontWeight="SemiBold" 
+                                   VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding CurrentTime}" 
+                                   FontSize="18" FontWeight="SemiBold" Foreground="{StaticResource TealBrush}" 
                                    VerticalAlignment="Center"/>
                     </StackPanel>
 
@@ -275,6 +268,7 @@
               HorizontalScrollBarVisibility="Disabled" 
               Background="White">
 
+                    <!-- Упрощаем: убираем стили, оставляем только DataTemplate -->
                     <ContentControl Content="{Binding Navigation.CurrentViewModel}" Margin="25">
                         <ContentControl.Resources>
                             <!-- Шаблон для приветствия -->
@@ -287,30 +281,30 @@
                                     </Grid.RowDefinitions>
 
                                     <TextBlock Grid.Row="0" 
-                           Text="🔧" 
-                           FontSize="120" 
-                           Foreground="{StaticResource PrimaryBrush}"
-                           HorizontalAlignment="Center"
-                           Margin="0,50,0,20"/>
+                               Text="🔧" 
+                               FontSize="120" 
+                               Foreground="{StaticResource PrimaryBrush}"
+                               HorizontalAlignment="Center"
+                               Margin="0,50,0,20"/>
 
                                     <TextBlock Grid.Row="1" 
-                           Text="Добро пожаловать в систему управления автосервисом" 
-                           FontSize="32" 
-                           FontWeight="Light" 
-                           Foreground="{StaticResource DarkTextBrush}"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Margin="20,0,20,20"/>
+                               Text="Добро пожаловать в систему управления автосервисом" 
+                               FontSize="32" 
+                               FontWeight="Light" 
+                               Foreground="{StaticResource DarkTextBrush}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="20,0,20,20"/>
 
                                     <TextBlock Grid.Row="2" 
-                           Text="Выберите раздел в меню слева для начала работы" 
-                           FontSize="18" 
-                           Foreground="{StaticResource LightTextBrush}"
-                           TextWrapping="Wrap"
-                           TextAlignment="Center"
-                           HorizontalAlignment="Center"
-                           Margin="20,0,20,50"/>
+                               Text="Выберите раздел в меню слева для начала работы" 
+                               FontSize="18" 
+                               Foreground="{StaticResource LightTextBrush}"
+                               TextWrapping="Wrap"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"
+                               Margin="20,0,20,50"/>
                                 </Grid>
                             </DataTemplate>
 
@@ -338,7 +332,7 @@
                             </DataTemplate>
                         </ContentControl.Resources>
 
-                        <!-- Простой и рабочий вариант -->
+                        <!-- Простой триггер для отображения приветствия -->
                         <ContentControl.Style>
                             <Style TargetType="ContentControl">
                                 <Setter Property="ContentTemplate" Value="{x:Null}"/>

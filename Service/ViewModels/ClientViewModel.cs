@@ -1,14 +1,11 @@
 ﻿using Service.Data;
-using Service.ViewModels;
 using Service.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Service.ViewModels
@@ -17,7 +14,6 @@ namespace Service.ViewModels
     {
         private readonly ApplicationContext _context;
 
-        // Коллекция для отображения в DataGrid
         private ObservableCollection<Client> _clients;
         public ObservableCollection<Client> Clients
         {
@@ -25,12 +21,10 @@ namespace Service.ViewModels
             set
             {
                 _clients = value;
-                OnPropertyChanged(nameof(Clients));
-                FilteredClients = new ObservableCollection<Client>(value); // Обновляем отфильтрованную коллекцию
+                OnPropertyChanged();
             }
         }
 
-        // Отфильтрованная коллекция для отображения в DataGrid
         private ObservableCollection<Client> _filteredClients;
         public ObservableCollection<Client> FilteredClients
         {
@@ -38,20 +32,7 @@ namespace Service.ViewModels
             set
             {
                 _filteredClients = value;
-                OnPropertyChanged(nameof(FilteredClients));
-            }
-        }
-
-        private Client _currentClient;
-        public Client CurrentClient
-        {
-            get => _currentClient;
-            set
-            {
-                _currentClient = value;
-                OnPropertyChanged(nameof(CurrentClient));
-
-                SelectedClient = value;
+                OnPropertyChanged();
             }
         }
 
@@ -62,8 +43,7 @@ namespace Service.ViewModels
             set
             {
                 _selectedClient = value;
-                OnPropertyChanged(nameof(SelectedClient));
-
+                OnPropertyChanged();
                 if (value != null)
                 {
                     EditingClient = new Client
@@ -74,14 +54,10 @@ namespace Service.ViewModels
                         Discount = value.Discount,
                         ContactNumber = value.ContactNumber
                     };
-
-                    if (_currentClient != value)
-                        _currentClient = value;
                 }
                 else
                 {
                     EditingClient = null;
-                    _currentClient = null;
                 }
             }
         }
@@ -93,7 +69,7 @@ namespace Service.ViewModels
             set
             {
                 _editingClient = value;
-                OnPropertyChanged(nameof(EditingClient));
+                OnPropertyChanged();
             }
         }
 
@@ -104,19 +80,8 @@ namespace Service.ViewModels
             set
             {
                 _searchText = value;
-                OnPropertyChanged(nameof(SearchText));
+                OnPropertyChanged();
                 FilterClients();
-            }
-        }
-
-        private bool _isEditMode;
-        public bool IsEditMode
-        {
-            get => _isEditMode;
-            set
-            {
-                _isEditMode = value;
-                OnPropertyChanged(nameof(IsEditMode));
             }
         }
 
@@ -127,7 +92,7 @@ namespace Service.ViewModels
             set
             {
                 _isLoading = value;
-                OnPropertyChanged(nameof(IsLoading));
+                OnPropertyChanged();
             }
         }
 
@@ -137,7 +102,7 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
         public ICommand DeleteCommand { get; }
-        public ICommand ClearFiltersCommand { get; } 
+        public ICommand ClearFiltersCommand { get; }
 
         public ClientViewModel()
         {
@@ -151,7 +116,7 @@ namespace Service.ViewModels
             SaveCommand = new RelayCommand(async (obj) => await SaveClientAsync(), CanSaveClient);
             CancelEditCommand = new RelayCommand(CancelEdit);
             DeleteCommand = new RelayCommand(async (obj) => await DeleteClientAsync(), CanEditOrDelete);
-            ClearFiltersCommand = new RelayCommand(ClearFilters); 
+            ClearFiltersCommand = new RelayCommand(ClearFilters);
         }
 
         private async Task LoadDataAsync()
@@ -200,25 +165,32 @@ namespace Service.ViewModels
         private void ClearFilters(object obj)
         {
             SearchText = string.Empty;
-            FilteredClients = new ObservableCollection<Client>(Clients);
         }
 
         private void AddNewClient(object obj)
         {
-            var editWindow = new AddClient();
-            editWindow.DataContext = this; // Передаем текущую ViewModel
-            EditingClient = new Client { Discount = 0 };
-            editWindow.ShowDialog(); // Открываем как диалог
+            var addWindow = new Views.AddClient();
+            var viewModel = new AddClientViewModel(_context);
+            addWindow.DataContext = viewModel;
+
+            if (addWindow.ShowDialog() == true)
+            {
+                _ = LoadDataAsync();
+            }
         }
 
         private void EditClient(object obj)
         {
             if (SelectedClient != null)
             {
-                var editWindow = new AddClient();
-                editWindow.DataContext = this;
-                editWindow.Title = "Редактирование клиента";
-                editWindow.ShowDialog();
+                var editWindow = new Views.AddClient();
+                var viewModel = new AddClientViewModel(_context, SelectedClient);
+                editWindow.DataContext = viewModel;
+
+                if (editWindow.ShowDialog() == true)
+                {
+                    _ = LoadDataAsync();
+                }
             }
         }
 
@@ -243,7 +215,7 @@ namespace Service.ViewModels
             IsLoading = true;
             try
             {
-                if (EditingClient.Id == 0) 
+                if (EditingClient.Id == 0) // Новый клиент
                 {
                     _context.Clients.Add(EditingClient);
                     await _context.SaveChangesAsync();
@@ -251,7 +223,7 @@ namespace Service.ViewModels
                     Clients.Add(EditingClient);
                     FilteredClients.Add(EditingClient);
                 }
-                else 
+                else // Редактирование существующего
                 {
                     var clientToUpdate = await _context.Clients.FindAsync(EditingClient.Id);
                     if (clientToUpdate != null)
@@ -278,8 +250,6 @@ namespace Service.ViewModels
 
                 EditingClient = null;
                 SelectedClient = null;
-                CurrentClient = null;
-                IsEditMode = false;
             }
             catch (Exception ex)
             {
@@ -296,15 +266,15 @@ namespace Service.ViewModels
         {
             EditingClient = null;
             SelectedClient = null;
-            CurrentClient = null;
-            IsEditMode = false;
         }
 
         private async Task DeleteClientAsync()
         {
             if (SelectedClient == null) return;
 
-            if (SelectedClient.Cars != null && SelectedClient.Cars.Any())
+            // Проверяем наличие автомобилей у клиента
+            var hasCars = await _context.Cars.AnyAsync(c => c.OwnerId == SelectedClient.Id);
+            if (hasCars)
             {
                 MessageBox.Show("Невозможно удалить клиента, у которого есть автомобили. " +
                     "Сначала удалите все автомобили клиента.", "Предупреждение",
@@ -330,9 +300,7 @@ namespace Service.ViewModels
                     Clients.Remove(SelectedClient);
                     FilteredClients.Remove(SelectedClient);
                     SelectedClient = null;
-                    CurrentClient = null;
                     EditingClient = null;
-                    IsEditMode = false;
                 }
             }
             catch (Exception ex)

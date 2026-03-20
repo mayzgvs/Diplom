@@ -1,20 +1,17 @@
 ﻿using Service.Data;
-using Service.ViewModels;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Data.Entity; 
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Input;
 
 namespace Service.ViewModels
 {
     public class CarViewModel : BaseViewModel
     {
-        private readonly ApplicationContext _context; 
+        private readonly ApplicationContext _context;
 
         private ObservableCollection<Car> _cars;
         public ObservableCollection<Car> Cars
@@ -23,6 +20,17 @@ namespace Service.ViewModels
             set
             {
                 _cars = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private ObservableCollection<Car> _filteredCars;
+        public ObservableCollection<Car> FilteredCars
+        {
+            get => _filteredCars;
+            set
+            {
+                _filteredCars = value;
                 OnPropertyChanged();
             }
         }
@@ -38,7 +46,6 @@ namespace Service.ViewModels
             }
         }
 
-        // Выбранный автомобиль в DataGrid
         private Car _selectedCar;
         public Car SelectedCar
         {
@@ -78,6 +85,18 @@ namespace Service.ViewModels
             }
         }
 
+        private string _searchText;
+        public string SearchText
+        {
+            get => _searchText;
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                FilterCars();
+            }
+        }
+
         private bool _isLoading;
         public bool IsLoading
         {
@@ -95,11 +114,13 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand ClearFiltersCommand { get; }
 
         public CarViewModel()
         {
             _context = new ApplicationContext();
             Cars = new ObservableCollection<Car>();
+            FilteredCars = new ObservableCollection<Car>();
             Clients = new ObservableCollection<Client>();
 
             LoadedCommand = new RelayCommand(async (obj) => await LoadDataAsync());
@@ -108,6 +129,7 @@ namespace Service.ViewModels
             SaveCommand = new RelayCommand(async (obj) => await SaveCarAsync(), CanSaveCar);
             CancelEditCommand = new RelayCommand(CancelEdit);
             DeleteCommand = new RelayCommand(async (obj) => await DeleteCarAsync(), CanEditOrDelete);
+            ClearFiltersCommand = new RelayCommand(ClearFilters);
         }
 
         private async Task LoadDataAsync()
@@ -115,15 +137,25 @@ namespace Service.ViewModels
             IsLoading = true;
             try
             {
-                var cars = await _context.Cars.Include(c => c.Client).ToListAsync();
+                var cars = await _context.Cars
+                    .Include(c => c.Client)
+                    .OrderBy(c => c.Brand)
+                    .ThenBy(c => c.Model)
+                    .ToListAsync();
                 Cars = new ObservableCollection<Car>(cars);
 
-                var clients = await _context.Clients.ToListAsync();
+                var clients = await _context.Clients
+                    .OrderBy(c => c.LastName)
+                    .ThenBy(c => c.FirstName)
+                    .ToListAsync();
                 Clients = new ObservableCollection<Client>(clients);
+
+                FilteredCars = new ObservableCollection<Car>(Cars);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -131,30 +163,55 @@ namespace Service.ViewModels
             }
         }
 
+        private void FilterCars()
+        {
+            if (Cars == null) return;
+
+            var filtered = Cars.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var searchLower = SearchText.ToLower();
+                filtered = filtered.Where(c =>
+                    (c.Brand?.ToLower().Contains(searchLower) == true) ||
+                    (c.Model?.ToLower().Contains(searchLower) == true) ||
+                    (c.RegistrationNumber?.ToLower().Contains(searchLower) == true) ||
+                    (c.VIN?.ToLower().Contains(searchLower) == true) ||
+                    (c.Client?.FullName?.ToLower().Contains(searchLower) == true));
+            }
+
+            FilteredCars = new ObservableCollection<Car>(filtered);
+        }
+
+        private void ClearFilters(object obj)
+        {
+            SearchText = string.Empty;
+        }
+
         private void AddNewCar(object obj)
         {
-            EditingCar = new Car
+            var addWindow = new Views.AddCarView();
+            var viewModel = new AddCarViewModel(_context);
+            addWindow.DataContext = viewModel;
+
+            if (addWindow.ShowDialog() == true)
             {
-                OwnerId = Clients.FirstOrDefault()?.Id ?? 0 
-            };
-            SelectedCar = null; 
+                _ = LoadDataAsync();
+            }
         }
 
         private void EditCar(object obj)
         {
             if (SelectedCar != null)
             {
-                // Создаем копию для редактирования
-                EditingCar = new Car
+                var editWindow = new Views.AddCarView();
+                var viewModel = new AddCarViewModel(_context, SelectedCar);
+                editWindow.DataContext = viewModel;
+
+                if (editWindow.ShowDialog() == true)
                 {
-                    Id = SelectedCar.Id,
-                    Brand = SelectedCar.Brand,
-                    Model = SelectedCar.Model,
-                    RegistrationNumber = SelectedCar.RegistrationNumber,
-                    VIN = SelectedCar.VIN,
-                    OwnerId = SelectedCar.OwnerId,
-                    Client = SelectedCar.Client
-                };
+                    _ = LoadDataAsync();
+                }
             }
         }
 
@@ -166,22 +223,24 @@ namespace Service.ViewModels
                 string.IsNullOrWhiteSpace(EditingCar.Model) ||
                 string.IsNullOrWhiteSpace(EditingCar.RegistrationNumber))
             {
-                MessageBox.Show("Марка, модель и госномер обязательны для заполнения.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Марка, модель и госномер обязательны для заполнения.",
+                    "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             IsLoading = true;
             try
             {
-                if (EditingCar.Id == 0) 
+                if (EditingCar.Id == 0) // Новый автомобиль
                 {
                     _context.Cars.Add(EditingCar);
                     await _context.SaveChangesAsync();
 
                     await _context.Entry(EditingCar).Reference(c => c.Client).LoadAsync();
                     Cars.Add(EditingCar);
+                    FilteredCars.Add(EditingCar);
                 }
-                else 
+                else // Редактирование существующего
                 {
                     var carToUpdate = await _context.Cars.FindAsync(EditingCar.Id);
                     if (carToUpdate != null)
@@ -204,6 +263,8 @@ namespace Service.ViewModels
                             existingCar.OwnerId = EditingCar.OwnerId;
                             existingCar.Client = Clients.FirstOrDefault(cl => cl.Id == EditingCar.OwnerId);
                         }
+
+                        FilterCars();
                     }
                 }
 
@@ -212,7 +273,8 @@ namespace Service.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -230,7 +292,19 @@ namespace Service.ViewModels
         {
             if (SelectedCar == null) return;
 
-            var result = MessageBox.Show($"Вы уверены, что хотите удалить автомобиль {SelectedCar.Brand} {SelectedCar.Model} ({SelectedCar.RegistrationNumber})?",
+            // Проверяем наличие заявок на ремонт для этого автомобиля
+            var hasRepairRequests = await _context.RepairRequests
+                .AnyAsync(r => r.CarId == SelectedCar.Id);
+
+            if (hasRepairRequests)
+            {
+                MessageBox.Show("Невозможно удалить автомобиль, на который есть заявки на ремонт.",
+                    "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                $"Вы уверены, что хотите удалить автомобиль {SelectedCar.Brand} {SelectedCar.Model} ({SelectedCar.RegistrationNumber})?",
                 "Подтверждение удаления", MessageBoxButton.YesNo, MessageBoxImage.Question);
 
             if (result != MessageBoxResult.Yes) return;
@@ -245,13 +319,15 @@ namespace Service.ViewModels
                     await _context.SaveChangesAsync();
 
                     Cars.Remove(SelectedCar);
+                    FilteredCars.Remove(SelectedCar);
                     SelectedCar = null;
                     EditingCar = null;
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при удалении: {ex.Message}. Возможно, на этот автомобиль ссылаются другие записи.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
@@ -267,53 +343,6 @@ namespace Service.ViewModels
         private bool CanSaveCar(object obj)
         {
             return EditingCar != null && !IsLoading;
-        }
-        private void FilterCars()
-        {
-            if (Cars == null) return;
-
-            var filtered = Cars.AsEnumerable();
-
-            if (!string.IsNullOrWhiteSpace(SearchText))
-            {
-                var search = SearchText.ToLower();
-                filtered = filtered.Where(c =>
-                    (c.Brand?.ToLower().Contains(search) == true) ||
-                    (c.Model?.ToLower().Contains(search) == true) ||
-                    (c.RegistrationNumber?.ToLower().Contains(search) == true) ||
-                    (c.VIN?.ToLower().Contains(search) == true));
-            }
-
-            FilteredCars = new ObservableCollection<Car>(filtered);
-        }
-
-        private string _searchText;
-        public string SearchText
-        {
-            get => _searchText;
-            set
-            {
-                _searchText = value;
-                OnPropertyChanged();
-                FilterCars(); // вызывать фильтрацию при изменении
-            }
-        }
-
-        private ObservableCollection<Car> _filteredCars;
-        public ObservableCollection<Car> FilteredCars
-        {
-            get => _filteredCars;
-            set
-            {
-                _filteredCars = value;
-                OnPropertyChanged();
-            }
-        }
-
-        // Публичный метод для загрузки данных (для вызова из навигации)
-        public async void LoadData()
-        {
-            await LoadDataAsync();
         }
     }
 }

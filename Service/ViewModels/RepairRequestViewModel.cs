@@ -337,19 +337,29 @@ namespace Service.ViewModels
 
         private void AddNewRepairRequest(object obj)
         {
-            EditingRepairRequest = new RepairRequest
+            var addWindow = new Views.AddRepairView();
+            var viewModel = new AddRepairRequestViewModel(_context);
+            addWindow.DataContext = viewModel;
+
+            if (addWindow.ShowDialog() == true)
             {
-                StartDate = DateTime.Now,
-                StatusId = Statuses.FirstOrDefault()?.Id ?? 1,
-                TotalCost = 0
-            };
-            SelectedRepairRequest = null;
-            IsEditMode = true;
+                _ = LoadDataAsync();
+            }
         }
 
         private void EditRepairRequest(object obj)
         {
-            IsEditMode = true;
+            if (SelectedRepairRequest != null)
+            {
+                var editWindow = new Views.AddRepairView();
+                var viewModel = new AddRepairRequestViewModel(_context, SelectedRepairRequest);
+                editWindow.DataContext = viewModel;
+
+                if (editWindow.ShowDialog() == true)
+                {
+                    _ = LoadDataAsync();
+                }
+            }
         }
 
         private void OnCarSelectionChanged(object obj)

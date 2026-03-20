@@ -1,5 +1,7 @@
 ﻿using Service.ViewModels;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Service.Views
 {
@@ -8,7 +10,12 @@ namespace Service.Views
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainWindowViewModel();
+
+            var viewModel = new MainWindowViewModel();
+            DataContext = viewModel;
+
+            Debug.WriteLine($"DataContext установлен: {DataContext}");
+            Debug.WriteLine($"NavigateCommand: {viewModel.NavigateCommand}");
 
             // Управление окном
             CloseButton.Click += (s, e) => Close();

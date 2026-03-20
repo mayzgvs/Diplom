@@ -1,5 +1,6 @@
 ﻿using Service.Views;
 using System;
+using System.Diagnostics;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -34,7 +35,7 @@ namespace Service.ViewModels
         }
 
         // Команда для навигации (прокси к навигации)
-        public ICommand NavigateCommand => Navigation.NavigateToCommand;
+        public ICommand NavigateCommand => Navigation?.NavigateToCommand;
 
         private readonly DispatcherTimer _timer;
 
@@ -42,6 +43,8 @@ namespace Service.ViewModels
         {
             // Инициализируем навигацию
             Navigation = new NavigationViewModel();
+
+            Debug.WriteLine("MainWindowViewModel created");
 
             // Таймер для даты/времени
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };

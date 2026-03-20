@@ -155,17 +155,29 @@ namespace Service.ViewModels
 
         private void AddNewConsumable(object obj)
         {
-            EditingConsumable = new Consumable
+            var addWindow = new Views.AddConsumablesView();
+            var viewModel = new AddConsumablesViewModel(_context);
+            addWindow.DataContext = viewModel;
+
+            if (addWindow.ShowDialog() == true)
             {
-                ConsumableCategoryId = Categories.FirstOrDefault()?.Id ?? 0
-            };
-            SelectedConsumable = null;
-            IsEditMode = true;
+                _ = LoadDataAsync();
+            }
         }
 
         private void EditConsumable(object obj)
         {
-            IsEditMode = true;
+            if (SelectedConsumable != null)
+            {
+                var editWindow = new Views.AddConsumablesView();
+                var viewModel = new AddConsumablesViewModel(_context, SelectedConsumable);
+                editWindow.DataContext = viewModel;
+
+                if (editWindow.ShowDialog() == true)
+                {
+                    _ = LoadDataAsync();
+                }
+            }
         }
 
         private async Task SaveConsumableAsync()

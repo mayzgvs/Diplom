@@ -1,59 +1,68 @@
-﻿using Service;
-using Service.ViewModels;
+﻿using Service.ViewModels;
+using System.Diagnostics;
 using System.Windows.Input;
 
-public class NavigationViewModel : BaseViewModel
+namespace Service.ViewModels
 {
-    private object _currentViewModel;
-    public object CurrentViewModel
+    public class NavigationViewModel : BaseViewModel
     {
-        get => _currentViewModel;
-        set
+        private object _currentViewModel;
+        public object CurrentViewModel
         {
-            _currentViewModel = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ICommand NavigateToCommand { get; }
-
-    public NavigationViewModel()
-    {
-        NavigateToCommand = new RelayCommand(NavigateTo);
-        // Стартуем с приветствием
-        CurrentViewModel = null;
-    }
-
-    private void NavigateTo(object parameter)
-    {
-        if (parameter is string viewModelName)
-        {
-            switch (viewModelName)
+            get => _currentViewModel;
+            set
             {
-                case "Clients":
-                    CurrentViewModel = new ClientViewModel();
-                    break;
-                case "Cars":
-                    CurrentViewModel = new CarViewModel();
-                    break;
-                case "RepairRequests":
-                    CurrentViewModel = new RepairRequestViewModel();
-                    break;
-                case "Services":
-                    CurrentViewModel = new ServiceViewModel();
-                    break;
-                case "Consumables":
-                    CurrentViewModel = new ConsumableViewModel();
-                    break;
-                case "Employees":
-                    CurrentViewModel = new EmployeeViewModel();
-                    break;
-                case "Reports":
-                    CurrentViewModel = new ReportsViewModel();
-                    break;
-                default:
-                    CurrentViewModel = null;
-                    break;
+                _currentViewModel = value;
+                OnPropertyChanged();
+                Debug.WriteLine($"CurrentViewModel changed to: {value?.GetType().Name ?? "null"}");
+            }
+        }
+
+        public ICommand NavigateToCommand { get; }
+
+        public NavigationViewModel()
+        {
+            NavigateToCommand = new RelayCommand(NavigateTo);
+            Debug.WriteLine("NavigationViewModel created, NavigateToCommand initialized");
+        }
+
+        private void NavigateTo(object parameter)
+        {
+            Debug.WriteLine($"NavigateTo вызван с параметром: {parameter}");
+
+            if (parameter is string viewModelName)
+            {
+                Debug.WriteLine($"Создаем ViewModel для: {viewModelName}");
+
+                switch (viewModelName)
+                {
+                    case "Clients":
+                        CurrentViewModel = new ClientViewModel();
+                        break;
+                    case "Cars":
+                        CurrentViewModel = new CarViewModel();
+                        break;
+                    case "RepairRequests":
+                        CurrentViewModel = new RepairRequestViewModel();
+                        break;
+                    case "Services":
+                        CurrentViewModel = new ServiceViewModel();
+                        break;
+                    case "Consumables":
+                        CurrentViewModel = new ConsumableViewModel();
+                        break;
+                    case "Employees":
+                        CurrentViewModel = new EmployeeViewModel();
+                        break;
+                    case "Reports":
+                        CurrentViewModel = new ReportsViewModel();
+                        break;
+                    default:
+                        CurrentViewModel = null;
+                        break;
+                }
+
+                Debug.WriteLine($"После навигации CurrentViewModel: {CurrentViewModel?.GetType().Name ?? "null"}");
             }
         }
     }
