@@ -14,6 +14,9 @@ namespace Service.ViewModels
         private Car _editingCar;
         private bool _isEditMode;
 
+        // Событие для уведомления об успешном сохранении
+        public event EventHandler CarSaved;
+
         public Car EditingCar
         {
             get => _editingCar;
@@ -28,7 +31,7 @@ namespace Service.ViewModels
 
         public AddCarViewModel(Car car = null)
         {
-            Clients = new ObservableCollection<Client>(_model.GetClients());
+            LoadClients();
 
             if (car == null)
             {
@@ -46,17 +49,34 @@ namespace Service.ViewModels
             AddNewClientCommand = new RelayCommand(AddNewClient);
         }
 
+        private void LoadClients()
+        {
+            Clients = new ObservableCollection<Client>(_model.GetClients());
+        }
+
         private void AddNewClient(object parameter)
         {
             var addClientWindow = new AddClient();
             var addClientViewModel = new AddClientViewModel();
             addClientWindow.DataContext = addClientViewModel;
 
+            // Подписываемся на событие сохранения клиента
+            addClientViewModel.ClientSaved += OnClientSaved;
+
             if (addClientWindow.ShowDialog() == true)
             {
                 // Обновляем список клиентов
-                Clients = new ObservableCollection<Client>(_model.GetClients());
+                LoadClients();
             }
+
+            // Отписываемся от события
+            addClientViewModel.ClientSaved -= OnClientSaved;
+        }
+
+        private void OnClientSaved(object sender, EventArgs e)
+        {
+            // Обновляем список клиентов при сохранении нового клиента
+            LoadClients();
         }
 
         private void Save(object parameter)
@@ -70,17 +90,28 @@ namespace Service.ViewModels
                 return;
             }
 
-            if (!_isEditMode)
+            try
             {
-                _model.CreateCar(EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber, EditingCar.VIN, EditingCar.OwnerId);
-            }
-            else
-            {
-                _model.EditCar(EditingCar.Id, EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber, EditingCar.VIN, EditingCar.OwnerId);
-            }
+                if (!_isEditMode)
+                {
+                    _model.CreateCar(EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber, EditingCar.VIN, EditingCar.OwnerId);
+                }
+                else
+                {
+                    _model.EditCar(EditingCar.Id, EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber, EditingCar.VIN, EditingCar.OwnerId);
+                }
 
-            if (parameter is Window window)
-                window.DialogResult = true;
+                // Вызываем событие перед закрытием окна
+                CarSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                    window.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)

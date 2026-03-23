@@ -34,6 +34,7 @@ namespace Service.ViewModels
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand ClearSearchCommand { get; }
 
         public RepairRequestViewModel()
         {
@@ -41,6 +42,7 @@ namespace Service.ViewModels
             AddCommand = new RelayCommand(_ => AddRepairRequest());
             EditCommand = new RelayCommand(_ => EditRepairRequest(), _ => SelectedRepairRequest != null);
             DeleteCommand = new RelayCommand(_ => DeleteRepairRequest(), _ => SelectedRepairRequest != null);
+            ClearSearchCommand = new RelayCommand(_ => SearchText = string.Empty);
 
             LoadData();
         }

@@ -17,7 +17,7 @@ namespace Service.Utility
             }
         }
 
-        public static void CreateClient(string firstName, string lastName, string contactNumber, decimal discount)
+        public static void CreateClient(string firstName, string lastName, string contactNumber, int discount)
         {
             using (var context = new ApplicationContext())
             {
@@ -33,7 +33,7 @@ namespace Service.Utility
             }
         }
 
-        public static void EditClient(int id, string firstName, string lastName, string contactNumber, decimal discount)
+        public static void EditClient(int id, string firstName, string lastName, string contactNumber, int discount)
         {
             using (var context = new ApplicationContext())
             {
@@ -324,7 +324,9 @@ namespace Service.Utility
         {
             using (var context = new ApplicationContext())
             {
-                return context.Services.Include(s => s.ServiceCategory).ToList();
+                return context.Services
+                               .Include(s => s.ServiceCategory)  
+                               .ToList();
             }
         }
 
@@ -385,7 +387,9 @@ namespace Service.Utility
         {
             using (var context = new ApplicationContext())
             {
-                return context.Consumables.Include(c => c.ConsumableCategory).ToList();
+                return context.Consumables
+                               .Include(c => c.ConsumableCategory) 
+                               .ToList();
             }
         }
 

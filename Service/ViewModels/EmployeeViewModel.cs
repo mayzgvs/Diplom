@@ -27,13 +27,19 @@ namespace Service.ViewModels
         public string SearchText
         {
             get => _searchText;
-            set { _searchText = value; OnPropertyChanged(); FilterEmployees(); }
+            set
+            {
+                _searchText = value;
+                OnPropertyChanged();
+                FilterEmployees();
+            }
         }
 
         public ICommand LoadedCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand ClearSearchCommand { get; }
 
         public EmployeeViewModel()
         {
@@ -41,6 +47,7 @@ namespace Service.ViewModels
             AddCommand = new RelayCommand(_ => AddEmployee());
             EditCommand = new RelayCommand(_ => EditEmployee(), _ => SelectedEmployee != null);
             DeleteCommand = new RelayCommand(_ => DeleteEmployee(), _ => SelectedEmployee != null);
+            ClearSearchCommand = new RelayCommand(_ => SearchText = "");
 
             LoadData();
         }
@@ -50,43 +57,84 @@ namespace Service.ViewModels
             var list = _model.GetEmployees();
             Employees = new ObservableCollection<Employee>(list);
             FilteredEmployees = new ObservableCollection<Employee>(list);
+            OnPropertyChanged(nameof(Employees));
+            OnPropertyChanged(nameof(FilteredEmployees));
         }
 
         private void FilterEmployees()
         {
             if (Employees == null) return;
 
-            var filtered = string.IsNullOrWhiteSpace(SearchText)
+            var search = (SearchText ?? "").Trim().ToLower();
+
+            var filtered = string.IsNullOrEmpty(search)
                 ? Employees.ToList()
                 : Employees.Where(e =>
-                    (e.LastName?.ToLower().Contains(SearchText.ToLower()) == true) ||
-                    (e.FirstName?.ToLower().Contains(SearchText.ToLower()) == true) ||
-                    (e.ContactNumber?.ToLower().Contains(SearchText.ToLower()) == true)).ToList();
+                    (e.LastName?.ToLower().Contains(search) == true) ||
+                    (e.FirstName?.ToLower().Contains(search) == true) ||
+                    (e.ContactNumber?.ToLower().Contains(search) == true)
+                  ).ToList();
 
-            FilteredEmployees = new ObservableCollection<Employee>(filtered);
+            FilteredEmployees.Clear();
+            foreach (var employee in filtered)
+            {
+                FilteredEmployees.Add(employee);
+            }
         }
 
         private void AddEmployee()
         {
             var window = new AddEmployeeView();
-            window.DataContext = new AddEmployeeViewModel();
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddEmployeeViewModel();
+
+            // Подписываемся на событие сохранения
+            viewModel.EmployeeSaved += OnEmployeeSaved;
+
+            window.DataContext = viewModel;
+            window.ShowDialog();
         }
 
         private void EditEmployee()
         {
             var window = new AddEmployeeView();
-            window.DataContext = new AddEmployeeViewModel(SelectedEmployee);
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddEmployeeViewModel(SelectedEmployee);
+
+            // Подписываемся на событие сохранения
+            viewModel.EmployeeSaved += OnEmployeeSaved;
+
+            window.DataContext = viewModel;
+            window.ShowDialog();
+        }
+
+        // Обработчик события сохранения сотрудника
+        private void OnEmployeeSaved(object sender, EventArgs e)
+        {
+            LoadData();
+
+            // Отписываемся от события, чтобы избежать утечек памяти
+            if (sender is AddEmployeeViewModel viewModel)
+            {
+                viewModel.EmployeeSaved -= OnEmployeeSaved;
+            }
         }
 
         private void DeleteEmployee()
         {
+            if (SelectedEmployee == null) return;
+
             if (MessageBox.Show($"Удалить сотрудника {SelectedEmployee.FullName}?",
-                "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                _model.DeleteEmployee(SelectedEmployee);
-                LoadData();
+                try
+                {
+                    _model.DeleteEmployee(SelectedEmployee);
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

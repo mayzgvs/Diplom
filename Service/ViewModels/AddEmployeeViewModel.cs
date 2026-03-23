@@ -12,6 +12,9 @@ namespace Service.ViewModels
         private Employee _editingEmployee;
         private bool _isEditMode;
 
+        // Событие для уведомления об успешном сохранении
+        public event EventHandler EmployeeSaved;
+
         public Employee EditingEmployee
         {
             get => _editingEmployee;
@@ -46,17 +49,30 @@ namespace Service.ViewModels
                 return;
             }
 
-            if (!_isEditMode)
-                _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
-            else
-                _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
+            try
+            {
+                if (!_isEditMode)
+                    _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
+                else
+                    _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
 
-            if (parameter is Window window) window.DialogResult = true;
+                // Вызываем событие перед закрытием окна
+                EmployeeSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                    window.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)
         {
-            if (parameter is Window window) window.DialogResult = false;
+            if (parameter is Window window)
+                window.DialogResult = false;
         }
     }
 }

@@ -55,8 +55,8 @@ namespace Service.Data
             }
         }
 
-        private decimal _discount;
-        public decimal Discount
+        private int _discount;
+        public int Discount
         {
             get => _discount;
             set

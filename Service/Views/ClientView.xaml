@@ -80,7 +80,7 @@
                                 FontSize="14"
                                 FontWeight="Bold"
                                 Cursor="Hand"
-                                Command="{Binding ClearFiltersCommand}"
+                                Command="{Binding ClearSearchCommand}"
                                 ToolTip="Очистить поиск"/>
                     </Grid>
                 </Border>

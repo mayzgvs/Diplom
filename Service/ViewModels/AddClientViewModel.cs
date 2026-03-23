@@ -12,6 +12,9 @@ namespace Service.ViewModels
         private Client _editingClient;
         private bool _isEditMode;
 
+        // Событие для уведомления об успешном сохранении
+        public event EventHandler ClientSaved;
+
         public Client EditingClient
         {
             get => _editingClient;
@@ -46,13 +49,24 @@ namespace Service.ViewModels
                 return;
             }
 
-            if (!_isEditMode)
-                _model.CreateClient(EditingClient.FirstName, EditingClient.LastName, EditingClient.ContactNumber, EditingClient.Discount);
-            else
-                _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName, EditingClient.ContactNumber, EditingClient.Discount);
+            try
+            {
+                if (!_isEditMode)
+                    _model.CreateClient(EditingClient.FirstName, EditingClient.LastName, EditingClient.ContactNumber, EditingClient.Discount);
+                else
+                    _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName, EditingClient.ContactNumber, EditingClient.Discount);
 
-            if (parameter is Window window)
-                window.DialogResult = true;
+                // Вызываем событие перед закрытием окна
+                ClientSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                    window.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)

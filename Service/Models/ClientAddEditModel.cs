@@ -7,12 +7,12 @@ namespace Service.Models
 {
     public class ClientAddEditModel
     {
-        public void CreateClient(string firstName, string lastName, string contactNumber, decimal discount)
+        public void CreateClient(string firstName, string lastName, string contactNumber, int discount)
         {
             DbManager.CreateClient(firstName, lastName, contactNumber, discount);
         }
 
-        public void EditClient(int id, string firstName, string lastName, string contactNumber, decimal discount)
+        public void EditClient(int id, string firstName, string lastName, string contactNumber, int discount)
         {
             DbManager.EditClient(id, firstName, lastName, contactNumber, discount);
         }

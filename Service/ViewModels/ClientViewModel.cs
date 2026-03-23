@@ -34,6 +34,7 @@ namespace Service.ViewModels
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand ClearSearchCommand { get; }
 
         public ClientViewModel()
         {
@@ -41,52 +42,111 @@ namespace Service.ViewModels
             AddCommand = new RelayCommand(_ => AddClient());
             EditCommand = new RelayCommand(_ => EditClient(), _ => SelectedClient != null);
             DeleteCommand = new RelayCommand(_ => DeleteClient(), _ => SelectedClient != null);
+            ClearSearchCommand = new RelayCommand(_ => SearchText = "");
 
+            Clients = new ObservableCollection<Client>();
+            FilteredClients = new ObservableCollection<Client>();
             LoadData();
         }
 
         private void LoadData()
         {
             var list = _model.GetClients();
-            Clients = new ObservableCollection<Client>(list);
-            FilteredClients = new ObservableCollection<Client>(list);
+
+            Clients.Clear();
+            FilteredClients.Clear();
+
+            foreach (var client in list)
+            {
+                Clients.Add(client);
+                FilteredClients.Add(client);
+            }
+
+            OnPropertyChanged(nameof(Clients));
+            OnPropertyChanged(nameof(FilteredClients));
         }
 
         private void FilterClients()
         {
             if (Clients == null) return;
 
-            var filtered = string.IsNullOrWhiteSpace(SearchText)
-                ? Clients.ToList()
-                : Clients.Where(c =>
-                    (c.LastName?.ToLower().Contains(SearchText.ToLower()) == true) ||
-                    (c.FirstName?.ToLower().Contains(SearchText.ToLower()) == true) ||
-                    (c.ContactNumber?.ToLower().Contains(SearchText.ToLower()) == true)).ToList();
+            var search = (SearchText ?? "").Trim().ToLower();
 
-            FilteredClients = new ObservableCollection<Client>(filtered);
+            FilteredClients.Clear();
+
+            if (string.IsNullOrEmpty(search))
+            {
+                foreach (var client in Clients)
+                {
+                    FilteredClients.Add(client);
+                }
+            }
+            else
+            {
+                var filtered = Clients.Where(c =>
+                    (c.LastName?.ToLower().Contains(search) == true) ||
+                    (c.FirstName?.ToLower().Contains(search) == true) ||
+                    (c.ContactNumber?.ToLower().Contains(search) == true)
+                );
+
+                foreach (var client in filtered)
+                {
+                    FilteredClients.Add(client);
+                }
+            }
         }
 
         private void AddClient()
         {
             var window = new AddClient();
-            window.DataContext = new AddClientViewModel();
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddClientViewModel();
+
+            viewModel.ClientSaved += OnClientSaved;
+            window.DataContext = viewModel;
+
+            window.ShowDialog();
         }
 
         private void EditClient()
         {
             var window = new AddClient();
-            window.DataContext = new AddClientViewModel(SelectedClient);
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddClientViewModel(SelectedClient);
+
+            viewModel.ClientSaved += OnClientSaved;
+            window.DataContext = viewModel;
+
+            window.ShowDialog();
+        }
+
+        private void OnClientSaved(object sender, EventArgs e)
+        {
+            LoadData();
+            FilterClients();
+
+            if (sender is AddClientViewModel viewModel)
+            {
+                viewModel.ClientSaved -= OnClientSaved;
+            }
         }
 
         private void DeleteClient()
         {
+            if (SelectedClient == null) return;
+
             if (MessageBox.Show($"Удалить клиента {SelectedClient.FullName}?",
-                "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                _model.DeleteClient(SelectedClient);
-                LoadData();
+                try
+                {
+                    _model.DeleteClient(SelectedClient);
+                    LoadData();
+                    FilterClients();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

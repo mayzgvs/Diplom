@@ -34,6 +34,7 @@ namespace Service.ViewModels
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand ClearSearchCommand { get; }
 
         public CarViewModel()
         {
@@ -41,53 +42,103 @@ namespace Service.ViewModels
             AddCommand = new RelayCommand(_ => AddCar());
             EditCommand = new RelayCommand(_ => EditCar(), _ => SelectedCar != null);
             DeleteCommand = new RelayCommand(_ => DeleteCar(), _ => SelectedCar != null);
+            ClearSearchCommand = new RelayCommand(_ => SearchText = "");
 
+            Cars = new ObservableCollection<Car>();
+            FilteredCars = new ObservableCollection<Car>();
             LoadData();
         }
 
         private void LoadData()
         {
             var list = _model.GetCars();
-            Cars = new ObservableCollection<Car>(list);
-            FilteredCars = new ObservableCollection<Car>(list);
+
+            Cars.Clear();
+            FilteredCars.Clear();
+
+            foreach (var car in list)
+            {
+                Cars.Add(car);
+                FilteredCars.Add(car);
+            }
+
+            OnPropertyChanged(nameof(Cars));
+            OnPropertyChanged(nameof(FilteredCars));
         }
 
         private void FilterCars()
         {
             if (Cars == null) return;
 
-            var filtered = string.IsNullOrWhiteSpace(SearchText)
+            var search = (SearchText ?? "").Trim().ToLower();
+
+            var filtered = string.IsNullOrEmpty(search)
                 ? Cars.ToList()
                 : Cars.Where(c =>
-                    (c.Brand?.ToLower().Contains(SearchText.ToLower()) == true) ||
-                    (c.Model?.ToLower().Contains(SearchText.ToLower()) == true) ||
-                    (c.RegistrationNumber?.ToLower().Contains(SearchText.ToLower()) == true) ||
-                    (c.VIN?.ToLower().Contains(SearchText.ToLower()) == true)).ToList();
+                    (c.Brand?.ToLower().Contains(search) == true) ||
+                    (c.Model?.ToLower().Contains(search) == true) ||
+                    (c.RegistrationNumber?.ToLower().Contains(search) == true) ||
+                    (c.VIN?.ToLower().Contains(search) == true)
+                  ).ToList();
 
-            FilteredCars = new ObservableCollection<Car>(filtered);
+            FilteredCars.Clear();
+            foreach (var car in filtered)
+            {
+                FilteredCars.Add(car);
+            }
         }
 
         private void AddCar()
         {
             var window = new AddCarView();
-            window.DataContext = new AddCarViewModel();
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddCarViewModel();
+
+            viewModel.CarSaved += OnCarSaved;
+            window.DataContext = viewModel;
+
+            window.ShowDialog();
         }
 
         private void EditCar()
         {
             var window = new AddCarView();
-            window.DataContext = new AddCarViewModel(SelectedCar);
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddCarViewModel(SelectedCar);
+
+            viewModel.CarSaved += OnCarSaved;
+            window.DataContext = viewModel;
+
+            window.ShowDialog();
+        }
+
+        private void OnCarSaved(object sender, EventArgs e)
+        {
+            LoadData();
+            FilterCars();
+
+            if (sender is AddCarViewModel viewModel)
+            {
+                viewModel.CarSaved -= OnCarSaved;
+            }
         }
 
         private void DeleteCar()
         {
+            if (SelectedCar == null) return;
+
             if (MessageBox.Show($"Удалить автомобиль {SelectedCar.Brand} {SelectedCar.Model}?",
-                "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                _model.DeleteCar(SelectedCar);
-                LoadData();
+                try
+                {
+                    _model.DeleteCar(SelectedCar);
+                    LoadData();
+                    FilterCars();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

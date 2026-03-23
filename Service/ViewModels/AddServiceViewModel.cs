@@ -14,6 +14,8 @@ namespace Service.ViewModels
         private ServiceModel _editingService;
         private bool _isEditMode;
 
+        public event EventHandler ServiceSaved;
+
         public ServiceModel EditingService
         {
             get => _editingService;
@@ -27,7 +29,7 @@ namespace Service.ViewModels
 
         public AddServiceViewModel(ServiceModel service = null)
         {
-            ServiceCategories = new ObservableCollection<ServiceCategory>(_model.GetCategories());
+            LoadCategories();
 
             if (service == null)
             {
@@ -44,25 +46,42 @@ namespace Service.ViewModels
             CancelEditCommand = new RelayCommand(Cancel);
         }
 
+        private void LoadCategories()
+        {
+            ServiceCategories = new ObservableCollection<ServiceCategory>(_model.GetCategories());
+        }
+
         private void Save(object parameter)
         {
             if (string.IsNullOrWhiteSpace(EditingService.Name) || EditingService.ServiceCategoryId == 0)
             {
-                MessageBox.Show("Заполните название и категорию!");
+                MessageBox.Show("Заполните название и категорию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (!_isEditMode)
-                _model.CreateService(EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
-            else
-                _model.EditService(EditingService.Id, EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
+            try
+            {
+                if (!_isEditMode)
+                    _model.CreateService(EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
+                else
+                    _model.EditService(EditingService.Id, EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
 
-            if (parameter is Window window) window.DialogResult = true;
+                ServiceSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                    window.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)
         {
-            if (parameter is Window window) window.DialogResult = false;
+            if (parameter is Window window)
+                window.DialogResult = false;
         }
     }
 }

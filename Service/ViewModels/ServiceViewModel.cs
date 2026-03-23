@@ -31,10 +31,20 @@ namespace Service.ViewModels
             set { _searchText = value; OnPropertyChanged(); Filter(); }
         }
 
+        private ServiceCategory _selectedCategory;
+        public ServiceCategory SelectedCategory
+        {
+            get => _selectedCategory;
+            set { _selectedCategory = value; OnPropertyChanged(); Filter(); }
+        }
+
+        public ObservableCollection<ServiceCategory> Categories { get; private set; }
+
         public ICommand LoadedCommand { get; }
         public ICommand AddCommand { get; }
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
+        public ICommand ClearSearchCommand { get; }
 
         public ServiceViewModel()
         {
@@ -42,50 +52,110 @@ namespace Service.ViewModels
             AddCommand = new RelayCommand(_ => AddService());
             EditCommand = new RelayCommand(_ => EditService(), _ => SelectedService != null);
             DeleteCommand = new RelayCommand(_ => DeleteService(), _ => SelectedService != null);
+            ClearSearchCommand = new RelayCommand(_ => SearchText = string.Empty);
 
+            Services = new ObservableCollection<ServiceModel>();
+            FilteredServices = new ObservableCollection<ServiceModel>();
+            Categories = new ObservableCollection<ServiceCategory>();
             LoadData();
         }
 
         private void LoadData()
         {
             var list = _model.GetServices();
-            Services = new ObservableCollection<ServiceModel>(list);
-            FilteredServices = new ObservableCollection<ServiceModel>(list);
+            var categories = _model.GetCategories();
+
+            Services.Clear();
+            foreach (var service in list)
+            {
+                Services.Add(service);
+            }
+
+            Categories.Clear();
+            foreach (var category in categories)
+            {
+                Categories.Add(category);
+            }
+
+            Filter();
+
+            OnPropertyChanged(nameof(Services));
+            OnPropertyChanged(nameof(Categories));
         }
 
         private void Filter()
         {
             if (Services == null) return;
 
-            var filtered = string.IsNullOrWhiteSpace(SearchText)
-                ? Services.ToList()
-                : Services.Where(s =>
-                    s.Name?.ToLower().Contains(SearchText.ToLower()) == true).ToList();
+            var filtered = Services.AsEnumerable();
 
-            FilteredServices = new ObservableCollection<ServiceModel>(filtered);
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                var st = SearchText.ToLower();
+                filtered = filtered.Where(s => s.Name?.ToLower().Contains(st) == true);
+            }
+
+            if (SelectedCategory != null)
+                filtered = filtered.Where(s => s.ServiceCategoryId == SelectedCategory.Id);
+
+            FilteredServices.Clear();
+            foreach (var service in filtered)
+            {
+                FilteredServices.Add(service);
+            }
+
+            OnPropertyChanged(nameof(FilteredServices));
         }
 
         private void AddService()
         {
             var window = new AddServiceView();
-            window.DataContext = new AddServiceViewModel();
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddServiceViewModel();
+
+            viewModel.ServiceSaved += OnServiceSaved;
+            window.DataContext = viewModel;
+
+            window.ShowDialog();
         }
 
         private void EditService()
         {
             var window = new AddServiceView();
-            window.DataContext = new AddServiceViewModel(SelectedService);
-            if (window.ShowDialog() == true) LoadData();
+            var viewModel = new AddServiceViewModel(SelectedService);
+
+            viewModel.ServiceSaved += OnServiceSaved;
+            window.DataContext = viewModel;
+
+            window.ShowDialog();
+        }
+
+        private void OnServiceSaved(object sender, EventArgs e)
+        {
+            LoadData();
+
+            if (sender is AddServiceViewModel viewModel)
+            {
+                viewModel.ServiceSaved -= OnServiceSaved;
+            }
         }
 
         private void DeleteService()
         {
+            if (SelectedService == null) return;
+
             if (MessageBox.Show($"Удалить услугу '{SelectedService.Name}'?",
-                "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                _model.DeleteService(SelectedService);
-                LoadData();
+                try
+                {
+                    _model.DeleteService(SelectedService);
+                    LoadData();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

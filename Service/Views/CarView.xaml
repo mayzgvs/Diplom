@@ -1,8 +1,11 @@
 ﻿<UserControl x:Class="Service.Views.CarView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
              Background="Transparent">
-
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -19,126 +22,61 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
-            <TextBlock Text="Управление автомобилями" 
-                       FontSize="28" 
-                       FontWeight="Light" 
-                       Foreground="{StaticResource DarkTextBrush}"
-                       Margin="0,0,0,15"/>
+            <TextBlock Text="Управление автомобилями" FontSize="28" FontWeight="Light"
+                       Foreground="{StaticResource DarkTextBrush}" Margin="0,0,0,15"/>
         </StackPanel>
 
-        <!-- Панель фильтрации -->
-        <Border Grid.Row="1" 
-        Background="White" 
-        CornerRadius="8" 
-        Padding="15"
-        Margin="20,0,20,15"
-        BorderBrush="{StaticResource BorderBrush}" 
-        BorderThickness="1">
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="20,0,20,15"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" 
-                Background="{StaticResource LightBackgroundBrush}" 
-                CornerRadius="5" 
-                BorderBrush="{StaticResource BorderBrush}" 
-                BorderThickness="1"
-                Height="35"
-                Margin="0,0,10,0">
+                <Border Grid.Column="0" Background="{StaticResource LightBackgroundBrush}" CornerRadius="5"
+                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Height="35" Margin="0,0,10,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" 
-                           Text="🔍" 
-                           Margin="10,0" 
-                           VerticalAlignment="Center"
-                           Foreground="{StaticResource LightTextBrush}"/>
-
-                        <TextBox Grid.Column="1" 
-                         BorderThickness="0"
-                         Background="Transparent"
-                         Padding="0"
-                         VerticalAlignment="Center"
-                         ToolTip="Введите фамилию, имя или телефон"
-                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <Button Grid.Column="2"
-                        Content="✖"
-                        Width="25"
-                        Height="25"
-                        Margin="0,0,5,0"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Foreground="{StaticResource LightTextBrush}"
-                        FontSize="14"
-                        FontWeight="Bold"
-                        Cursor="Hand"
-                        Command="{Binding ClearFiltersCommand}"
-                        ToolTip="Очистить поиск"/>
+                        <TextBlock Grid.Column="0" Text="🔍" Margin="10,0" VerticalAlignment="Center" Foreground="{StaticResource LightTextBrush}"/>
+                        <TextBox Grid.Column="1" BorderThickness="0" Background="Transparent" Padding="0"
+                                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 VerticalAlignment="Center"/>
+                        <Button Grid.Column="2" Content="✖" Width="25" Height="25" Margin="0,0,5,0"
+                                Background="Transparent" BorderThickness="0" Foreground="{StaticResource LightTextBrush}"
+                                Command="{Binding ClearSearchCommand}" ToolTip="Очистить поиск"/>
                     </Grid>
                 </Border>
             </Grid>
         </Border>
 
-        <!-- Список автомобилей с кнопками в строке -->
-        <ListView Grid.Row="2" 
-                  Margin="20,0,20,20"
+        <ListView Grid.Row="2" Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredCars}"
-                  SelectedItem="{Binding CurrentCar, Mode=TwoWay}"
-                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
-                  ScrollViewer.VerticalScrollBarVisibility="Auto"
-                  Background="White"
-                  BorderBrush="{StaticResource BorderBrush}"
-                  BorderThickness="1">
-
+                  SelectedItem="{Binding SelectedCar, Mode=TwoWay}"
+                  Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
             <ListView.View>
                 <GridView>
-
-                    <GridViewColumn Header="Марка" Width="120" 
-                                    DisplayMemberBinding="{Binding Brand}"/>
-
-                    <GridViewColumn Header="Модель" Width="120" 
-                                    DisplayMemberBinding="{Binding Model}"/>
-
-                    <GridViewColumn Header="Рег. номер" Width="100" 
-                                    DisplayMemberBinding="{Binding RegistrationNumber}"/>
-
-                    <GridViewColumn Header="VIN" Width="150" 
-                                    DisplayMemberBinding="{Binding VIN}"/>
-
-                    <GridViewColumn Header="Владелец" Width="150" 
-                                    DisplayMemberBinding="{Binding Client.FullName}"/>
-
-                    <GridViewColumn Header="Телефон" Width="120" 
-                                    DisplayMemberBinding="{Binding Client.ContactNumber}"/>
-
-                    <!-- Колонка с действиями -->
+                    <GridViewColumn Header="Марка" Width="120" DisplayMemberBinding="{Binding Brand}"/>
+                    <GridViewColumn Header="Модель" Width="120" DisplayMemberBinding="{Binding Model}"/>
+                    <GridViewColumn Header="Рег. номер" Width="100" DisplayMemberBinding="{Binding RegistrationNumber}"/>
+                    <GridViewColumn Header="VIN" Width="150" DisplayMemberBinding="{Binding VIN}"/>
+                    <GridViewColumn Header="Владелец" Width="150" DisplayMemberBinding="{Binding Client.FullName}"/>
+                    <GridViewColumn Header="Телефон" Width="120" DisplayMemberBinding="{Binding Client.ContactNumber}"/>
                     <GridViewColumn Header="" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button Width="30" Height="30" Margin="2"
-                                            ToolTip="Редактировать"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Cursor="Hand"
+                                    <Button Width="30" Height="30" Margin="2" ToolTip="Редактировать"
                                             Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
                                         <TextBlock Text="✏️" FontSize="16" Foreground="#FFA500"/>
                                     </Button>
-                                    <Button Width="30" Height="30" Margin="2"
-                                            ToolTip="Удалить"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Cursor="Hand"
+                                    <Button Width="30" Height="30" Margin="2" ToolTip="Удалить"
                                             Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
                                         <TextBlock Text="🗑️" FontSize="16" Foreground="#FF4444"/>
@@ -152,7 +90,6 @@
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
                     <Setter Property="Padding" Value="8"/>
@@ -171,19 +108,11 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <!-- Кнопка добавления -->
-        <Border Grid.Row="3" 
-                Background="White" 
-                CornerRadius="8" 
-                Padding="15"
-                Margin="20,0,20,20"
-                BorderBrush="{StaticResource BorderBrush}" 
-                BorderThickness="1">
+        <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="15" Margin="20,0,20,20"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Content="➕ Добавить"
-                        Style="{StaticResource AddButtonWithIconStyle}" 
-                        Width="120" 
-                        Command="{Binding AddCommand}"/>
+                <Button Content="➕ Добавить" Style="{StaticResource AddButtonWithIconStyle}"
+                        Width="120" Command="{Binding AddCommand}"/>
             </StackPanel>
         </Border>
     </Grid>

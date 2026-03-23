@@ -13,6 +13,9 @@ namespace Service.ViewModels
         private Consumable _editingConsumable;
         private bool _isEditMode;
 
+        // Событие для уведомления об успешном сохранении
+        public event EventHandler ConsumableSaved;
+
         public Consumable EditingConsumable
         {
             get => _editingConsumable;
@@ -26,7 +29,7 @@ namespace Service.ViewModels
 
         public AddConsumablesViewModel(Consumable consumable = null)
         {
-            ConsumableCategories = new ObservableCollection<ConsumablesCategory>(_model.GetCategories());
+            LoadCategories();
 
             if (consumable == null)
             {
@@ -43,25 +46,43 @@ namespace Service.ViewModels
             CancelEditCommand = new RelayCommand(Cancel);
         }
 
+        private void LoadCategories()
+        {
+            ConsumableCategories = new ObservableCollection<ConsumablesCategory>(_model.GetCategories());
+        }
+
         private void Save(object parameter)
         {
             if (string.IsNullOrWhiteSpace(EditingConsumable.Name) || EditingConsumable.ConsumableCategoryId == 0)
             {
-                MessageBox.Show("Заполните название и категорию!");
+                MessageBox.Show("Заполните название и категорию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (!_isEditMode)
-                _model.CreateConsumable(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId);
-            else
-                _model.EditConsumable(EditingConsumable.Id, EditingConsumable.Name, EditingConsumable.ConsumableCategoryId);
+            try
+            {
+                if (!_isEditMode)
+                    _model.CreateConsumable(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId);
+                else
+                    _model.EditConsumable(EditingConsumable.Id, EditingConsumable.Name, EditingConsumable.ConsumableCategoryId);
 
-            if (parameter is Window window) window.DialogResult = true;
+                // Вызываем событие перед закрытием окна
+                ConsumableSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                    window.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)
         {
-            if (parameter is Window window) window.DialogResult = false;
+            if (parameter is Window window)
+                window.DialogResult = false;
         }
     }
 }
