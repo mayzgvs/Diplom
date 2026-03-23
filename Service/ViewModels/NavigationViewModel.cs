@@ -14,7 +14,7 @@ namespace Service.ViewModels
             {
                 _currentViewModel = value;
                 OnPropertyChanged();
-                Debug.WriteLine($"CurrentViewModel changed to: {value?.GetType().Name ?? "null"}");
+                Debug.WriteLine($"Переключились на: {value?.GetType().Name ?? "null"}");
             }
         }
 
@@ -23,18 +23,15 @@ namespace Service.ViewModels
         public NavigationViewModel()
         {
             NavigateToCommand = new RelayCommand(NavigateTo);
-            Debug.WriteLine("NavigationViewModel created, NavigateToCommand initialized");
         }
 
         private void NavigateTo(object parameter)
         {
-            Debug.WriteLine($"NavigateTo вызван с параметром: {parameter}");
-
-            if (parameter is string viewModelName)
+            if (parameter is string viewName)
             {
-                Debug.WriteLine($"Создаем ViewModel для: {viewModelName}");
+                Debug.WriteLine($"Навигация → {viewName}");
 
-                switch (viewModelName)
+                switch (viewName)
                 {
                     case "Clients":
                         CurrentViewModel = new ClientViewModel();
@@ -57,12 +54,7 @@ namespace Service.ViewModels
                     case "Reports":
                         CurrentViewModel = new ReportsViewModel();
                         break;
-                    default:
-                        CurrentViewModel = null;
-                        break;
                 }
-
-                Debug.WriteLine($"После навигации CurrentViewModel: {CurrentViewModel?.GetType().Name ?? "null"}");
             }
         }
     }

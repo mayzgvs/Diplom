@@ -1,45 +1,37 @@
-﻿using Service.ViewModels;
+﻿using Service.Models;
+using System;
 using System.Windows.Input;
 
 namespace Service.ViewModels
 {
     public class ReportsViewModel : BaseViewModel
     {
-        private bool _isLoading;
-        public bool IsLoading
-        {
-            get => _isLoading;
-            set
-            {
-                _isLoading = value;
-                OnPropertyChanged();
-            }
-        }
+        private readonly StatisticsModel _statistics = new StatisticsModel();
+
+        // Статистика
+        public int ActiveRequests => _statistics.GetActiveRequestsCount();
+        public int TotalClients => _statistics.GetTotalClientsCount();
+        public decimal MonthlyRevenue => _statistics.GetMonthlyRevenue();
+        public int CompletedRequests => _statistics.GetCompletedRequestsCount();
+        public int ActiveEmployees => _statistics.GetActiveEmployeesCount();
+
+        public (decimal Avg, decimal Min, decimal Max) ServiceCostStats => _statistics.GetServiceCostStats();
 
         public ICommand LoadedCommand { get; }
 
         public ReportsViewModel()
         {
-            LoadedCommand = new RelayCommand(async (obj) => await LoadDataAsync());
+            LoadedCommand = new RelayCommand(_ => RefreshStats());
         }
 
-        private async System.Threading.Tasks.Task LoadDataAsync()
+        private void RefreshStats()
         {
-            IsLoading = true;
-            try
-            {
-                // Здесь будет загрузка данных для отчетов
-                // Например:
-                // await LoadStatisticsAsync();
-                // await LoadRevenueReportAsync();
-                // и т.д.
-
-                await System.Threading.Tasks.Task.Delay(100); // Имитация загрузки
-            }
-            finally
-            {
-                IsLoading = false;
-            }
+            OnPropertyChanged(nameof(ActiveRequests));
+            OnPropertyChanged(nameof(TotalClients));
+            OnPropertyChanged(nameof(MonthlyRevenue));
+            OnPropertyChanged(nameof(CompletedRequests));
+            OnPropertyChanged(nameof(ActiveEmployees));
+            OnPropertyChanged(nameof(ServiceCostStats));
         }
     }
 }

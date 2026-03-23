@@ -1,4 +1,5 @@
 ﻿using Service.Data;
+using Service.Models;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -7,27 +8,21 @@ namespace Service.ViewModels
 {
     public class AddClientViewModel : BaseViewModel
     {
-        private readonly ApplicationContext _context;
+        private readonly ClientAddEditModel _model = new ClientAddEditModel();
         private Client _editingClient;
         private bool _isEditMode;
 
         public Client EditingClient
         {
             get => _editingClient;
-            set
-            {
-                _editingClient = value;
-                OnPropertyChanged();
-            }
+            set { _editingClient = value; OnPropertyChanged(); }
         }
 
-        public ICommand SaveCommand { get; set; }
-        public ICommand CancelEditCommand { get; set; }
+        public ICommand SaveCommand { get; }
+        public ICommand CancelEditCommand { get; }
 
-        public AddClientViewModel(ApplicationContext context, Client client = null)
+        public AddClientViewModel(Client client = null)
         {
-            _context = context;
-
             if (client == null)
             {
                 _isEditMode = false;
@@ -36,14 +31,7 @@ namespace Service.ViewModels
             else
             {
                 _isEditMode = true;
-                EditingClient = new Client
-                {
-                    Id = client.Id,
-                    FirstName = client.FirstName,
-                    LastName = client.LastName,
-                    Discount = client.Discount,
-                    ContactNumber = client.ContactNumber
-                };
+                EditingClient = client;
             }
 
             SaveCommand = new RelayCommand(Save);
@@ -52,48 +40,19 @@ namespace Service.ViewModels
 
         private void Save(object parameter)
         {
-            try
+            if (string.IsNullOrWhiteSpace(EditingClient.LastName) || string.IsNullOrWhiteSpace(EditingClient.FirstName))
             {
-                if (string.IsNullOrWhiteSpace(EditingClient.LastName))
-                {
-                    MessageBox.Show("Фамилия обязательна для заполнения.", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(EditingClient.FirstName))
-                {
-                    MessageBox.Show("Имя обязательно для заполнения.", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (!_isEditMode)
-                {
-                    _context.Clients.Add(EditingClient);
-                }
-                else
-                {
-                    var existing = _context.Clients.Find(EditingClient.Id);
-                    if (existing != null)
-                    {
-                        existing.FirstName = EditingClient.FirstName;
-                        existing.LastName = EditingClient.LastName;
-                        existing.ContactNumber = EditingClient.ContactNumber;
-                        existing.Discount = EditingClient.Discount;
-                    }
-                }
-
-                _context.SaveChanges();
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
+                MessageBox.Show("Фамилия и имя обязательны!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка сохранения: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+
+            if (!_isEditMode)
+                _model.CreateClient(EditingClient.FirstName, EditingClient.LastName, EditingClient.ContactNumber, EditingClient.Discount);
+            else
+                _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName, EditingClient.ContactNumber, EditingClient.Discount);
+
+            if (parameter is Window window)
+                window.DialogResult = true;
         }
 
         private void Cancel(object parameter)

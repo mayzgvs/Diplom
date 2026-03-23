@@ -7,6 +7,12 @@ namespace Service.Data
 {
     public class ApplicationContext : DbContext
     {
+        public ApplicationContext() : base("name=MyDbContext")
+        {
+            Database.SetInitializer<ApplicationContext>(null);
+
+        }
+
         // Все таблицы базы данных
         public DbSet<Car> Cars { get; set; }           
         public DbSet<Client> Clients { get; set; }     
@@ -19,12 +25,6 @@ namespace Service.Data
         public DbSet<ConsumablesCategory> ConsumablesCategories { get; set; } 
         public DbSet<StatusRequest> StatusRequests { get; set; } 
         public DbSet<StatusWork> StatusWorks { get; set; } 
-
-        public ApplicationContext() : base("MyDbContext")
-        {
-            // Настройки по умолчанию
-            Database.SetInitializer(new CreateDatabaseIfNotExists<ApplicationContext>());
-        }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

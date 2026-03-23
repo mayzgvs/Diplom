@@ -1,4 +1,5 @@
 ﻿using Service.Data;
+using Service.Models;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -7,27 +8,21 @@ namespace Service.ViewModels
 {
     public class AddEmployeeViewModel : BaseViewModel
     {
-        private readonly ApplicationContext _context;
+        private readonly EmployeeAddEditModel _model = new EmployeeAddEditModel();
         private Employee _editingEmployee;
         private bool _isEditMode;
 
         public Employee EditingEmployee
         {
             get => _editingEmployee;
-            set
-            {
-                _editingEmployee = value;
-                OnPropertyChanged();
-            }
+            set { _editingEmployee = value; OnPropertyChanged(); }
         }
 
-        public ICommand SaveCommand { get; set; }
-        public ICommand CancelEditCommand { get; set; }
+        public ICommand SaveCommand { get; }
+        public ICommand CancelEditCommand { get; }
 
-        public AddEmployeeViewModel(ApplicationContext context, Employee employee = null)
+        public AddEmployeeViewModel(Employee employee = null)
         {
-            _context = context;
-
             if (employee == null)
             {
                 _isEditMode = false;
@@ -36,13 +31,7 @@ namespace Service.ViewModels
             else
             {
                 _isEditMode = true;
-                EditingEmployee = new Employee
-                {
-                    Id = employee.Id,
-                    FirstName = employee.FirstName,
-                    LastName = employee.LastName,
-                    ContactNumber = employee.ContactNumber
-                };
+                EditingEmployee = employee;
             }
 
             SaveCommand = new RelayCommand(Save);
@@ -51,53 +40,23 @@ namespace Service.ViewModels
 
         private void Save(object parameter)
         {
-            try
+            if (string.IsNullOrWhiteSpace(EditingEmployee.LastName) || string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
             {
-                if (string.IsNullOrWhiteSpace(EditingEmployee.LastName))
-                {
-                    MessageBox.Show("Фамилия обязательна для заполнения.", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
-                {
-                    MessageBox.Show("Имя обязательно для заполнения.", "Предупреждение",
-                        MessageBoxButton.OK, MessageBoxImage.Warning);
-                    return;
-                }
-
-                if (!_isEditMode)
-                {
-                    _context.Employees.Add(EditingEmployee);
-                }
-                else
-                {
-                    var existing = _context.Employees.Find(EditingEmployee.Id);
-                    if (existing != null)
-                    {
-                        existing.FirstName = EditingEmployee.FirstName;
-                        existing.LastName = EditingEmployee.LastName;
-                        existing.ContactNumber = EditingEmployee.ContactNumber;
-                    }
-                }
-
-                _context.SaveChanges();
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
+                MessageBox.Show("Фамилия и имя обязательны!");
+                return;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка сохранения: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+
+            if (!_isEditMode)
+                _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
+            else
+                _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
+
+            if (parameter is Window window) window.DialogResult = true;
         }
 
         private void Cancel(object parameter)
         {
-            if (parameter is Window window)
-                window.DialogResult = false;
+            if (parameter is Window window) window.DialogResult = false;
         }
     }
 }
