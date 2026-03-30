@@ -27,24 +27,6 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-        public AddConsumablesViewModel(Consumable consumable = null)
-        {
-            LoadCategories();
-
-            if (consumable == null)
-            {
-                _isEditMode = false;
-                EditingConsumable = new Consumable();
-            }
-            else
-            {
-                _isEditMode = true;
-                EditingConsumable = consumable;
-            }
-
-            SaveCommand = new RelayCommand(Save);
-            CancelEditCommand = new RelayCommand(Cancel);
-        }
 
         private void LoadCategories()
         {
@@ -77,6 +59,24 @@ namespace Service.ViewModels
                 MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        public AddConsumablesViewModel(Consumable consumable = null)
+        {
+            LoadCategories();
+
+            if (consumable == null)
+            {
+                _isEditMode = false;
+                EditingConsumable = new Consumable();
+            }
+            else
+            {
+                _isEditMode = true;
+                EditingConsumable = consumable;
+            }
+
+            SaveCommand = new RelayCommand(Save);
+            CancelEditCommand = new RelayCommand(Cancel);
         }
 
         private void Cancel(object parameter)

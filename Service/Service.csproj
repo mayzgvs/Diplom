@@ -97,6 +97,7 @@
     <Compile Include="RelayCommand.cs" />
     <Compile Include="Utility\DbManager.cs" />
     <Compile Include="Utility\Enums.cs" />
+    <Compile Include="Utility\ValidationHelper.cs" />
     <Compile Include="ViewModels\AddCarViewModel.cs" />
     <Compile Include="ViewModels\AddClientViewModel.cs" />
     <Compile Include="ViewModels\AddConsumablesViewModel.cs" />

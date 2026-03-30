@@ -27,24 +27,6 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-        public AddServiceViewModel(ServiceModel service = null)
-        {
-            LoadCategories();
-
-            if (service == null)
-            {
-                _isEditMode = false;
-                EditingService = new ServiceModel();
-            }
-            else
-            {
-                _isEditMode = true;
-                EditingService = service;
-            }
-
-            SaveCommand = new RelayCommand(Save);
-            CancelEditCommand = new RelayCommand(Cancel);
-        }
 
         private void LoadCategories()
         {
@@ -76,6 +58,24 @@ namespace Service.ViewModels
                 MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        public AddServiceViewModel(ServiceModel service = null)
+        {
+            LoadCategories();
+
+            if (service == null)
+            {
+                _isEditMode = false;
+                EditingService = new ServiceModel();
+            }
+            else
+            {
+                _isEditMode = true;
+                EditingService = service;
+            }
+
+            SaveCommand = new RelayCommand(Save);
+            CancelEditCommand = new RelayCommand(Cancel);
         }
 
         private void Cancel(object parameter)

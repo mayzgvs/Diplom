@@ -13,7 +13,7 @@ namespace Service.Models
         public CarAddEditModel()
         {
             Refresh();
-            _statuses = DbManager.GetCarStatuses(); // Получаем статусы
+            _statuses = DbManager.GetCarStatuses();
         }
 
         public void Refresh()
@@ -56,5 +56,8 @@ namespace Service.Models
                 car.VIN?.Equals(vin, System.StringComparison.OrdinalIgnoreCase) == true &&
                 (!excludeId.HasValue || car.Id != excludeId.Value));
         }
+
+        // Удаляем методы IsValidRegistrationNumber и IsValidVIN из этого класса
+        // Они теперь в ValidationHelper
     }
 }

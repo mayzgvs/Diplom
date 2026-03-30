@@ -11,6 +11,50 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Стиль для кнопки с иконкой -->
+            <Style x:Key="IconButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+                        <Setter Property="Opacity" Value="0.8"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Стиль для заголовка страницы -->
+            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="24"/>
+                <Setter Property="FontWeight" Value="Light"/>
+                <Setter Property="Foreground" Value="#2C3E50"/>
+                <Setter Property="Margin" Value="0,0,0,20"/>
+            </Style>
+
+            <!-- Стиль для панели поиска -->
+            <Style x:Key="SearchPanelStyle" TargetType="Border">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="Padding" Value="15"/>
+                <Setter Property="Margin" Value="20,0,20,20"/>
+                <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <!-- Стиль для поля поиска -->
+            <Style TargetType="TextBox" x:Key="SearchTextBox">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="#2C3E50"/>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -22,64 +66,183 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
-            <TextBlock Text="Управление автомобилями" FontSize="28" FontWeight="Light"
-                       Foreground="{StaticResource DarkTextBrush}" Margin="0,0,0,15"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="🚗" FontSize="28" Foreground="#1ABC9C" Margin="0,0,12,0"/>
+                <TextBlock Text="Управление автомобилями" Style="{StaticResource PageTitleStyle}" Margin="0"/>
+            </StackPanel>
+            <TextBlock Text="Просмотр, добавление и редактирование автомобилей клиентов" 
+                       FontSize="13" 
+                       Foreground="#7F8C8D" 
+                       Margin="40,5,0,0"/>
         </StackPanel>
 
-        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="20,0,20,15"
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+        <!-- Поиск -->
+        <Border Grid.Row="1" Style="{StaticResource SearchPanelStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Background="{StaticResource LightBackgroundBrush}" CornerRadius="5"
-                        BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Height="35" Margin="0,0,10,0">
+                <Border Grid.Column="0" 
+                        Background="{StaticResource LightBackgroundBrush}" 
+                        CornerRadius="5"
+                        BorderBrush="#E0E0E0" 
+                        BorderThickness="1" 
+                        Height="38" 
+                        Margin="0,0,10,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Text="🔍" Margin="10,0" VerticalAlignment="Center" Foreground="{StaticResource LightTextBrush}"/>
-                        <TextBox Grid.Column="1" BorderThickness="0" Background="Transparent" Padding="0"
+                        <TextBlock Grid.Column="0" Text="🔍" Margin="12,0" VerticalAlignment="Center" Foreground="#95A5A6" FontSize="14"/>
+                        <TextBox Grid.Column="1" 
+                                 Style="{StaticResource SearchTextBox}"
                                  Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  VerticalAlignment="Center"/>
-                        <Button Grid.Column="2" Content="✖" Width="25" Height="25" Margin="0,0,5,0"
-                                Background="Transparent" BorderThickness="0" Foreground="{StaticResource LightTextBrush}"
-                                Command="{Binding ClearSearchCommand}" ToolTip="Очистить поиск"/>
+                        <Button Grid.Column="2" 
+                                Content="✖" 
+                                Width="30" 
+                                Height="30" 
+                                Margin="0,0,8,0"
+                                Background="Transparent" 
+                                BorderThickness="0" 
+                                Foreground="#95A5A6"
+                                FontSize="12"
+                                Cursor="Hand"
+                                Command="{Binding ClearSearchCommand}" 
+                                ToolTip="Очистить поиск">
+                            <Button.Triggers>
+                                <EventTrigger RoutedEvent="Button.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="Foreground.Color" 
+                                                          To="#E74C3C" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Button.MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="Foreground.Color" 
+                                                          To="#95A5A6" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Button.Triggers>
+                        </Button>
                     </Grid>
                 </Border>
             </Grid>
         </Border>
 
-        <ListView Grid.Row="2" Margin="20,0,20,20"
+        <!-- Таблица автомобилей -->
+        <ListView Grid.Row="2" 
+                  Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredCars}"
                   SelectedItem="{Binding SelectedCar, Mode=TwoWay}"
-                  Background="White" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+                  Background="White" 
+                  BorderBrush="#E0E0E0" 
+                  BorderThickness="1"
+                  FontFamily="Segoe UI">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Марка" Width="120" DisplayMemberBinding="{Binding Brand}"/>
-                    <GridViewColumn Header="Модель" Width="120" DisplayMemberBinding="{Binding Model}"/>
-                    <GridViewColumn Header="Рег. номер" Width="100" DisplayMemberBinding="{Binding RegistrationNumber}"/>
-                    <GridViewColumn Header="VIN" Width="150" DisplayMemberBinding="{Binding VIN}"/>
-                    <GridViewColumn Header="Владелец" Width="150" DisplayMemberBinding="{Binding Client.FullName}"/>
-                    <GridViewColumn Header="Телефон" Width="120" DisplayMemberBinding="{Binding Client.ContactNumber}"/>
+                    <GridViewColumn Header="МАРКА" Width="130">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="МАРКА" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Brand}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="МОДЕЛЬ" Width="130">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="МОДЕЛЬ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Model}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="РЕГ. НОМЕР" Width="110">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="РЕГ. НОМЕР" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding RegistrationNumber}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="VIN" Width="150">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="VIN" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding VIN}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="ВЛАДЕЛЕЦ" Width="160">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="ВЛАДЕЛЕЦ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Client.FullName}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="ТЕЛЕФОН" Width="120">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="ТЕЛЕФОН" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Client.ContactNumber}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="" Width="100">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="ДЕЙСТВИЯ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button Width="30" Height="30" Margin="2" ToolTip="Редактировать"
+                                    <Button Style="{StaticResource IconButtonStyle}" 
+                                            ToolTip="Редактировать"
                                             Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
-                                        <TextBlock Text="✏️" FontSize="16" Foreground="#FFA500"/>
+                                        <TextBlock Text="✏️" FontSize="16"/>
                                     </Button>
-                                    <Button Width="30" Height="30" Margin="2" ToolTip="Удалить"
+                                    <Button Style="{StaticResource IconButtonStyle}" 
+                                            ToolTip="Удалить"
                                             Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
-                                        <TextBlock Text="🗑️" FontSize="16" Foreground="#FF4444"/>
+                                        <TextBlock Text="🗑️" FontSize="16"/>
                                     </Button>
                                 </StackPanel>
                             </DataTemplate>
@@ -92,27 +255,69 @@
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="Padding" Value="8"/>
-                    <Setter Property="MinHeight" Value="45"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="MinHeight" Value="48"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    <Setter Property="BorderBrush" Value="#F0F0F0"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
-                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Background" Value="#E8F8F5"/>
+                            <Setter Property="BorderBrush" Value="#1ABC9C"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,2"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter Property="Background" Value="#F8F9FA"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
+
+            <!-- Пустое состояние -->
+            <ListView.Resources>
+                <Style TargetType="ScrollViewer">
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </ListView.Resources>
         </ListView>
 
-        <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="15" Margin="20,0,20,20"
-                BorderBrush="{StaticResource BorderBrush}" BorderThickness="1">
+        <!-- Панель кнопок -->
+        <Border Grid.Row="3" 
+                Background="White" 
+                CornerRadius="8" 
+                Padding="15" 
+                Margin="20,0,20,20"
+                BorderBrush="#E0E0E0" 
+                BorderThickness="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Content="➕ Добавить" Style="{StaticResource AddButtonWithIconStyle}"
-                        Width="120" Command="{Binding AddCommand}"/>
+                <Button Content="➕ Добавить автомобиль" 
+                        Width="189" 
+                        Height="38" 
+                        Background="#1ABC9C"
+                        Foreground="White"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Command="{Binding AddCommand}">
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="Button.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="Background.Color" 
+                                                  To="#16A085" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="Button.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="Background.Color" 
+                                                  To="#1ABC9C" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
             </StackPanel>
         </Border>
     </Grid>

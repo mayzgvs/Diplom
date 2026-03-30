@@ -1,6 +1,8 @@
 ﻿using Service.Data;
 using Service.Models;
+using Service.Utility;
 using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
@@ -24,6 +26,60 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
+
+        private void Save(object parameter)
+        {
+            if (string.IsNullOrWhiteSpace(EditingEmployee.LastName))
+            {
+                MessageBox.Show("Введите фамилию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
+            {
+                MessageBox.Show("Введите имя!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // Проверка формата телефона через ValidationHelper
+            if (!string.IsNullOrWhiteSpace(EditingEmployee.ContactNumber))
+            {
+                if (!ValidationHelper.IsValidRussianPhone(EditingEmployee.ContactNumber))
+                {
+                    MessageBox.Show("Некорректный формат номера телефона!\nФормат: +7XXXXXXXXXX (10 цифр после +7)",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                // Проверка уникальности телефона
+                if (_model.PhoneExists(EditingEmployee.ContactNumber, _isEditMode ? EditingEmployee.Id : (int?)null))
+                {
+                    MessageBox.Show("Сотрудник с таким номером телефона уже существует!",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            try
+            {
+                if (!_isEditMode)
+                    _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName,
+                        EditingEmployee.ContactNumber);
+                else
+                    _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName,
+                        EditingEmployee.ContactNumber);
+
+                EmployeeSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                    window.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         public AddEmployeeViewModel(Employee employee = null)
         {
             if (employee == null)
@@ -39,34 +95,6 @@ namespace Service.ViewModels
 
             SaveCommand = new RelayCommand(Save);
             CancelEditCommand = new RelayCommand(Cancel);
-        }
-
-        private void Save(object parameter)
-        {
-            if (string.IsNullOrWhiteSpace(EditingEmployee.LastName) || string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
-            {
-                MessageBox.Show("Фамилия и имя обязательны!");
-                return;
-            }
-
-            try
-            {
-                if (!_isEditMode)
-                    _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
-                else
-                    _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
-
-                // Вызываем событие перед закрытием окна
-                EmployeeSaved?.Invoke(this, EventArgs.Empty);
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
         }
 
         private void Cancel(object parameter)

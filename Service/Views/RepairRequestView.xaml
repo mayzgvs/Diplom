@@ -6,12 +6,68 @@
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="800"
              Background="Transparent">
-
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Стиль для кнопки с иконкой -->
+            <Style x:Key="IconButtonStyle" TargetType="Button">
+                <Setter Property="Width" Value="32"/>
+                <Setter Property="Height" Value="32"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="FontSize" Value="18"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+                        <Setter Property="Opacity" Value="0.8"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+
+            <!-- Стиль для заголовка страницы -->
+            <Style x:Key="PageTitleStyle" TargetType="TextBlock">
+                <Setter Property="FontSize" Value="24"/>
+                <Setter Property="FontWeight" Value="Light"/>
+                <Setter Property="Foreground" Value="#2C3E50"/>
+                <Setter Property="Margin" Value="0,0,0,20"/>
+            </Style>
+
+            <!-- Стиль для панели поиска -->
+            <Style x:Key="SearchPanelStyle" TargetType="Border">
+                <Setter Property="Background" Value="White"/>
+                <Setter Property="CornerRadius" Value="8"/>
+                <Setter Property="Padding" Value="15"/>
+                <Setter Property="Margin" Value="20,0,20,20"/>
+                <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                <Setter Property="BorderThickness" Value="1"/>
+            </Style>
+
+            <!-- Стиль для поля поиска -->
+            <Style TargetType="TextBox" x:Key="SearchTextBox">
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="VerticalAlignment" Value="Center"/>
+                <Setter Property="FontSize" Value="13"/>
+                <Setter Property="Foreground" Value="#2C3E50"/>
+            </Style>
+
+            <!-- Стиль для стоимости -->
+            <Style x:Key="CostStyle" TargetType="TextBlock">
+                <Setter Property="FontWeight" Value="Bold"/>
+                <Setter Property="Foreground" Value="#27AE60"/>
+                <Setter Property="FontSize" Value="13"/>
+            </Style>
+
+            <!-- Стиль для статуса -->
+            <Style x:Key="StatusBadgeStyle" TargetType="Border">
+                <Setter Property="CornerRadius" Value="3"/>
+                <Setter Property="Padding" Value="5,2"/>
+            </Style>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -25,21 +81,18 @@
 
         <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
-            <TextBlock Text="Управление заявками на ремонт" 
-                       FontSize="28" 
-                       FontWeight="Light" 
-                       Foreground="{StaticResource DarkTextBrush}"
-                       Margin="0,0,0,15"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="📋" FontSize="28" Foreground="#27AE60" Margin="0,0,12,0"/>
+                <TextBlock Text="Управление заявками на ремонт" Style="{StaticResource PageTitleStyle}" Margin="0"/>
+            </StackPanel>
+            <TextBlock Text="Просмотр, добавление и редактирование заявок на ремонт" 
+                       FontSize="13" 
+                       Foreground="#7F8C8D" 
+                       Margin="40,5,0,0"/>
         </StackPanel>
 
         <!-- Панель фильтрации -->
-        <Border Grid.Row="1" 
-                Background="White" 
-                CornerRadius="8" 
-                Padding="15"
-                Margin="20,0,20,15"
-                BorderBrush="{StaticResource BorderBrush}" 
-                BorderThickness="1">
+        <Border Grid.Row="1" Style="{StaticResource SearchPanelStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
@@ -49,10 +102,10 @@
 
                 <Border Grid.Column="0" 
                         Background="{StaticResource LightBackgroundBrush}" 
-                        CornerRadius="5" 
-                        BorderBrush="{StaticResource BorderBrush}" 
-                        BorderThickness="1"
-                        Height="35"
+                        CornerRadius="5"
+                        BorderBrush="#E0E0E0" 
+                        BorderThickness="1" 
+                        Height="38" 
                         Margin="0,0,10,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -60,58 +113,64 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-
-                        <TextBlock Grid.Column="0" 
-                                   Text="🔍" 
-                                   Margin="10,0" 
-                                   VerticalAlignment="Center"
-                                   Foreground="{StaticResource LightTextBrush}"/>
-
+                        <TextBlock Grid.Column="0" Text="🔍" Margin="12,0" VerticalAlignment="Center" Foreground="#95A5A6" FontSize="14"/>
                         <TextBox Grid.Column="1" 
-                                 BorderThickness="0"
-                                 Background="Transparent"
-                                 Padding="0"
-                                 VerticalAlignment="Center"
+                                 Style="{StaticResource SearchTextBox}"
+                                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                  ToolTip="Введите номер авто, VIN или ФИО клиента"
-                                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-                        <Button Grid.Column="2"
-                                Content="✖"
-                                Width="25"
-                                Height="25"
-                                Margin="0,0,5,0"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Foreground="{StaticResource LightTextBrush}"
-                                FontSize="14"
-                                FontWeight="Bold"
+                                 VerticalAlignment="Center"/>
+                        <Button Grid.Column="2" 
+                                Content="✖" 
+                                Width="30" 
+                                Height="30" 
+                                Margin="0,0,8,0"
+                                Background="Transparent" 
+                                BorderThickness="0" 
+                                Foreground="#95A5A6"
+                                FontSize="12"
                                 Cursor="Hand"
-                                Command="{Binding ClearFilterCommand}"
-                                ToolTip="Очистить поиск"/>
+                                Command="{Binding ClearFilterCommand}" 
+                                ToolTip="Очистить поиск">
+                            <Button.Triggers>
+                                <EventTrigger RoutedEvent="Button.MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="Foreground.Color" 
+                                                          To="#E74C3C" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="Button.MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ColorAnimation Storyboard.TargetProperty="Foreground.Color" 
+                                                          To="#95A5A6" Duration="0:0:0.1"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Button.Triggers>
+                        </Button>
                     </Grid>
                 </Border>
 
-                <StackPanel Grid.Column="1" 
-                            Orientation="Horizontal"
-                            Margin="0,0,10,0">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,10,0">
                     <Border Background="{StaticResource LightBackgroundBrush}" 
                             CornerRadius="5" 
-                            BorderBrush="{StaticResource BorderBrush}" 
+                            BorderBrush="#E0E0E0" 
                             BorderThickness="1"
-                            Height="35"
-                            Width="150">
+                            Height="38"
+                            Width="160">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
-
                             <TextBlock Grid.Column="0" 
                                        Text="⚡" 
-                                       Margin="10,0" 
+                                       Margin="12,0" 
                                        VerticalAlignment="Center"
-                                       Foreground="{StaticResource LightTextBrush}"/>
-
+                                       Foreground="#95A5A6"
+                                       FontSize="14"/>
                             <ComboBox Grid.Column="1"
                                       BorderThickness="0"
                                       Background="Transparent"
@@ -120,6 +179,8 @@
                                       ToolTip="Фильтр по статусу"
                                       VerticalAlignment="Center"
                                       Margin="0,0,5,0"
+                                      FontSize="13"
+                                      Foreground="#2C3E50"
                                       DisplayMemberPath="Name"/>
                         </Grid>
                     </Border>
@@ -127,7 +188,7 @@
             </Grid>
         </Border>
 
-        <!-- Список заявок с кнопками в строке -->
+        <!-- Таблица заявок -->
         <ListView Grid.Row="2" 
                   Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredRequests}"
@@ -135,85 +196,125 @@
                   ScrollViewer.HorizontalScrollBarVisibility="Auto"
                   ScrollViewer.VerticalScrollBarVisibility="Auto"
                   Background="White"
-                  BorderBrush="{StaticResource BorderBrush}"
-                  BorderThickness="1">
-
+                  BorderBrush="#E0E0E0"
+                  BorderThickness="1"
+                  FontFamily="Segoe UI">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn Header="Автомобиль" Width="180">
-                        <!--<GridViewColumn.CellTemplate>
+                    <GridViewColumn Header="МАРКА" Width="110">
+                        <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Car.Brand, Car.Model}" 
-                                           FontWeight="SemiBold"/>
+                                <TextBlock Text="МАРКА" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
                             </DataTemplate>
-                        </GridViewColumn.CellTemplate>-->
-                    </GridViewColumn>
-
-                    <GridViewColumn Header="Госномер" Width="100" 
-                                    DisplayMemberBinding="{Binding Car.RegistrationNumber}"/>
-
-                    <GridViewColumn Header="Клиент" Width="150" 
-                                    DisplayMemberBinding="{Binding Client}"/>
-
-                    <GridViewColumn Header="Статус" Width="100">
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Border CornerRadius="3" Padding="3">
-                                    <Border.Style>
-                                        <Style TargetType="Border">
-                                            <Setter Property="Background" Value="#FFF0F0F0"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Status.Name}" Value="В работе">
-                                                    <Setter Property="Background" Value="#FFE6F7FF"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status.Name}" Value="В ожидании">
-                                                    <Setter Property="Background" Value="#FFFFF0E6"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Status.Name}" Value="Завершена">
-                                                    <Setter Property="Background" Value="#FFE6FFE6"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </Border.Style>
+                                <TextBlock Text="{Binding Car.Brand}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="МОДЕЛЬ" Width="110">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="МОДЕЛЬ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Car.Model}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="ГОСНОМЕР" Width="110">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="ГОСНОМЕР" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Car.RegistrationNumber}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="КЛИЕНТ" Width="160">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="КЛИЕНТ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Client}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="СТАТУС" Width="110">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="СТАТУС" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Border Style="{StaticResource StatusBadgeStyle}" Padding="5,2" Margin="5,0">
                                     <TextBlock Text="{Binding Status.Name}" 
-                                               HorizontalAlignment="Center"/>
+                                               HorizontalAlignment="Center"
+                                               FontSize="12"/>
                                 </Border>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-
-                    <GridViewColumn Header="Стоимость" Width="100">
+                    <GridViewColumn Header="СТОИМОСТЬ" Width="110">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="СТОИМОСТЬ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding TotalCost, StringFormat={}{0:C2}}" 
-                                           FontWeight="Bold"
-                                           Foreground="{StaticResource SuccessBrush}"/>
+                                           Style="{StaticResource CostStyle}"
+                                           Padding="8,5"
+                                           TextAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-
-                    <!-- Колонка с действиями -->
+                    <GridViewColumn Header="ДАТА СОЗДАНИЯ" Width="120">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="ДАТА СОЗДАНИЯ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding CreatedDate, StringFormat=dd.MM.yyyy}" 
+                                           Foreground="#2C3E50" 
+                                           FontSize="13" 
+                                           Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="" Width="100">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="ДЕЙСТВИЯ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button Width="30" Height="30" Margin="2"
+                                    <Button Style="{StaticResource IconButtonStyle}" 
                                             ToolTip="Редактировать"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Cursor="Hand"
                                             Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
-                                        <TextBlock Text="✏️" FontSize="16" Foreground="#FFA500"/>
+                                        <TextBlock Text="✏️" FontSize="16"/>
                                     </Button>
-                                    <Button Width="30" Height="30" Margin="2"
+                                    <Button Style="{StaticResource IconButtonStyle}" 
                                             ToolTip="Удалить"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            Cursor="Hand"
                                             Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}">
-                                        <TextBlock Text="🗑️" FontSize="16" Foreground="#FF4444"/>
+                                        <TextBlock Text="🗑️" FontSize="16"/>
                                     </Button>
                                 </StackPanel>
                             </DataTemplate>
@@ -224,38 +325,64 @@
 
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
-                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}"/>
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="VerticalContentAlignment" Value="Center"/>
-                    <Setter Property="Padding" Value="8"/>
-                    <Setter Property="MinHeight" Value="45"/>
+                    <Setter Property="Padding" Value="0"/>
+                    <Setter Property="MinHeight" Value="48"/>
+                    <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                    <Setter Property="BorderBrush" Value="#F0F0F0"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
-                            <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
-                            <Setter Property="BorderThickness" Value="2"/>
+                            <Setter Property="Background" Value="#E8F5E9"/>
+                            <Setter Property="BorderBrush" Value="#27AE60"/>
+                            <Setter Property="BorderThickness" Value="0,0,0,2"/>
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{StaticResource HoverBrush}"/>
+                            <Setter Property="Background" Value="#F8F9FA"/>
                         </Trigger>
                     </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <!-- Кнопка добавления -->
+        <!-- Панель кнопок -->
         <Border Grid.Row="3" 
                 Background="White" 
                 CornerRadius="8" 
-                Padding="15"
+                Padding="15" 
                 Margin="20,0,20,20"
-                BorderBrush="{StaticResource BorderBrush}" 
+                BorderBrush="#E0E0E0" 
                 BorderThickness="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                <Button Content="➕ Добавить"
-                        Style="{StaticResource AddButtonWithIconStyle}" 
-                        Width="120" 
-                        Command="{Binding AddCommand}"/>
+                <Button Content="➕ Добавить заявку" 
+                        Width="140" 
+                        Height="38" 
+                        Background="#27AE60"
+                        Foreground="White"
+                        FontSize="13"
+                        FontWeight="SemiBold"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        Command="{Binding AddCommand}">
+                    <Button.Triggers>
+                        <EventTrigger RoutedEvent="Button.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="Background.Color" 
+                                                  To="#229954" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="Button.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="Background.Color" 
+                                                  To="#27AE60" Duration="0:0:0.1"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </Button.Triggers>
+                </Button>
             </StackPanel>
         </Border>
     </Grid>
