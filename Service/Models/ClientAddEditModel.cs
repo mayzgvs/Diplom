@@ -7,18 +7,16 @@ namespace Service.Models
 {
     public class ClientAddEditModel
     {
-        public void CreateClient(string firstName, string lastName, string contactNumber, int discount)
+        public void CreateClient(string firstName, string lastName, string contactNumber, int discount, string email) 
         {
-            // Очищаем номер телефона перед сохранением
             var cleanedPhone = ValidationHelper.CleanPhone(contactNumber);
-            DbManager.CreateClient(firstName, lastName, cleanedPhone, discount);
+            DbManager.CreateClient(firstName, lastName, cleanedPhone, discount, email); 
         }
 
-        public void EditClient(int id, string firstName, string lastName, string contactNumber, int discount)
+        public void EditClient(int id, string firstName, string lastName, string contactNumber, int discount, string email) 
         {
-            // Очищаем номер телефона перед сохранением
             var cleanedPhone = ValidationHelper.CleanPhone(contactNumber);
-            DbManager.EditClient(id, firstName, lastName, cleanedPhone, discount);
+            DbManager.EditClient(id, firstName, lastName, cleanedPhone, discount, email); 
         }
 
         public bool PhoneExists(string phone, int? excludeId = null)
@@ -26,7 +24,6 @@ namespace Service.Models
             if (string.IsNullOrWhiteSpace(phone))
                 return false;
 
-            // Очищаем номер для сравнения
             var cleanedPhone = ValidationHelper.CleanPhone(phone);
             var clients = DbManager.GetClients();
             return clients.Any(client =>
@@ -34,7 +31,15 @@ namespace Service.Models
                 (!excludeId.HasValue || client.Id != excludeId.Value));
         }
 
-        // Удаляем методы IsValidPhone из этого класса
-        // Они теперь в ValidationHelper
+        public bool EmailExists(string email, int? excludeId = null)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            var clients = DbManager.GetClients();
+            return clients.Any(client =>
+                client.Email?.Equals(email, System.StringComparison.OrdinalIgnoreCase) == true &&
+                (!excludeId.HasValue || client.Id != excludeId.Value));
+        }
     }
 }

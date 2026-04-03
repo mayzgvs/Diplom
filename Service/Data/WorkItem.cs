@@ -186,5 +186,51 @@ namespace Service.Data
                 }
             }
         }
+
+        [NotMapped]
+        public string EmployeeFullName => Employee?.FullName ?? "Не назначен";
+
+        [NotMapped]
+        public string ConsumableName => Consumable?.Name ?? "Не указан";
+
+        [NotMapped]
+        public string StatusName => StatusWork?.Name ?? "Не указан";
+
+        [NotMapped]
+        public string ServiceAndConsumableName
+        {
+            get
+            {
+                string result = "";
+                if (Service != null)
+                    result += Service.Name;
+                if (Consumable != null)
+                {
+                    if (!string.IsNullOrEmpty(result))
+                        result += " + ";
+                    result += Consumable.Name;
+                }
+                return string.IsNullOrEmpty(result) ? "Не указано" : result;
+            }
+        }
+
+        [NotMapped]
+        public string EmployeeName
+        {
+            get
+            {
+                return Employee != null ? $"{Employee.LastName} {Employee.FirstName}" : "Не назначен";
+            }
+        }
+
+        [NotMapped]
+        public string ServiceName
+        {
+            get
+            {
+                return Service != null ? Service.Name : "Услуга не указана";
+            }
+        }
+        public int Index { get; set; } 
     }
 }

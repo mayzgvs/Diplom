@@ -86,7 +86,8 @@ namespace Service.ViewModels
                 var filtered = Clients.Where(c =>
                     (c.LastName?.ToLower().Contains(search) == true) ||
                     (c.FirstName?.ToLower().Contains(search) == true) ||
-                    (c.ContactNumber?.ToLower().Contains(search) == true)
+                    (c.ContactNumber?.ToLower().Contains(search) == true) ||
+                    (c.Email?.ToLower().Contains(search) == true)
                 );
 
                 foreach (var client in filtered)

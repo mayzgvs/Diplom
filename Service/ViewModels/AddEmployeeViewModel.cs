@@ -14,7 +14,6 @@ namespace Service.ViewModels
         private Employee _editingEmployee;
         private bool _isEditMode;
 
-        // Событие для уведомления об успешном сохранении
         public event EventHandler EmployeeSaved;
 
         public Employee EditingEmployee
@@ -41,7 +40,6 @@ namespace Service.ViewModels
                 return;
             }
 
-            // Проверка формата телефона через ValidationHelper
             if (!string.IsNullOrWhiteSpace(EditingEmployee.ContactNumber))
             {
                 if (!ValidationHelper.IsValidRussianPhone(EditingEmployee.ContactNumber))
@@ -51,7 +49,6 @@ namespace Service.ViewModels
                     return;
                 }
 
-                // Проверка уникальности телефона
                 if (_model.PhoneExists(EditingEmployee.ContactNumber, _isEditMode ? EditingEmployee.Id : (int?)null))
                 {
                     MessageBox.Show("Сотрудник с таким номером телефона уже существует!",

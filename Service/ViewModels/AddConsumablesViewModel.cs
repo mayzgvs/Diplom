@@ -13,8 +13,9 @@ namespace Service.ViewModels
         private Consumable _editingConsumable;
         private bool _isEditMode;
 
-        // Событие для уведомления об успешном сохранении
         public event EventHandler ConsumableSaved;
+
+        public string Title => _isEditMode ? "Редактирование расходника" : "Добавление расходника";
 
         public Consumable EditingConsumable
         {
@@ -27,39 +28,6 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-
-        private void LoadCategories()
-        {
-            ConsumableCategories = new ObservableCollection<ConsumablesCategory>(_model.GetCategories());
-        }
-
-        private void Save(object parameter)
-        {
-            if (string.IsNullOrWhiteSpace(EditingConsumable.Name) || EditingConsumable.ConsumableCategoryId == 0)
-            {
-                MessageBox.Show("Заполните название и категорию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            try
-            {
-                if (!_isEditMode)
-                    _model.CreateConsumable(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId);
-                else
-                    _model.EditConsumable(EditingConsumable.Id, EditingConsumable.Name, EditingConsumable.ConsumableCategoryId);
-
-                // Вызываем событие перед закрытием окна
-                ConsumableSaved?.Invoke(this, EventArgs.Empty);
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
         public AddConsumablesViewModel(Consumable consumable = null)
         {
             LoadCategories();
@@ -77,6 +45,53 @@ namespace Service.ViewModels
 
             SaveCommand = new RelayCommand(Save);
             CancelEditCommand = new RelayCommand(Cancel);
+        }
+
+        private void LoadCategories()
+        {
+            ConsumableCategories = new ObservableCollection<ConsumablesCategory>(_model.GetCategories());
+        }
+
+        private void Save(object parameter)
+        {
+            if (string.IsNullOrWhiteSpace(EditingConsumable.Name))
+            {
+                MessageBox.Show("Введите наименование расходника!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (EditingConsumable.ConsumableCategoryId == 0)
+            {
+                MessageBox.Show("Выберите категорию расходника!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (_model.ConsumableNameExistsInCategory(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId,
+                _isEditMode ? EditingConsumable.Id : (int?)null))
+            {
+                MessageBox.Show("Расходник с таким наименованием уже существует в выбранной категории!",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                if (!_isEditMode)
+                    _model.CreateConsumable(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId, EditingConsumable.Cost);
+                else
+                    _model.EditConsumable(EditingConsumable.Id, EditingConsumable.Name,
+                        EditingConsumable.ConsumableCategoryId, EditingConsumable.Cost);
+
+                ConsumableSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                    window.DialogResult = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)

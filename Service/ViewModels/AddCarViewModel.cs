@@ -16,7 +16,6 @@ namespace Service.ViewModels
         private Car _editingCar;
         private bool _isEditMode;
 
-        // Событие для уведомления об успешном сохранении
         public event EventHandler CarSaved;
 
         public Car EditingCar
@@ -43,28 +42,23 @@ namespace Service.ViewModels
             var addClientViewModel = new AddClientViewModel();
             addClientWindow.DataContext = addClientViewModel;
 
-            // Подписываемся на событие сохранения клиента
             addClientViewModel.ClientSaved += OnClientSaved;
 
             if (addClientWindow.ShowDialog() == true)
             {
-                // Обновляем список клиентов
                 LoadClients();
             }
 
-            // Отписываемся от события
             addClientViewModel.ClientSaved -= OnClientSaved;
         }
 
         private void OnClientSaved(object sender, EventArgs e)
         {
-            // Обновляем список клиентов при сохранении нового клиента
             LoadClients();
         }
 
         private void Save(object parameter)
         {
-            // Проверка на заполнение
             if (string.IsNullOrWhiteSpace(EditingCar.Brand))
             {
                 MessageBox.Show("Введите марку автомобиля!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -89,7 +83,6 @@ namespace Service.ViewModels
                 return;
             }
 
-            // Проверка формата госномера через ValidationHelper
             if (!ValidationHelper.IsValidRussianLicensePlate(EditingCar.RegistrationNumber))
             {
                 MessageBox.Show("Некорректный формат государственного номера!\nФормат: Б123ББ77 или Б123ББ777",
@@ -97,7 +90,6 @@ namespace Service.ViewModels
                 return;
             }
 
-            // Проверка формата VIN (если заполнен)
             if (!string.IsNullOrWhiteSpace(EditingCar.VIN))
             {
                 if (!ValidationHelper.IsValidVIN(EditingCar.VIN))
@@ -107,7 +99,6 @@ namespace Service.ViewModels
                     return;
                 }
 
-                // Проверка уникальности VIN
                 if (_model.VinExists(EditingCar.VIN, _isEditMode ? EditingCar.Id : (int?)null))
                 {
                     MessageBox.Show("Автомобиль с таким VIN номером уже существует в базе!",
@@ -116,7 +107,6 @@ namespace Service.ViewModels
                 }
             }
 
-            // Проверка уникальности госномера
             if (_model.RegistrationNumberExists(EditingCar.RegistrationNumber, _isEditMode ? EditingCar.Id : (int?)null))
             {
                 MessageBox.Show("Автомобиль с таким государственным номером уже существует в базе!",

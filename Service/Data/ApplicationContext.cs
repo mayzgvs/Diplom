@@ -13,7 +13,6 @@ namespace Service.Data
 
         }
 
-        // Все таблицы базы данных
         public DbSet<Car> Cars { get; set; }           
         public DbSet<Client> Clients { get; set; }     
         public DbSet<Employee> Employees { get; set; }  

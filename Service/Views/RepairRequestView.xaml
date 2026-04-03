@@ -12,7 +12,6 @@
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Стиль для кнопки с иконкой -->
             <Style x:Key="IconButtonStyle" TargetType="Button">
                 <Setter Property="Width" Value="32"/>
                 <Setter Property="Height" Value="32"/>
@@ -28,7 +27,6 @@
                 </Style.Triggers>
             </Style>
 
-            <!-- Стиль для заголовка страницы -->
             <Style x:Key="PageTitleStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="FontWeight" Value="Light"/>
@@ -36,7 +34,6 @@
                 <Setter Property="Margin" Value="0,0,0,20"/>
             </Style>
 
-            <!-- Стиль для панели поиска -->
             <Style x:Key="SearchPanelStyle" TargetType="Border">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="CornerRadius" Value="8"/>
@@ -46,7 +43,6 @@
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
-            <!-- Стиль для поля поиска -->
             <Style TargetType="TextBox" x:Key="SearchTextBox">
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Background" Value="Transparent"/>
@@ -56,14 +52,12 @@
                 <Setter Property="Foreground" Value="#2C3E50"/>
             </Style>
 
-            <!-- Стиль для стоимости -->
             <Style x:Key="CostStyle" TargetType="TextBlock">
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="Foreground" Value="#27AE60"/>
                 <Setter Property="FontSize" Value="13"/>
             </Style>
 
-            <!-- Стиль для статуса -->
             <Style x:Key="StatusBadgeStyle" TargetType="Border">
                 <Setter Property="CornerRadius" Value="3"/>
                 <Setter Property="Padding" Value="5,2"/>
@@ -79,7 +73,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="📋" FontSize="28" Foreground="#27AE60" Margin="0,0,12,0"/>
@@ -91,22 +84,20 @@
                        Margin="40,5,0,0"/>
         </StackPanel>
 
-        <!-- Панель фильтрации -->
         <Border Grid.Row="1" Style="{StaticResource SearchPanelStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" 
-                        Background="{StaticResource LightBackgroundBrush}" 
-                        CornerRadius="5"
-                        BorderBrush="#E0E0E0" 
-                        BorderThickness="1" 
-                        Height="38" 
-                        Margin="0,0,10,0">
+                <Border Grid.Column="0"
+                Background="{StaticResource LightBackgroundBrush}"
+                CornerRadius="5"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1"
+                Height="38"
+                Margin="0,0,10,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
@@ -114,81 +105,48 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="🔍" Margin="12,0" VerticalAlignment="Center" Foreground="#95A5A6" FontSize="14"/>
-                        <TextBox Grid.Column="1" 
-                                 Style="{StaticResource SearchTextBox}"
-                                 Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 ToolTip="Введите номер авто, VIN или ФИО клиента"
-                                 VerticalAlignment="Center"/>
-                        <Button Grid.Column="2" 
-                                Content="✖" 
-                                Width="30" 
-                                Height="30" 
-                                Margin="0,0,8,0"
-                                Background="Transparent" 
-                                BorderThickness="0" 
-                                Foreground="#95A5A6"
-                                FontSize="12"
-                                Cursor="Hand"
-                                Command="{Binding ClearFilterCommand}" 
-                                ToolTip="Очистить поиск">
-                            <Button.Triggers>
-                                <EventTrigger RoutedEvent="Button.MouseEnter">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetProperty="Foreground.Color" 
-                                                          To="#E74C3C" Duration="0:0:0.1"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                                <EventTrigger RoutedEvent="Button.MouseLeave">
-                                    <BeginStoryboard>
-                                        <Storyboard>
-                                            <ColorAnimation Storyboard.TargetProperty="Foreground.Color" 
-                                                          To="#95A5A6" Duration="0:0:0.1"/>
-                                        </Storyboard>
-                                    </BeginStoryboard>
-                                </EventTrigger>
-                            </Button.Triggers>
-                        </Button>
+                        <TextBox Grid.Column="1"
+                         Style="{StaticResource SearchTextBox}"
+                         Text="{Binding SearchText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalAlignment="Center"/>
+                        <Button Grid.Column="2"
+                        Content="✖"
+                        Width="30"
+                        Height="30"
+                        Margin="0,0,8,0"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Foreground="#95A5A6"
+                        Command="{Binding ClearFilterCommand}"/>
                     </Grid>
                 </Border>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="0,0,10,0">
-                    <Border Background="{StaticResource LightBackgroundBrush}" 
-                            CornerRadius="5" 
-                            BorderBrush="#E0E0E0" 
-                            BorderThickness="1"
-                            Height="38"
-                            Width="160">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" 
-                                       Text="⚡" 
-                                       Margin="12,0" 
-                                       VerticalAlignment="Center"
-                                       Foreground="#95A5A6"
-                                       FontSize="14"/>
-                            <ComboBox Grid.Column="1"
-                                      BorderThickness="0"
-                                      Background="Transparent"
-                                      ItemsSource="{Binding Statuses}"
-                                      SelectedItem="{Binding SelectedFilterStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                      ToolTip="Фильтр по статусу"
-                                      VerticalAlignment="Center"
-                                      Margin="0,0,5,0"
-                                      FontSize="13"
-                                      Foreground="#2C3E50"
-                                      DisplayMemberPath="Name"/>
-                        </Grid>
-                    </Border>
-                </StackPanel>
+                <Border Grid.Column="1"
+                Background="{StaticResource LightBackgroundBrush}"
+                CornerRadius="5"
+                BorderBrush="#E0E0E0"
+                BorderThickness="1"
+                Height="38"
+                Width="190">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="⚡" Margin="12,0" VerticalAlignment="Center" Foreground="#95A5A6" FontSize="14"/>
+                        <ComboBox Grid.Column="1"
+                          ItemsSource="{Binding Statuses}"
+                          SelectedItem="{Binding SelectedFilterStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="Name"
+                          BorderThickness="0"
+                          Background="Transparent"
+                          VerticalAlignment="Center"
+                          Margin="5,0"/>
+                    </Grid>
+                </Border>
             </Grid>
         </Border>
 
-        <!-- Таблица заявок -->
         <ListView Grid.Row="2" 
                   Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredRequests}"
@@ -237,7 +195,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="КЛИЕНТ" Width="160">
+                    <GridViewColumn Header="КЛИЕНТ" Width="180">
                         <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
                                 <TextBlock Text="КЛИЕНТ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
@@ -245,7 +203,10 @@
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Client}" Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                                <TextBlock Text="{Binding ClientDisplayName}" 
+                                           Foreground="#2C3E50" 
+                                           FontSize="13" 
+                                           Padding="8,5"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -273,25 +234,36 @@
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding TotalCost, StringFormat={}{0:C2}}" 
+                                <TextBlock Text="{Binding TotalCost, StringFormat={}{0:N0} ₽}" 
                                            Style="{StaticResource CostStyle}"
                                            Padding="8,5"
                                            TextAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="ДАТА СОЗДАНИЯ" Width="120">
+                    <GridViewColumn Header="ДАТА НАЧАЛА" Width="120">
                         <GridViewColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="ДАТА СОЗДАНИЯ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5"/>
+                                <TextBlock Text="ДАТА НАЧАЛА" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5" TextAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding CreatedDate, StringFormat=dd.MM.yyyy}" 
-                                           Foreground="#2C3E50" 
-                                           FontSize="13" 
-                                           Padding="8,5"/>
+                                <TextBlock Text="{Binding StartDate, StringFormat=dd.MM.yyyy}" 
+                       Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="ДАТА ОКОНЧАНИЯ" Width="120">
+                        <GridViewColumn.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="ДАТА ОКОНЧАНИЯ" Foreground="#7F8C8D" FontSize="12" FontWeight="SemiBold" Padding="8,5" TextAlignment="Center"/>
+                            </DataTemplate>
+                        </GridViewColumn.HeaderTemplate>
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding EndDate, StringFormat=dd.MM.yyyy}" 
+                                           Foreground="#2C3E50" FontSize="13" Padding="8,5"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
@@ -345,7 +317,6 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <!-- Панель кнопок -->
         <Border Grid.Row="3" 
                 Background="White" 
                 CornerRadius="8" 
@@ -383,7 +354,17 @@
                         </EventTrigger>
                     </Button.Triggers>
                 </Button>
+                <StackPanel Orientation="Horizontal" Margin="5">
+                    <Button Content="📧 Отправить уведомление" 
+                            Command="{Binding SendNotificationManuallyCommand}"
+                            Background="#FF9800"  
+                            Foreground="White" 
+                            Padding="10,5" 
+                            Margin="2" Width="189" Height="38" />
+                </StackPanel>
+                
             </StackPanel>
+
         </Border>
     </Grid>
 </UserControl>

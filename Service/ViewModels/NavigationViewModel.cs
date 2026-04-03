@@ -33,6 +33,9 @@ namespace Service.ViewModels
 
                 switch (viewName)
                 {
+                    case "WorkItems":
+                        CurrentViewModel = new WorkItemViewModel();
+                        break;
                     case "Clients":
                         CurrentViewModel = new ClientViewModel();
                         break;

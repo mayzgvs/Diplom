@@ -12,7 +12,6 @@
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Стиль для кнопки с иконкой -->
             <Style x:Key="IconButtonStyle" TargetType="Button">
                 <Setter Property="Width" Value="32"/>
                 <Setter Property="Height" Value="32"/>
@@ -28,7 +27,6 @@
                 </Style.Triggers>
             </Style>
 
-            <!-- Стиль для заголовка страницы -->
             <Style x:Key="PageTitleStyle" TargetType="TextBlock">
                 <Setter Property="FontSize" Value="24"/>
                 <Setter Property="FontWeight" Value="Light"/>
@@ -36,7 +34,6 @@
                 <Setter Property="Margin" Value="0,0,0,20"/>
             </Style>
 
-            <!-- Стиль для панели поиска -->
             <Style x:Key="SearchPanelStyle" TargetType="Border">
                 <Setter Property="Background" Value="White"/>
                 <Setter Property="CornerRadius" Value="8"/>
@@ -46,7 +43,6 @@
                 <Setter Property="BorderThickness" Value="1"/>
             </Style>
 
-            <!-- Стиль для поля поиска -->
             <Style TargetType="TextBox" x:Key="SearchTextBox">
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Background" Value="Transparent"/>
@@ -56,7 +52,6 @@
                 <Setter Property="Foreground" Value="#2C3E50"/>
             </Style>
 
-            <!-- Стиль для стоимости -->
             <Style x:Key="CostStyle" TargetType="TextBlock">
                 <Setter Property="FontWeight" Value="Bold"/>
                 <Setter Property="Foreground" Value="#27AE60"/>
@@ -73,7 +68,6 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Заголовок -->
         <StackPanel Grid.Row="0" Margin="20,20,20,10">
             <StackPanel Orientation="Horizontal">
                 <TextBlock Text="⚙️" FontSize="28" Foreground="#9B59B6" Margin="0,0,12,0"/>
@@ -85,7 +79,6 @@
                        Margin="40,5,0,0"/>
         </StackPanel>
 
-        <!-- Поиск -->
         <Border Grid.Row="1" Style="{StaticResource SearchPanelStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -148,7 +141,6 @@
             </Grid>
         </Border>
 
-        <!-- Таблица услуг -->
         <ListView Grid.Row="2" 
                   Margin="20,0,20,20"
                   ItemsSource="{Binding FilteredServices}"
@@ -248,7 +240,6 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <!-- Панель кнопок -->
         <Border Grid.Row="3" 
                 Background="White" 
                 CornerRadius="8" 

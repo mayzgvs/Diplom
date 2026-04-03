@@ -83,6 +83,20 @@ namespace Service.Data
             }
         }
 
+        private string _email;
+        public string Email
+        {
+            get => _email;
+            set
+            {
+                if (_email != value)
+                {
+                    _email = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private ICollection<Car> _cars;
         public virtual ICollection<Car> Cars
         {
@@ -97,7 +111,6 @@ namespace Service.Data
             }
         }
 
-        // Вычисляемое свойство для полного имени
         [NotMapped]
         public string FullName => $"{LastName} {FirstName}".Trim();
     }

@@ -8,13 +8,34 @@ namespace Service.Models
 {
     public class RepairRequestModel
     {
-        // Метод для получения всегда свежих данных
         public List<RepairRequest> GetRepairRequests()
         {
             return DbManager.GetRepairRequests();
         }
 
-        // Кэширование для производительности
+        public RepairRequest UpdateRequestStatus(int requestId, int newStatusId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var request = context.RepairRequests.Find(requestId);
+                if (request != null)
+                {
+                    var oldStatusId = request.StatusId;
+                    request.StatusId = newStatusId;
+                    context.SaveChanges();
+
+                    context.Entry(request).Reference(r => r.Car).Load();
+                    if (request.Car != null)
+                    {
+                        context.Entry(request.Car).Reference(c => c.Client).Load();
+                    }
+
+                    return request;
+                }
+            }
+            return null;
+        }
+
         private List<RepairRequest> _cachedRequests;
         private List<StatusRequest> _cachedStatuses;
 
@@ -38,16 +59,14 @@ namespace Service.Models
             _cachedStatuses = DbManager.GetRequestStatuses();
         }
 
-        // Получение статусов (всегда свежие)
         public List<StatusRequest> GetStatuses()
         {
             return DbManager.GetRequestStatuses();
         }
 
-        // Фильтрация заявок
         public List<RepairRequest> FilterRequests(string searchText, int? statusId)
         {
-            var requests = GetRepairRequests(); // Всегда свежие данные
+            var requests = GetRepairRequests();
             var filtered = requests.AsEnumerable();
 
             if (!string.IsNullOrEmpty(searchText))
@@ -58,38 +77,32 @@ namespace Service.Models
                         r.Car.Brand?.ToLower().Contains(searchText) == true ||
                         r.Car.Model?.ToLower().Contains(searchText) == true ||
                         r.Car.RegistrationNumber?.ToLower().Contains(searchText) == true)) ||
-                    r.Client?.ToLower().Contains(searchText) == true
+                    r.ClientDisplayName.ToLower().Contains(searchText)  
                 );
             }
 
             if (statusId.HasValue)
-            {
                 filtered = filtered.Where(r => r.StatusId == statusId.Value);
-            }
 
             return filtered.OrderByDescending(r => r.StartDate).ToList();
         }
 
-        // Проверка выбранного элемента
         public bool CheckSelectedItem(RepairRequest request)
         {
             return request != null;
         }
 
-        // Удаление заявки
         public void DeleteRepairRequest(RepairRequest request)
         {
             DbManager.DeleteRepairRequestById(request.Id);
-            Refresh(); // Обновляем кэш после удаления
+            Refresh(); 
         }
 
-        // Проверка наличия работ
         public bool HasWorkItems(RepairRequest request)
         {
             return DbManager.GetWorkItemsByRequestId(request.Id).Any();
         }
 
-        // Расчет общей стоимости
         public decimal CalculateTotalCost(int requestId)
         {
             var workItems = DbManager.GetWorkItemsByRequestId(requestId);

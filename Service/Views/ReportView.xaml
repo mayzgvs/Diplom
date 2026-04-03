@@ -1,16 +1,337 @@
 ﻿<UserControl x:Class="Service.Views.ReportView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignHeight="600" d:DesignWidth="800"
-             Background="Transparent">
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:Service.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="850" d:DesignWidth="1180"
+             Background="#F8F9FA">
 
-    <Grid>
-        <TextBlock Text="Страница отчётов в разработке" 
-                   FontSize="24" FontWeight="Light"
-                   HorizontalAlignment="Center" 
-                   VerticalAlignment="Center"/>
-    </Grid>
+    <UserControl.Resources>
+        <!-- Стили карточек -->
+        <Style x:Key="StatCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="12" ShadowDepth="3" Opacity="0.08" Color="#2C3E50"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="StatValueStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+        </Style>
+
+        <Style x:Key="StatLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#7F8C8D"/>
+            <Setter Property="Margin" Value="0,6,0,0"/>
+        </Style>
+
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#2C3E50"/>
+            <Setter Property="Margin" Value="5,25,0,15"/>
+        </Style>
+
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Margin" Value="6"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GreenButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="#27AE60"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#229954"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="BlueButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="#3498DB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2980B9"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="OrangeButtonStyle" TargetType="Button" BasedOn="{StaticResource ActionButtonStyle}">
+            <Setter Property="Background" Value="#E67E22"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D35400"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="25">
+        <StackPanel>
+
+            <!-- Заголовок страницы -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,30">
+                <Border Background="#E74C3C" CornerRadius="12" Width="64" Height="64" Margin="0,0,20,0">
+                    <TextBlock Text="📊" FontSize="34" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="ОТЧЁТЫ И АНАЛИТИКА" 
+                               FontSize="28" FontWeight="SemiBold" Foreground="#2C3E50"/>
+                    <TextBlock Text="Статистика и управление заказ-нарядами" 
+                               FontSize="15" Foreground="#95A5A6"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- === СТАТИСТИКА === -->
+            <TextBlock Text="Общая статистика" Style="{StaticResource SectionHeaderStyle}"/>
+
+            <WrapPanel>
+                <Border Style="{StaticResource StatCardStyle}" Width="230">
+                    <StackPanel>
+                        <TextBlock Text="🔧" FontSize="38" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding ActiveRequests}" Style="{StaticResource StatValueStyle}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Активных заявок" Style="{StaticResource StatLabelStyle}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCardStyle}" Width="230">
+                    <StackPanel>
+                        <TextBlock Text="👥" FontSize="38" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding TotalClients}" Style="{StaticResource StatValueStyle}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Всего клиентов" Style="{StaticResource StatLabelStyle}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCardStyle}" Width="230">
+                    <StackPanel>
+                        <TextBlock Text="💰" FontSize="38" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding MonthlyRevenue, StringFormat={}{0:N0} ₽}" 
+                                   Style="{StaticResource StatValueStyle}" FontSize="26" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Выручка за месяц" Style="{StaticResource StatLabelStyle}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCardStyle}" Width="230">
+                    <StackPanel>
+                        <TextBlock Text="✅" FontSize="38" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding CompletedRequests}" Style="{StaticResource StatValueStyle}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Завершённых заявок" Style="{StaticResource StatLabelStyle}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCardStyle}" Width="230">
+                    <StackPanel>
+                        <TextBlock Text="👨‍🔧" FontSize="38" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding ActiveEmployees}" Style="{StaticResource StatValueStyle}" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Активных сотрудников" Style="{StaticResource StatLabelStyle}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource StatCardStyle}" Width="230">
+                    <StackPanel>
+                        <TextBlock Text="⚙️" FontSize="38" HorizontalAlignment="Center"/>
+                        <TextBlock Text="{Binding AverageServiceCost, StringFormat={}{0:N0} ₽}" 
+                                   Style="{StaticResource StatValueStyle}" FontSize="26" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Средняя стоимость услуги" Style="{StaticResource StatLabelStyle}" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Border>
+            </WrapPanel>
+
+            <!-- Кнопки экспорта статистики + Обновить -->
+            <StackPanel Orientation="Horizontal" Margin="10,15,0,25">
+                <Button Content="📊 Экспорт статистики в Excel" 
+                        Command="{Binding ExportStatisticsToExcelCommand}"
+                        Style="{StaticResource GreenButtonStyle}"/>
+                <Button Content="📄 Экспорт статистики в Word" 
+                        Command="{Binding ExportStatisticsToWordCommand}"
+                        Style="{StaticResource BlueButtonStyle}"/>
+                <Button Content="🔄 Обновить все данные" 
+                        Command="{Binding RefreshStatisticsCommand}"
+                        Style="{StaticResource ActionButtonStyle}" Background="#34495E" Foreground="White"/>
+            </StackPanel>
+
+            <!-- Выручка за период -->
+            <TextBlock Text="Выручка за период" Style="{StaticResource SectionHeaderStyle}" Margin="5,10,0,12"/>
+
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <WrapPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
+                            <TextBlock Text="С:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="Medium"/>
+                            <DatePicker SelectedDate="{Binding StartDate}" Width="160" Height="36"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,30,0">
+                            <TextBlock Text="По:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="Medium"/>
+                            <DatePicker SelectedDate="{Binding EndDate}" Width="160" Height="36"/>
+                        </StackPanel>
+                    </WrapPanel>
+
+                    <Border Background="#F0F8F4" CornerRadius="8" Padding="18" Margin="0,18,0,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="ИТОГО ЗА ПЕРИОД:" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding PeriodRevenue, StringFormat={}{0:N2} ₽}" 
+                                       FontSize="28" FontWeight="Bold" Foreground="#27AE60" Margin="15,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <!-- === ЗАКАЗ-НАРЯД === -->
+            <TextBlock Text="Заказ-наряд" Style="{StaticResource SectionHeaderStyle}"/>
+
+            <Border Style="{StaticResource StatCardStyle}">
+                <StackPanel>
+                    <!-- Выбор автомобиля -->
+                    <TextBlock Grid.Row="0" Grid.Column="3" 
+                               Text="{Binding SelectedRepairRequest.Car.Model}" 
+                               TextTrimming="CharacterEllipsis"/>
+                    <ComboBox ItemsSource="{Binding Cars}"
+                              SelectedItem="{Binding SelectedCar}"
+                              Height="38"
+                              IsEditable="True"
+                              IsTextSearchEnabled="True">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Brand}" Width="100"/>
+                                    <TextBlock Text="{Binding Model}" Width="100" Margin="10,0"/>
+                                    <TextBlock Text="{Binding RegistrationNumber}" Foreground="#7F8C8D"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!-- Выбор заявки -->
+                    <TextBlock Text="Выберите заявку" FontWeight="SemiBold" Margin="0,18,0,8"/>
+                    <ComboBox ItemsSource="{Binding CarRepairRequests}"
+                              SelectedItem="{Binding SelectedRepairRequest}"
+                              Height="38">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="№" Margin="0,0,5,0"/>
+                                    <TextBlock Text="{Binding Id}" Width="60"/>
+                                    <TextBlock Text="{Binding StartDate, StringFormat=dd.MM.yyyy}" Width="110"/>
+                                    <TextBlock Text="{Binding StatusName}" Foreground="#27AE60" Margin="15,0,0,0"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!-- Кнопки действий -->
+                    <StackPanel Orientation="Horizontal" Margin="0,20,0,0">
+                        <Button Content="📎 Экспорт в Excel" 
+                                Command="{Binding ExportToExcelCommand}"
+                                Style="{StaticResource GreenButtonStyle}"/>
+                        <Button Content="📝 Экспорт в Word" 
+                                Command="{Binding ExportToWordCommand}"
+                                Style="{StaticResource BlueButtonStyle}"/>
+                        <Button Content="🖨️ Печать заказ-наряда" 
+                                Command="{Binding PrintWorkOrderCommand}"
+                                Style="{StaticResource OrangeButtonStyle}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Предпросмотр заказ-наряда -->
+            <TextBlock Text="Предпросмотр заказ-наряда" Style="{StaticResource SectionHeaderStyle}"/>
+
+            <Border Style="{StaticResource StatCardStyle}" Background="#FAFBFC">
+                <Border Background="White" Padding="25" CornerRadius="10" BorderBrush="#EDEDED" BorderThickness="1">
+                    <StackPanel>
+
+                        <TextBlock Text="{Binding SelectedRepairRequest.Id, StringFormat='ЗАКАЗ-НАРЯД № {0}'}"
+                                   FontSize="19" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,0,0,15"/>
+
+                        <Separator Margin="0,0,0,20" Background="#EEE"/>
+
+                        <!-- Информация о клиенте и авто -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="28"/>
+                                <RowDefinition Height="28"/>
+                                <RowDefinition Height="28"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Заказчик:" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding SelectedRepairRequest.ClientDisplayName}"/>
+
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Автомобиль:" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="0" Grid.Column="3" 
+                                       Text="{Binding SelectedRepairRequest.Car.FullName, FallbackValue='—'}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Гос. номер:" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" 
+                                       Text="{Binding SelectedRepairRequest.Car.RegistrationNumber, FallbackValue='—'}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="VIN:" FontWeight="SemiBold"/>
+                            <TextBlock Grid.Row="1" Grid.Column="3" 
+                                       Text="{Binding SelectedRepairRequest.Car.VIN, FallbackValue='—'}"/>
+                        </Grid>
+
+                        <Separator Margin="0,20,0,15"/>
+
+                        <!-- Таблица работ -->
+                        <TextBlock Text="Выполненные работы:" FontWeight="SemiBold" Margin="0,0,0,10"/>
+
+                        <DataGrid ItemsSource="{Binding WorkOrderItems}" 
+                                  AutoGenerateColumns="False" IsReadOnly="True"
+                                  BorderThickness="1" BorderBrush="#E0E0E0"
+                                  Background="White" RowHeight="34" HeadersVisibility="Column">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="№" Binding="{Binding Index}" Width="50"/>
+                                <DataGridTextColumn Header="Услуга" Binding="{Binding ServiceName}" Width="*"/>
+                                <DataGridTextColumn Header="Сотрудник" Binding="{Binding EmployeeName}" Width="180"/>
+                                <DataGridTextColumn Header="Стоимость" Binding="{Binding Cost, StringFormat={}{0:N2} ₽}" Width="130"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <!-- Итого -->
+                        <Border Background="#F8F9FA" CornerRadius="8" Padding="18" Margin="0,18,0,0">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <TextBlock Text="ИТОГО:" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding WorkOrderTotal, StringFormat={}{0:N2} ₽}" 
+                                           FontSize="18" FontWeight="Bold" Foreground="#27AE60" Margin="20,0,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                    </StackPanel>
+                </Border>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

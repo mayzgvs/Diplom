@@ -10,7 +10,6 @@ namespace Service.Utility
                 return false;
 
             // Регулярное выражение для российского госномера
-            // Формат: Б123ББ 777 или Б123ББ777
             var pattern = @"^[АВЕКМНОРСТУХ]\d{3}[АВЕКМНОРСТУХ]{2}\d{2,3}$";
             return Regex.IsMatch(plate.ToUpper(), pattern);
         }
@@ -30,7 +29,6 @@ namespace Service.Utility
             if (string.IsNullOrWhiteSpace(phone))
                 return false;
 
-            // Очищаем номер от лишних символов
             var cleaned = phone.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", "");
 
             // Проверяем формат +7XXXXXXXXXX (11 цифр после +7)
@@ -43,6 +41,23 @@ namespace Service.Utility
             if (string.IsNullOrWhiteSpace(phone))
                 return phone;
             return phone.Replace(" ", "").Replace("-", "").Replace("(", "").Replace(")", "");
+        }
+
+        public static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return false;
+
+            try
+            {
+                // Простая проверка формата email
+                var regex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+                return regex.IsMatch(email);
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

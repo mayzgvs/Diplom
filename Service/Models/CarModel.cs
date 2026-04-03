@@ -7,13 +7,11 @@ namespace Service.Models
 {
     public class CarModel
     {
-        // Метод для получения всегда свежих данных
         public List<Car> GetCars()
         {
             return DbManager.GetCars();
         }
 
-        // Кэширование для производительности
         private List<Car> _cachedCars;
 
         public List<Car> GetCachedCars()
@@ -28,7 +26,6 @@ namespace Service.Models
             _cachedCars = DbManager.GetCars();
         }
 
-        // Фильтрация автомобилей
         public List<Car> FilterCars(string searchText, string status)
         {
             var cars = GetCars();

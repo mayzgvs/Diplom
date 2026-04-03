@@ -9,14 +9,12 @@ namespace Service.Models
     {
         public void CreateEmployee(string firstName, string lastName, string contactNumber)
         {
-            // Очищаем номер телефона перед сохранением
             var cleanedPhone = ValidationHelper.CleanPhone(contactNumber);
             DbManager.CreateEmployee(firstName, lastName, cleanedPhone);
         }
 
         public void EditEmployee(int id, string firstName, string lastName, string contactNumber)
         {
-            // Очищаем номер телефона перед сохранением
             var cleanedPhone = ValidationHelper.CleanPhone(contactNumber);
             DbManager.EditEmployee(id, firstName, lastName, cleanedPhone);
         }
@@ -26,7 +24,6 @@ namespace Service.Models
             if (string.IsNullOrWhiteSpace(phone))
                 return false;
 
-            // Очищаем номер для сравнения
             var cleanedPhone = ValidationHelper.CleanPhone(phone);
             var employees = DbManager.GetEmployees();
             return employees.Any(emp =>
@@ -34,7 +31,5 @@ namespace Service.Models
                 (!excludeId.HasValue || emp.Id != excludeId.Value));
         }
 
-        // Удаляем методы IsValidPhone из этого класса
-        // Они теперь в ValidationHelper
     }
 }

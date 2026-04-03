@@ -1,7 +1,21 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Service.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="SmtpHost" Type="System.String" Scope="User">
+      <Value Profile="(Default)">smtp.yandex.ru</Value>
+    </Setting>
+    <Setting Name="SmtpPort" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">587</Value>
+    </Setting>
+    <Setting Name="SmtpEmail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">mayzgvs@yandex.ru</Value>
+    </Setting>
+    <Setting Name="SmtpPassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">eltjtlbnwmyrlwjd</Value>
+    </Setting>
+    <Setting Name="SmtpSenderName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Автосервис</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

@@ -98,7 +98,6 @@ namespace Service.ViewModels
 
             var filtered = Consumables.AsEnumerable();
 
-            // Поиск по наименованию
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
                 var lowerSearch = SearchText.Trim().ToLower();
@@ -107,7 +106,6 @@ namespace Service.ViewModels
                 );
             }
 
-            // Фильтр по категории
             if (SelectedCategory != null)
             {
                 filtered = filtered.Where(c => c.ConsumableCategoryId == SelectedCategory.Id);

@@ -1,52 +1,26 @@
-﻿using Service.Utility;
+﻿using Service.Data;
+using Service.Utility;
 using System;
-using System.Linq;
 
 namespace Service.Models
 {
     public class StatisticsModel
     {
-        // Используем другие модели вместо прямых вызовов DbManager
-        private readonly RepairRequestModel _requestModel;
-        private readonly ClientModel _clientModel;
-        private readonly EmployeeModel _employeeModel;
-        private readonly ServiceItemModel _serviceModel;
+        private readonly ClientModel _clientModel = new ClientModel();
+        private readonly EmployeeModel _employeeModel = new EmployeeModel();
+        private readonly ServiceItemModel _serviceModel = new ServiceItemModel();
 
-        public StatisticsModel()
-        {
-            _requestModel = new RepairRequestModel();
-            _clientModel = new ClientModel();
-            _employeeModel = new EmployeeModel();
-            _serviceModel = new ServiceItemModel();
-        }
-
-        public int GetActiveRequestsCount()
-        {
-            return DbManager.GetActiveRequestsCount();
-        }
-
-        public int GetTotalClientsCount()
-        {
-            return _clientModel.GetClients().Count;
-        }
+        public int GetActiveRequestsCount() => DbManager.GetActiveRequestsCount();
+        public int GetTotalClientsCount() => _clientModel.GetClients().Count;
+        public int GetCompletedRequestsCount() => DbManager.GetCompletedRequestsCount();
+        public int GetActiveEmployeesCount() => _employeeModel.GetActiveEmployeesCount();
 
         public decimal GetMonthlyRevenue()
         {
             var now = DateTime.Now;
-            var startOfMonth = new DateTime(now.Year, now.Month, 1);
-            var endOfMonth = startOfMonth.AddMonths(1).AddDays(-1);
-
-            return DbManager.GetRevenueForPeriod(startOfMonth, endOfMonth);
-        }
-
-        public int GetCompletedRequestsCount()
-        {
-            return DbManager.GetCompletedRequestsCount();
-        }
-
-        public int GetActiveEmployeesCount()
-        {
-            return _employeeModel.GetActiveEmployeesCount();
+            var start = new DateTime(now.Year, now.Month, 1);
+            var end = start.AddMonths(1).AddDays(-1);
+            return DbManager.GetRevenueForPeriod(start, end);
         }
 
         public (decimal Avg, decimal Min, decimal Max) GetServiceCostStats()
@@ -56,6 +30,11 @@ namespace Service.Models
                 _serviceModel.GetMinCost(),
                 _serviceModel.GetMaxCost()
             );
+        }
+
+        public decimal GetRevenueForPeriod(DateTime startDate, DateTime endDate)
+        {
+            return DbManager.GetRevenueForPeriod(startDate, endDate);
         }
     }
 }

@@ -14,7 +14,6 @@ namespace Service.ViewModels
         private Client _editingClient;
         private bool _isEditMode;
 
-        // Событие для уведомления об успешном сохранении
         public event EventHandler ClientSaved;
 
         public Client EditingClient
@@ -41,7 +40,6 @@ namespace Service.ViewModels
                 return;
             }
 
-            // Проверка формата телефона через ValidationHelper
             if (!string.IsNullOrWhiteSpace(EditingClient.ContactNumber))
             {
                 if (!ValidationHelper.IsValidRussianPhone(EditingClient.ContactNumber))
@@ -51,10 +49,26 @@ namespace Service.ViewModels
                     return;
                 }
 
-                // Проверка уникальности телефона
                 if (_model.PhoneExists(EditingClient.ContactNumber, _isEditMode ? EditingClient.Id : (int?)null))
                 {
                     MessageBox.Show("Клиент с таким номером телефона уже существует!",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(EditingClient.Email))
+            {
+                if (!ValidationHelper.IsValidEmail(EditingClient.Email))
+                {
+                    MessageBox.Show("Некорректный формат email!\nПример: user@example.com",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (_model.EmailExists(EditingClient.Email, _isEditMode ? EditingClient.Id : (int?)null))
+                {
+                    MessageBox.Show("Клиент с таким email уже существует!",
                         "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
@@ -64,10 +78,10 @@ namespace Service.ViewModels
             {
                 if (!_isEditMode)
                     _model.CreateClient(EditingClient.FirstName, EditingClient.LastName,
-                        EditingClient.ContactNumber, EditingClient.Discount);
+                        EditingClient.ContactNumber, EditingClient.Discount, EditingClient.Email); 
                 else
                     _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName,
-                        EditingClient.ContactNumber, EditingClient.Discount);
+                        EditingClient.ContactNumber, EditingClient.Discount, EditingClient.Email); 
 
                 ClientSaved?.Invoke(this, EventArgs.Empty);
 

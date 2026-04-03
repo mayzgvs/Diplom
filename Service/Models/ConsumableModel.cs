@@ -7,13 +7,11 @@ namespace Service.Models
 {
     public class ConsumableModel
     {
-        // Метод для получения всегда свежих данных
         public List<Consumable> GetConsumables()
         {
             return DbManager.GetConsumables();
         }
 
-        // Кэширование для производительности
         private List<Consumable> _cachedConsumables;
         private List<ConsumablesCategory> _cachedCategories;
 
@@ -37,16 +35,14 @@ namespace Service.Models
             _cachedCategories = DbManager.GetConsumableCategories();
         }
 
-        // Получение категорий (всегда свежие)
         public List<ConsumablesCategory> GetCategories()
         {
             return DbManager.GetConsumableCategories();
         }
 
-        // Фильтрация расходников
         public List<Consumable> FilterConsumables(string searchText, int? categoryId)
         {
-            var consumables = GetConsumables(); // Всегда свежие данные
+            var consumables = GetConsumables(); 
             var filtered = consumables.AsEnumerable();
 
             if (!string.IsNullOrEmpty(searchText))
@@ -65,20 +61,17 @@ namespace Service.Models
             return filtered.ToList();
         }
 
-        // Проверка выбранного элемента
         public bool CheckSelectedItem(Consumable consumable)
         {
             return consumable != null;
         }
 
-        // Удаление расходника
         public void DeleteConsumable(Consumable consumable)
         {
             DbManager.DeleteConsumableById(consumable.Id);
-            Refresh(); // Обновляем кэш после удаления
+            Refresh();
         }
 
-        // Проверка использования в работах
         public bool IsUsedInWorkItems(Consumable consumable)
         {
             return DbManager.GetWorkItemsByConsumableId(consumable.Id).Any();

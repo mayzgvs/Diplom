@@ -12,7 +12,6 @@
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
-            <!-- Минималистичный стиль для TextBox -->
             <Style TargetType="TextBox" x:Key="ModernTextBox">
                 <Setter Property="Height" Value="38"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -29,7 +28,6 @@
                 </Style.Triggers>
             </Style>
 
-            <!-- Минималистичный стиль для ComboBox -->
             <Style TargetType="ComboBox" x:Key="ModernComboBox">
                 <Setter Property="Height" Value="38"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -56,7 +54,6 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Заголовок -->
             <Border Grid.Row="0" Background="{StaticResource PrimaryDarkBrush}" CornerRadius="15,15,0,0" Padding="20,15">
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -70,7 +67,6 @@
                 </Grid>
             </Border>
 
-            <!-- Форма -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Background="White" Padding="30,25">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -125,7 +121,6 @@
                 </Grid>
             </ScrollViewer>
 
-            <!-- Кнопки -->
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Сохранить" Width="100" Height="38" Margin="5" 

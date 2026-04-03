@@ -56,8 +56,5 @@ namespace Service.Models
                 car.VIN?.Equals(vin, System.StringComparison.OrdinalIgnoreCase) == true &&
                 (!excludeId.HasValue || car.Id != excludeId.Value));
         }
-
-        // Удаляем методы IsValidRegistrationNumber и IsValidVIN из этого класса
-        // Они теперь в ValidationHelper
     }
 }

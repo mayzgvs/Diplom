@@ -17,7 +17,6 @@ namespace Service.Views
             Debug.WriteLine($"DataContext установлен: {DataContext}");
             Debug.WriteLine($"NavigateCommand: {viewModel.NavigateCommand}");
 
-            // Управление окном
             CloseButton.Click += (s, e) => Close();
             MinimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             MaximizeButton.Click += (s, e) =>

@@ -97,7 +97,6 @@ namespace Service.Data
             }
         }
 
-        // Связь с клиентом-владельцем
         private Client _client;
         [ForeignKey("OwnerId")]
         public virtual Client Client 
@@ -111,6 +110,11 @@ namespace Service.Data
                     OnPropertyChanged();
                 }
             }
+        }
+        public string DisplayName => $"{Brand} {Model} ({RegistrationNumber})".Trim();
+        public string FullName
+        {
+            get { return string.Format("{0} {1}", Brand ?? "", Model ?? "").Trim(); }
         }
     }
 }

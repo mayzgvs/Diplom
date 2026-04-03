@@ -17,7 +17,7 @@ namespace Service.Utility
             }
         }
 
-        public static void CreateClient(string firstName, string lastName, string contactNumber, int discount)
+        public static void CreateClient(string firstName, string lastName, string contactNumber, int discount, string email)
         {
             using (var context = new ApplicationContext())
             {
@@ -26,14 +26,15 @@ namespace Service.Utility
                     FirstName = firstName,
                     LastName = lastName,
                     ContactNumber = contactNumber,
-                    Discount = discount
+                    Discount = discount,
+                    Email = email 
                 };
                 context.Clients.Add(client);
                 context.SaveChanges();
             }
         }
 
-        public static void EditClient(int id, string firstName, string lastName, string contactNumber, int discount)
+        public static void EditClient(int id, string firstName, string lastName, string contactNumber, int discount, string email)
         {
             using (var context = new ApplicationContext())
             {
@@ -44,6 +45,7 @@ namespace Service.Utility
                     client.LastName = lastName;
                     client.ContactNumber = contactNumber;
                     client.Discount = discount;
+                    client.Email = email; 
                     context.SaveChanges();
                 }
             }
@@ -102,7 +104,7 @@ namespace Service.Utility
         }
 
         public static void CreateCar(string brand, string model, string registrationNumber,
-                                     string vin, int ownerId) 
+                                     string vin, int ownerId)
         {
             using (var context = new ApplicationContext())
             {
@@ -213,6 +215,7 @@ namespace Service.Utility
         #endregion
 
         #region RepairRequests
+
         public static List<RepairRequest> GetRepairRequests()
         {
             using (var context = new ApplicationContext())
@@ -224,12 +227,26 @@ namespace Service.Utility
                     .ToList();
             }
         }
-
         public static List<RepairRequest> GetRepairRequestsByCarId(int carId)
         {
-            using (var context = new ApplicationContext())
+            try
             {
-                return context.RepairRequests.Where(r => r.CarId == carId).ToList();
+                using (var context = new ApplicationContext())
+                {
+                    return context.RepairRequests
+                        .AsNoTracking()                   
+                        .Include(r => r.Car)
+                        .Include(r => r.Status)
+                        .Include(r => r.Car.Client)
+                        .Where(r => r.CarId == carId)
+                        .OrderByDescending(r => r.StartDate)
+                        .ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при получении заявок по авто: {ex.Message}");
+                return new List<RepairRequest>();
             }
         }
 
@@ -241,14 +258,14 @@ namespace Service.Utility
             }
         }
 
-        public static void CreateRepairRequest(int carId, string client, DateTime startDate, DateTime? endDate, decimal totalCost, int statusId)
+        public static void CreateRepairRequest(int carId, DateTime startDate, DateTime? endDate,
+                                               decimal totalCost, int statusId)
         {
             using (var context = new ApplicationContext())
             {
                 var request = new RepairRequest
                 {
                     CarId = carId,
-                    Client = client,
                     StartDate = startDate,
                     EndDate = endDate,
                     TotalCost = totalCost,
@@ -259,7 +276,8 @@ namespace Service.Utility
             }
         }
 
-        public static void EditRepairRequest(int id, int carId, string client, DateTime startDate, DateTime? endDate, decimal totalCost, int statusId)
+        public static void EditRepairRequest(int id, int carId, DateTime startDate, DateTime? endDate,
+                                             decimal totalCost, int statusId)
         {
             using (var context = new ApplicationContext())
             {
@@ -267,7 +285,6 @@ namespace Service.Utility
                 if (request != null)
                 {
                     request.CarId = carId;
-                    request.Client = client;
                     request.StartDate = startDate;
                     request.EndDate = endDate;
                     request.TotalCost = totalCost;
@@ -308,13 +325,33 @@ namespace Service.Utility
             }
         }
 
-        public static decimal GetRevenueForPeriod(DateTime start, DateTime end)
+        // DbManager.cs - исправленный метод (должен быть только один)
+        public static decimal GetRevenueForPeriod(DateTime startDate, DateTime endDate)
         {
             using (var context = new ApplicationContext())
             {
-                return context.RepairRequests
-                    .Where(r => r.StatusId == 3 && r.EndDate >= start && r.EndDate <= end)
-                    .Sum(r => (decimal?)r.TotalCost) ?? 0;
+                var completedRequests = context.RepairRequests
+                    .Where(r => r.StartDate >= startDate && r.StartDate <= endDate && r.StatusId == 3)
+                    .Select(r => r.Id)
+                    .ToList();
+
+                var total = context.WorkItems
+                    .Where(w => completedRequests.Contains(w.RepairRequestId))
+                    .Sum(w => (decimal?)w.Cost) ?? 0;
+
+                return total;
+            }
+        }
+        public static void UpdateRepairRequestStatus(int requestId, int statusId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var request = context.RepairRequests.Find(requestId);
+                if (request != null)
+                {
+                    request.StatusId = statusId;
+                    context.SaveChanges();
+                }
             }
         }
         #endregion
@@ -325,7 +362,7 @@ namespace Service.Utility
             using (var context = new ApplicationContext())
             {
                 return context.Services
-                               .Include(s => s.ServiceCategory)  
+                               .Include(s => s.ServiceCategory)
                                .ToList();
             }
         }
@@ -388,7 +425,7 @@ namespace Service.Utility
             using (var context = new ApplicationContext())
             {
                 return context.Consumables
-                               .Include(c => c.ConsumableCategory) 
+                               .Include(c => c.ConsumableCategory)
                                .ToList();
             }
         }
@@ -401,21 +438,22 @@ namespace Service.Utility
             }
         }
 
-        public static void CreateConsumable(string name, int categoryId)
+        public static void CreateConsumable(string name, int categoryId, decimal? cost = null)
         {
             using (var context = new ApplicationContext())
             {
                 var consumable = new Consumable
                 {
                     Name = name,
-                    ConsumableCategoryId = categoryId
+                    ConsumableCategoryId = categoryId,
+                    Cost = cost 
                 };
                 context.Consumables.Add(consumable);
                 context.SaveChanges();
             }
         }
 
-        public static void EditConsumable(int id, string name, int categoryId)
+        public static void EditConsumable(int id, string name, int categoryId, decimal? cost = null)
         {
             using (var context = new ApplicationContext())
             {
@@ -424,6 +462,7 @@ namespace Service.Utility
                 {
                     consumable.Name = name;
                     consumable.ConsumableCategoryId = categoryId;
+                    consumable.Cost = cost; 
                     context.SaveChanges();
                 }
             }
@@ -462,7 +501,13 @@ namespace Service.Utility
         {
             using (var context = new ApplicationContext())
             {
-                return context.WorkItems.Where(w => w.RepairRequestId == requestId).ToList();
+                return context.WorkItems
+                    .Include(w => w.Employee)
+                    .Include(w => w.Service)
+                    .Include(w => w.Consumable)
+                    .Include(w => w.StatusWork)
+                    .Where(w => w.RepairRequestId == requestId)
+                    .ToList();
             }
         }
 
@@ -470,7 +515,13 @@ namespace Service.Utility
         {
             using (var context = new ApplicationContext())
             {
-                return context.WorkItems.Where(w => w.EmployeeId == employeeId).ToList();
+                return context.WorkItems
+                    .Include(w => w.RepairRequest)
+                    .Include(w => w.Service)
+                    .Include(w => w.Consumable)
+                    .Include(w => w.StatusWork)
+                    .Where(w => w.EmployeeId == employeeId)
+                    .ToList();
             }
         }
 
@@ -478,7 +529,13 @@ namespace Service.Utility
         {
             using (var context = new ApplicationContext())
             {
-                return context.WorkItems.Where(w => w.ServiceId == serviceId).ToList();
+                return context.WorkItems
+                    .Include(w => w.RepairRequest)
+                    .Include(w => w.Employee)
+                    .Include(w => w.Consumable)
+                    .Include(w => w.StatusWork)
+                    .Where(w => w.ServiceId == serviceId)
+                    .ToList();
             }
         }
 
@@ -486,7 +543,13 @@ namespace Service.Utility
         {
             using (var context = new ApplicationContext())
             {
-                return context.WorkItems.Where(w => w.ConsumableId == consumableId).ToList();
+                return context.WorkItems
+                    .Include(w => w.RepairRequest)
+                    .Include(w => w.Employee)
+                    .Include(w => w.Service)
+                    .Include(w => w.StatusWork)
+                    .Where(w => w.ConsumableId == consumableId)
+                    .ToList();
             }
         }
 
@@ -498,6 +561,44 @@ namespace Service.Utility
             }
         }
 
+        public static void CreateWorkItem(int repairRequestId, int? employeeId, int? serviceId,
+            int? consumableId, decimal cost, int statusId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var workItem = new WorkItem
+                {
+                    RepairRequestId = repairRequestId,
+                    EmployeeId = employeeId,
+                    ServiceId = serviceId,
+                    ConsumableId = consumableId,
+                    Cost = cost,
+                    StatusId = statusId
+                };
+                context.WorkItems.Add(workItem);
+                context.SaveChanges();
+            }
+        }
+
+        public static void EditWorkItem(int id, int repairRequestId, int? employeeId, int? serviceId,
+            int? consumableId, decimal cost, int statusId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var workItem = context.WorkItems.Find(id);
+                if (workItem != null)
+                {
+                    workItem.RepairRequestId = repairRequestId;
+                    workItem.EmployeeId = employeeId;
+                    workItem.ServiceId = serviceId;
+                    workItem.ConsumableId = consumableId;
+                    workItem.Cost = cost;
+                    workItem.StatusId = statusId;
+                    context.SaveChanges();
+                }
+            }
+        }
+
         public static void DeleteWorkItemById(int id)
         {
             using (var context = new ApplicationContext())
@@ -506,6 +607,19 @@ namespace Service.Utility
                 if (workItem != null)
                 {
                     context.WorkItems.Remove(workItem);
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        public static void UpdateRepairRequestTotalCost(int requestId, decimal totalCost)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var request = context.RepairRequests.Find(requestId);
+                if (request != null)
+                {
+                    request.TotalCost = totalCost;
                     context.SaveChanges();
                 }
             }

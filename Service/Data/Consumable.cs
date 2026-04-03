@@ -42,6 +42,20 @@ namespace Service.Data
             }
         }
 
+        private decimal? _cost;
+        public decimal? Cost
+        {
+            get => _cost;
+            set
+            {
+                if (_cost != value)
+                {
+                    _cost = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
         private int _consumableCategoryId;
         [ForeignKey("ConsumableCategory")]
         public int ConsumableCategoryId
@@ -57,7 +71,6 @@ namespace Service.Data
             }
         }
 
-        // Связь с категорией расходников
         private ConsumablesCategory _consumableCategory;
         public virtual ConsumablesCategory ConsumableCategory
         {

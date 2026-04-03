@@ -87,7 +87,6 @@ namespace Service.ViewModels
             var window = new AddEmployeeView();
             var viewModel = new AddEmployeeViewModel();
 
-            // Подписываемся на событие сохранения
             viewModel.EmployeeSaved += OnEmployeeSaved;
 
             window.DataContext = viewModel;
@@ -99,19 +98,16 @@ namespace Service.ViewModels
             var window = new AddEmployeeView();
             var viewModel = new AddEmployeeViewModel(SelectedEmployee);
 
-            // Подписываемся на событие сохранения
             viewModel.EmployeeSaved += OnEmployeeSaved;
 
             window.DataContext = viewModel;
             window.ShowDialog();
         }
 
-        // Обработчик события сохранения сотрудника
         private void OnEmployeeSaved(object sender, EventArgs e)
         {
             LoadData();
 
-            // Отписываемся от события, чтобы избежать утечек памяти
             if (sender is AddEmployeeViewModel viewModel)
             {
                 viewModel.EmployeeSaved -= OnEmployeeSaved;

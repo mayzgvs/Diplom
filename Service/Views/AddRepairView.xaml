@@ -1,16 +1,18 @@
 ﻿<Window x:Class="Service.Views.AddRepairView"
+        xmlns:local="clr-namespace:Service.Utility"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Создание заявки на ремонт" Height="517" Width="650"
+        Title="Создание заявки на ремонт" Height="580" Width="650"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="Segoe UI">
-
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <local:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
 
             <Style TargetType="TextBox" x:Key="ModernTextBox">
                 <Setter Property="Height" Value="38"/>
@@ -27,7 +29,6 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-
             <Style TargetType="ComboBox" x:Key="ModernComboBox">
                 <Setter Property="Height" Value="38"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -43,7 +44,6 @@
                     </Trigger>
                 </Style.Triggers>
             </Style>
-
             <Style TargetType="DatePicker" x:Key="ModernDatePicker">
                 <Setter Property="Height" Value="38"/>
                 <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -85,6 +85,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
@@ -97,16 +99,16 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <ComboBox Grid.Column="0" 
+                        <ComboBox Grid.Column="0"
                                   Style="{StaticResource ModernComboBox}"
                                   ItemsSource="{Binding Cars}"
                                   SelectedValue="{Binding EditingRepairRequest.CarId, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedValuePath="Id"
                                   DisplayMemberPath="RegistrationNumber"/>
-                        <Button Grid.Column="1" 
-                                Content="+" 
-                                Width="38" 
-                                Height="38" 
+                        <Button Grid.Column="1"
+                                Content="+"
+                                Width="38"
+                                Height="38"
                                 Margin="8,5,5,5"
                                 Command="{Binding AddNewCarCommand}"
                                 Background="#27AE60"
@@ -118,38 +120,65 @@
                     </Grid>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Клиент" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingRepairRequest.Client, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Style="{StaticResource ModernTextBox}"
+                             Text="{Binding ClientName}"
+                             IsReadOnly="True"
+                             Background="#F8F9FA"
+                             IsEnabled="False"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Дата начала" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <DatePicker Grid.Row="2" Grid.Column="1" 
+                    <DatePicker Grid.Row="2" Grid.Column="1"
                                 Style="{StaticResource ModernDatePicker}"
                                 SelectedDate="{Binding EditingRepairRequest.StartDate}"
                                 Margin="5" Height="38"/>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Статус" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <ComboBox Grid.Row="3" Grid.Column="1" 
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Дата окончания" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
+                    <DatePicker Grid.Row="3" Grid.Column="1"
+                                Style="{StaticResource ModernDatePicker}"
+                                SelectedDate="{Binding EditingRepairRequest.EndDate}"
+                                Margin="5" Height="38"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="1"
+                               Text="{Binding DateError}"
+                               Foreground="Red"
+                               FontSize="12"
+                               Margin="5,2,5,10"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding DateError, 
+                                            Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Услуга" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
+                    <ComboBox Grid.Row="5" Grid.Column="1"
+                              Style="{StaticResource ModernComboBox}"
+                              ItemsSource="{Binding Services}"
+                              SelectedItem="{Binding SelectedService, Mode=TwoWay}"
+                              DisplayMemberPath="Name"/>
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Стоимость" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
+                    <TextBox Grid.Row="6" Grid.Column="1" 
+                             Style="{StaticResource ModernTextBox}" 
+                             Text="{Binding EditingRepairRequest.TotalCost, StringFormat={}{0:N0} ₽}"
+                             IsReadOnly="True"
+                             Background="#F8F9FA"
+                             IsEnabled="False"/>
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Статус" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
+                    <ComboBox Grid.Row="7" Grid.Column="1"
                               Style="{StaticResource ModernComboBox}"
                               ItemsSource="{Binding Statuses}"
                               SelectedValue="{Binding EditingRepairRequest.StatusId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
                               DisplayMemberPath="Name"/>
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Стоимость" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingRepairRequest.TotalCost, UpdateSourceTrigger=PropertyChanged}"/>
-
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Дата окончания" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <DatePicker Grid.Row="5" Grid.Column="1" 
-                                Style="{StaticResource ModernDatePicker}"
-                                SelectedDate="{Binding EditingRepairRequest.EndDate}"
-                                Margin="5" Height="38"/>
                 </Grid>
             </ScrollViewer>
 
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Сохранить" Width="100" Height="38" Margin="5" 
+                    <Button Content="Сохранить" Width="100" Height="38" Margin="5"
                             Command="{Binding SaveCommand}"
-                            Background="#27AE60" 
+                            Background="#27AE60"
                             Foreground="White"
                             FontSize="13"
                             Cursor="Hand"/>

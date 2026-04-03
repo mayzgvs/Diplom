@@ -8,10 +8,8 @@ namespace Service.ViewModels
 {
     public class MainWindowViewModel : BaseViewModel
     {
-        // Свойство для доступа к навигации
         public NavigationViewModel Navigation { get; }
 
-        // Текущая дата и время
         private string _currentDate;
         public string CurrentDate
         {
@@ -34,19 +32,16 @@ namespace Service.ViewModels
             }
         }
 
-        // Команда для навигации (прокси к навигации)
         public ICommand NavigateCommand => Navigation?.NavigateToCommand;
 
         private readonly DispatcherTimer _timer;
 
         public MainWindowViewModel()
         {
-            // Инициализируем навигацию
             Navigation = new NavigationViewModel();
 
             Debug.WriteLine("MainWindowViewModel created");
 
-            // Таймер для даты/времени
             _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
             _timer.Tick += (s, e) => UpdateDateTime();
             _timer.Start();

@@ -19,14 +19,14 @@ namespace Service.Models
             return _categories;
         }
 
-        public void CreateConsumable(string name, int categoryId)
+        public void CreateConsumable(string name, int categoryId, decimal? cost = null)
         {
-            DbManager.CreateConsumable(name, categoryId);
+            DbManager.CreateConsumable(name, categoryId, cost);
         }
 
-        public void EditConsumable(int id, string name, int categoryId)
+        public void EditConsumable(int id, string name, int categoryId, decimal? cost = null)
         {
-            DbManager.EditConsumable(id, name, categoryId);
+            DbManager.EditConsumable(id, name, categoryId, cost);
         }
 
         public bool ConsumableNameExistsInCategory(string name, int categoryId, int? excludeId = null)

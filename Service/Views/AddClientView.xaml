@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Service.Views.AddClient"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Добавление клиента" Height="407" Width="520"
+        Title="Добавление клиента" Height="467" Width="520"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="Segoe UI">
@@ -58,6 +58,8 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Добавили строку -->
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="120"/>
@@ -73,8 +75,11 @@
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Телефон" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingClient.ContactNumber, UpdateSourceTrigger=PropertyChanged}"/>
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Скидка (%)" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingClient.Discount, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Email" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
+                    <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingClient.Email, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Скидка (%)" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
+                    <TextBox Grid.Row="4" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingClient.Discount, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </ScrollViewer>
 

@@ -216,4 +216,8 @@
         <Setter Property="Margin" Value="0,10,0,0"/>
     </Style>
 
+    <!-- В ResourceDictionary Style.xaml добавьте: -->
+    <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    <BooleanToVisibilityConverter x:Key="NullToVisibilityConverter" x:Name="NullToVisibilityConverter"/>
+
 </ResourceDictionary>

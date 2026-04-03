@@ -8,13 +8,11 @@ namespace Service.Models
 {
     public class ServiceItemModel
     {
-        // Метод для получения всегда свежих данных
         public List<ServiceModel> GetServices()
         {
             return DbManager.GetServices();
         }
 
-        // Кэширование для производительности
         private List<ServiceModel> _cachedServices;
         private List<ServiceCategory> _cachedCategories;
 
@@ -38,16 +36,14 @@ namespace Service.Models
             _cachedCategories = DbManager.GetServiceCategories();
         }
 
-        // Получение категорий (всегда свежие)
         public List<ServiceCategory> GetCategories()
         {
             return DbManager.GetServiceCategories();
         }
 
-        // Фильтрация услуг
         public List<ServiceModel> FilterServices(string searchText, int? categoryId)
         {
-            var services = GetServices(); // Всегда свежие данные
+            var services = GetServices(); 
             var filtered = services.AsEnumerable();
 
             if (!string.IsNullOrEmpty(searchText))
@@ -66,26 +62,22 @@ namespace Service.Models
             return filtered.ToList();
         }
 
-        // Проверка выбранного элемента
         public bool CheckSelectedItem(ServiceModel service)
         {
             return service != null;
         }
 
-        // Удаление услуги
         public void DeleteService(ServiceModel service)
         {
             DbManager.DeleteServiceById(service.Id);
-            Refresh(); // Обновляем кэш после удаления
+            Refresh(); 
         }
 
-        // Проверка использования в работах
         public bool IsUsedInWorkItems(ServiceModel service)
         {
             return DbManager.GetWorkItemsByServiceId(service.Id).Any();
         }
 
-        // Статистика
         public decimal GetAverageCost()
         {
             var services = GetServices();
