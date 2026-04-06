@@ -11,47 +11,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <local:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
-
-            <Style TargetType="TextBox" x:Key="ModernTextBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#1ABC9C"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-            <Style TargetType="ComboBox" x:Key="ModernComboBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#1ABC9C"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-            <Style TargetType="DatePicker" x:Key="ModernDatePicker">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -100,11 +59,12 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <ComboBox Grid.Column="0"
-                                  Style="{StaticResource ModernComboBox}"
+                                  Style="{StaticResource WatermarkComboBoxGreen}"
                                   ItemsSource="{Binding Cars}"
                                   SelectedValue="{Binding EditingRepairRequest.CarId, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedValuePath="Id"
-                                  DisplayMemberPath="RegistrationNumber"/>
+                                  DisplayMemberPath="RegistrationNumber"
+                                  Tag="Выберите автомобиль"/>
                         <Button Grid.Column="1"
                                 Content="+"
                                 Width="38"
@@ -116,12 +76,13 @@
                                 FontSize="16"
                                 FontWeight="Bold"
                                 BorderThickness="0"
-                                Cursor="Hand"/>
+                                Cursor="Hand"
+                                ToolTip="Добавить новый автомобиль"/>
                     </Grid>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Клиент" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <TextBox Grid.Row="1" Grid.Column="1"
-                             Style="{StaticResource ModernTextBox}"
+                             Style="{StaticResource ModernTextBoxGreen}"
                              Text="{Binding ClientName}"
                              IsReadOnly="True"
                              Background="#F8F9FA"
@@ -129,13 +90,13 @@
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Дата начала" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <DatePicker Grid.Row="2" Grid.Column="1"
-                                Style="{StaticResource ModernDatePicker}"
+                                Style="{StaticResource ModernDatePickerGreen}"
                                 SelectedDate="{Binding EditingRepairRequest.StartDate}"
                                 Margin="5" Height="38"/>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Дата окончания" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <DatePicker Grid.Row="3" Grid.Column="1"
-                                Style="{StaticResource ModernDatePicker}"
+                                Style="{StaticResource ModernDatePickerGreen}"
                                 SelectedDate="{Binding EditingRepairRequest.EndDate}"
                                 Margin="5" Height="38"/>
 
@@ -145,19 +106,19 @@
                                FontSize="12"
                                Margin="5,2,5,10"
                                TextWrapping="Wrap"
-                               Visibility="{Binding DateError, 
-                                            Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
+                               Visibility="{Binding DateError, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
 
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="Услуга" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <ComboBox Grid.Row="5" Grid.Column="1"
-                              Style="{StaticResource ModernComboBox}"
+                              Style="{StaticResource WatermarkComboBoxGreen}"
                               ItemsSource="{Binding Services}"
                               SelectedItem="{Binding SelectedService, Mode=TwoWay}"
-                              DisplayMemberPath="Name"/>
+                              DisplayMemberPath="Name"
+                              Tag="Выберите услугу"/>
 
                     <TextBlock Grid.Row="6" Grid.Column="0" Text="Стоимость" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="6" Grid.Column="1" 
-                             Style="{StaticResource ModernTextBox}" 
+                    <TextBox Grid.Row="6" Grid.Column="1"
+                             Style="{StaticResource ModernTextBoxGreen}"
                              Text="{Binding EditingRepairRequest.TotalCost, StringFormat={}{0:N0} ₽}"
                              IsReadOnly="True"
                              Background="#F8F9FA"
@@ -165,12 +126,12 @@
 
                     <TextBlock Grid.Row="7" Grid.Column="0" Text="Статус" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <ComboBox Grid.Row="7" Grid.Column="1"
-                              Style="{StaticResource ModernComboBox}"
+                              Style="{StaticResource WatermarkComboBoxGreen}"
                               ItemsSource="{Binding Statuses}"
                               SelectedValue="{Binding EditingRepairRequest.StatusId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
-                              DisplayMemberPath="Name"/>
-
+                              DisplayMemberPath="Name"
+                              Tag="Выберите статус заявки"/>
                 </Grid>
             </ScrollViewer>
 

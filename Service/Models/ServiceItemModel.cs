@@ -16,20 +16,6 @@ namespace Service.Models
         private List<ServiceModel> _cachedServices;
         private List<ServiceCategory> _cachedCategories;
 
-        public List<ServiceModel> GetCachedServices()
-        {
-            if (_cachedServices == null)
-                _cachedServices = DbManager.GetServices();
-            return _cachedServices;
-        }
-
-        public List<ServiceCategory> GetCachedCategories()
-        {
-            if (_cachedCategories == null)
-                _cachedCategories = DbManager.GetServiceCategories();
-            return _cachedCategories;
-        }
-
         public void Refresh()
         {
             _cachedServices = DbManager.GetServices();
@@ -41,41 +27,10 @@ namespace Service.Models
             return DbManager.GetServiceCategories();
         }
 
-        public List<ServiceModel> FilterServices(string searchText, int? categoryId)
-        {
-            var services = GetServices(); 
-            var filtered = services.AsEnumerable();
-
-            if (!string.IsNullOrEmpty(searchText))
-            {
-                searchText = searchText.ToLower();
-                filtered = filtered.Where(s =>
-                    s.Name?.ToLower().Contains(searchText) == true
-                );
-            }
-
-            if (categoryId.HasValue)
-            {
-                filtered = filtered.Where(s => s.ServiceCategoryId == categoryId.Value);
-            }
-
-            return filtered.ToList();
-        }
-
-        public bool CheckSelectedItem(ServiceModel service)
-        {
-            return service != null;
-        }
-
         public void DeleteService(ServiceModel service)
         {
             DbManager.DeleteServiceById(service.Id);
             Refresh(); 
-        }
-
-        public bool IsUsedInWorkItems(ServiceModel service)
-        {
-            return DbManager.GetWorkItemsByServiceId(service.Id).Any();
         }
 
         public decimal GetAverageCost()

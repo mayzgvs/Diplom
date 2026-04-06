@@ -69,7 +69,6 @@ namespace Service.Data
             }
         }
 
-        // Вычисляемое свойство для полного имени
         [NotMapped]
         public string FullName => $"{LastName} {FirstName}".Trim();
     }

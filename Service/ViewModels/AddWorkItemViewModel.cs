@@ -32,42 +32,68 @@ namespace Service.ViewModels
         public bool IsServiceSelected
         {
             get => _isServiceSelected;
-            set { _isServiceSelected = value; OnPropertyChanged(); CalculateTotalCost(); }
+            set
+            {
+                _isServiceSelected = value;
+                OnPropertyChanged();
+                CalculateTotalCost();
+                ForceUpdateCommand();
+                if (!value) SelectedService = null;
+            }
         }
 
         private bool _isConsumableSelected;
         public bool IsConsumableSelected
         {
             get => _isConsumableSelected;
-            set { _isConsumableSelected = value; OnPropertyChanged(); CalculateTotalCost(); }
+            set
+            {
+                _isConsumableSelected = value;
+                OnPropertyChanged();
+                CalculateTotalCost();
+                ForceUpdateCommand();
+                if (!value) SelectedConsumable = null;
+            }
         }
 
         private Data.Service _selectedService;
         public Data.Service SelectedService
         {
             get => _selectedService;
-            set { _selectedService = value; OnPropertyChanged(); CalculateTotalCost(); }
+            set
+            {
+                _selectedService = value;
+                OnPropertyChanged();
+                CalculateTotalCost();
+                ForceUpdateCommand();
+            }
         }
 
         private Consumable _selectedConsumable;
         public Consumable SelectedConsumable
         {
             get => _selectedConsumable;
-            set { _selectedConsumable = value; OnPropertyChanged(); CalculateTotalCost(); }
+            set
+            {
+                _selectedConsumable = value;
+                OnPropertyChanged();
+                CalculateTotalCost();
+                ForceUpdateCommand();
+            }
         }
 
         private Employee _selectedEmployee;
         public Employee SelectedEmployee
         {
             get => _selectedEmployee;
-            set { _selectedEmployee = value; OnPropertyChanged(); }
+            set { _selectedEmployee = value; OnPropertyChanged(); ForceUpdateCommand(); }
         }
 
         private StatusWork _selectedStatus;
         public StatusWork SelectedStatus
         {
             get => _selectedStatus;
-            set { _selectedStatus = value; OnPropertyChanged(); }
+            set { _selectedStatus = value; OnPropertyChanged(); ForceUpdateCommand(); }
         }
 
         private string _cost = "0";
@@ -78,6 +104,7 @@ namespace Service.ViewModels
             {
                 _cost = value;
                 OnPropertyChanged();
+                ForceUpdateCommand();
             }
         }
 
@@ -88,7 +115,15 @@ namespace Service.ViewModels
             set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
         }
 
+        private string _successMessage;
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+        }
+
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
 
         public ICommand SaveCommand { get; }
 
@@ -101,6 +136,19 @@ namespace Service.ViewModels
             InitializeValues();
 
             SaveCommand = new RelayCommand(Save, CanSave);
+
+            PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(IsServiceSelected) ||
+                    e.PropertyName == nameof(IsConsumableSelected) ||
+                    e.PropertyName == nameof(SelectedService) ||
+                    e.PropertyName == nameof(SelectedConsumable) ||
+                    e.PropertyName == nameof(SelectedEmployee) ||
+                    e.PropertyName == nameof(SelectedStatus))
+                {
+                    CommandManager.InvalidateRequerySuggested();
+                }
+            };
         }
 
         private void LoadData()
@@ -154,13 +202,19 @@ namespace Service.ViewModels
 
         private bool CanSave(object parameter)
         {
-            return (IsServiceSelected || IsConsumableSelected) &&
-                   SelectedEmployee != null &&
-                   SelectedStatus != null;
+            bool hasWorkType = IsServiceSelected || IsConsumableSelected;
+            if (IsServiceSelected && SelectedService == null)
+                return false;
+            if (IsConsumableSelected && SelectedConsumable == null)
+                return false;
+            return hasWorkType && SelectedEmployee != null && SelectedStatus != null;
         }
 
-        private void Save(object parameter)
+        private async void Save(object parameter)
         {
+            ErrorMessage = "";
+            SuccessMessage = "";
+
             if (!CanSave(parameter))
             {
                 ErrorMessage = "Выберите услугу/расходник, сотрудника и статус!";
@@ -182,14 +236,18 @@ namespace Service.ViewModels
                 {
                     _model.CreateWorkItem(_repairRequest.Id, SelectedEmployee?.Id,
                         serviceId, consumableId, costValue, SelectedStatus.Id);
+                    SuccessMessage = "Работа успешно добавлена!";
                 }
                 else
                 {
                     _model.EditWorkItem(_editingWorkItem.Id, _repairRequest.Id, SelectedEmployee?.Id,
                         serviceId, consumableId, costValue, SelectedStatus.Id);
+                    SuccessMessage = "Работа успешно обновлена!";
                 }
 
                 WorkItemSaved?.Invoke(this, EventArgs.Empty);
+
+                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                 {
@@ -201,6 +259,11 @@ namespace Service.ViewModels
             {
                 ErrorMessage = $"Ошибка сохранения: {ex.Message}";
             }
+        }
+
+        private void ForceUpdateCommand()
+        {
+            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

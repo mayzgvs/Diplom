@@ -5,28 +5,11 @@
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="Segoe UI">
-
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <Style TargetType="TextBox" x:Key="ModernTextBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#1ABC9C"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -64,19 +47,28 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Фамилия" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingEmployee.LastName, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Style="{StaticResource WatermarkTextBoxTeal}"
+                             Text="{Binding EditingEmployee.LastName, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="Введите фамилию (например: Петров)"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Имя" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingEmployee.FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Style="{StaticResource WatermarkTextBoxTeal}"
+                             Text="{Binding EditingEmployee.FirstName, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="Введите имя (например: Иван)"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Телефон" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingEmployee.ContactNumber, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="2" Grid.Column="1"
+                             Style="{StaticResource WatermarkTextBoxTeal}"
+                             Text="{Binding EditingEmployee.ContactNumber, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="Формат: +7 (999) 123-45-67"/>
                 </Grid>
             </ScrollViewer>
 
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Сохранить" Width="100" Height="38" Margin="5" 
+                    <Button Content="Сохранить" Width="100" Height="38" Margin="5"
                             Command="{Binding SaveCommand}"
                             Background="#1ABC9C"
                             Foreground="White"

@@ -55,20 +55,6 @@ namespace Service.Data
             }
         }
 
-        private int _discount;
-        public int Discount
-        {
-            get => _discount;
-            set
-            {
-                if (_discount != value)
-                {
-                    _discount = value;
-                    OnPropertyChanged();
-                }
-            }
-        }
-
         private string _contactNumber;
         public string ContactNumber
         {

@@ -29,14 +29,5 @@ namespace Service.Models
         {
             DbManager.EditService(id, name, cost, categoryId);
         }
-
-        public bool ServiceNameExistsInCategory(string name, int categoryId, int? excludeId = null)
-        {
-            var services = DbManager.GetServices();
-            return services.Any(s =>
-                s.Name?.Equals(name, System.StringComparison.OrdinalIgnoreCase) == true &&
-                s.ServiceCategoryId == categoryId &&
-                (!excludeId.HasValue || s.Id != excludeId.Value));
-        }
     }
 }

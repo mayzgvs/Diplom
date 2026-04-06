@@ -7,16 +7,16 @@ namespace Service.Models
 {
     public class ClientAddEditModel
     {
-        public void CreateClient(string firstName, string lastName, string contactNumber, int discount, string email) 
+        public void CreateClient(string firstName, string lastName, string contactNumber, string email)
         {
             var cleanedPhone = ValidationHelper.CleanPhone(contactNumber);
-            DbManager.CreateClient(firstName, lastName, cleanedPhone, discount, email); 
+            DbManager.CreateClient(firstName, lastName, cleanedPhone, email);
         }
 
-        public void EditClient(int id, string firstName, string lastName, string contactNumber, int discount, string email) 
+        public void EditClient(int id, string firstName, string lastName, string contactNumber, string email)
         {
             var cleanedPhone = ValidationHelper.CleanPhone(contactNumber);
-            DbManager.EditClient(id, firstName, lastName, cleanedPhone, discount, email); 
+            DbManager.EditClient(id, firstName, lastName, cleanedPhone, email);
         }
 
         public bool PhoneExists(string phone, int? excludeId = null)

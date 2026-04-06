@@ -1,48 +1,16 @@
 ﻿<Window x:Class="Service.Views.AddCarView"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Добавление автомобиля" Height="464" Width="580"
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="Segoe UI">
-
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <Style TargetType="TextBox" x:Key="ModernTextBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#1ABC9C"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="ComboBox" x:Key="ModernComboBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#1ABC9C"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -82,16 +50,28 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Марка" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingCar.Brand, UpdateSourceTrigger=PropertyChanged}"/>
+                    <xctk:WatermarkTextBox Grid.Row="0" Grid.Column="1"
+                                           Style="{StaticResource ModernWatermarkTextBox}"
+                                           Text="{Binding EditingCar.Brand, UpdateSourceTrigger=PropertyChanged}"
+                                           Watermark="Например: Toyota, BMW, Mercedes"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Модель" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingCar.Model, UpdateSourceTrigger=PropertyChanged}"/>
+                    <xctk:WatermarkTextBox Grid.Row="1" Grid.Column="1"
+                                           Style="{StaticResource ModernWatermarkTextBox}"
+                                           Text="{Binding EditingCar.Model, UpdateSourceTrigger=PropertyChanged}"
+                                           Watermark="Например: Camry, X5, C-Class"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Рег. номер" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingCar.RegistrationNumber, UpdateSourceTrigger=PropertyChanged}"/>
+                    <xctk:WatermarkTextBox Grid.Row="2" Grid.Column="1"
+                                           Style="{StaticResource ModernWatermarkTextBox}"
+                                           Text="{Binding EditingCar.RegistrationNumber, UpdateSourceTrigger=PropertyChanged}"
+                                           Watermark="Формат: А123ВС 777"/>
 
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="VIN" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="3" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingCar.VIN, UpdateSourceTrigger=PropertyChanged}"/>
+                    <xctk:WatermarkTextBox Grid.Row="3" Grid.Column="1"
+                                           Style="{StaticResource ModernWatermarkTextBox}"
+                                           Text="{Binding EditingCar.VIN, UpdateSourceTrigger=PropertyChanged}"
+                                           Watermark="17 символов: JHMCM56557C404458"/>
 
                     <TextBlock Grid.Row="4" Grid.Column="0" Text="Владелец" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <Grid Grid.Row="4" Grid.Column="1" Margin="5">
@@ -99,16 +79,18 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <ComboBox Grid.Column="0" 
-                                  Style="{StaticResource ModernComboBox}"
-                                  ItemsSource="{Binding Clients}"
-                                  SelectedValue="{Binding EditingCar.OwnerId, UpdateSourceTrigger=PropertyChanged}"
-                                  SelectedValuePath="Id"
-                                  DisplayMemberPath="FullName" Margin="0,5,5,5"/>
-                        <Button Grid.Column="1" 
-                                Content="+" 
-                                Width="38" 
-                                Height="38" 
+                        <xctk:WatermarkComboBox Grid.Column="0"
+                                                Style="{StaticResource ModernWatermarkComboBox}"
+                                                ItemsSource="{Binding Clients}"
+                                                SelectedValue="{Binding EditingCar.OwnerId, UpdateSourceTrigger=PropertyChanged}"
+                                                SelectedValuePath="Id"
+                                                DisplayMemberPath="FullName"
+                                                Watermark="Выберите владельца из списка"
+                                                Margin="0,5,5,5"/>
+                        <Button Grid.Column="1"
+                                Content="+"
+                                Width="38"
+                                Height="38"
                                 Margin="8,5,5,5"
                                 Command="{Binding AddNewClientCommand}"
                                 Background="{StaticResource TealBrush}"
@@ -116,16 +98,17 @@
                                 FontSize="16"
                                 FontWeight="Bold"
                                 BorderThickness="0"
-                                Cursor="Hand"/>
+                                Cursor="Hand"
+                                ToolTip="Добавить нового владельца"/>
                     </Grid>
                 </Grid>
             </ScrollViewer>
 
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Сохранить" Width="100" Height="38" Margin="5" 
+                    <Button Content="Сохранить" Width="100" Height="38" Margin="5"
                             Command="{Binding SaveCommand}"
-                            Background="#1ABC9C" 
+                            Background="#1ABC9C"
                             Foreground="White"
                             FontSize="13"
                             Cursor="Hand"/>

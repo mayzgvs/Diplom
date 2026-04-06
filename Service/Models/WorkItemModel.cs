@@ -33,38 +33,6 @@ namespace Service.Models
             return DbManager.GetWorkItemsByRequestId(requestId);
         }
 
-        public List<Employee> GetEmployees()
-        {
-            return DbManager.GetEmployees();
-        }
-
-        public List<Data.Service> GetServices()
-        {
-            return DbManager.GetServices();
-        }
-
-        public List<Consumable> GetConsumables()
-        {
-            return DbManager.GetConsumables();
-        }
-
-        public List<StatusWork> GetWorkStatuses()
-        {
-            return DbManager.GetWorkStatuses();
-        }
-
-        public void CreateWorkItem(int repairRequestId, int? employeeId, int? serviceId,
-            int? consumableId, decimal cost, int statusId)
-        {
-            DbManager.CreateWorkItem(repairRequestId, employeeId, serviceId, consumableId, cost, statusId);
-        }
-
-        public void EditWorkItem(int id, int repairRequestId, int? employeeId, int? serviceId,
-            int? consumableId, decimal cost, int statusId)
-        {
-            DbManager.EditWorkItem(id, repairRequestId, employeeId, serviceId, consumableId, cost, statusId);
-        }
-
         public void DeleteWorkItem(WorkItem workItem)
         {
             DbManager.DeleteWorkItemById(workItem.Id);

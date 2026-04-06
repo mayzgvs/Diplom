@@ -2,7 +2,6 @@
 using Service.Models;
 using Service.Utility;
 using System;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
@@ -25,18 +24,37 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-
-        private void Save(object parameter)
+        private string _errorMessage;
+        public string ErrorMessage
         {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+
+        private string _successMessage;
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+        }
+
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
+
+        private async void Save(object parameter)
+        {
+            ErrorMessage = "";
+            SuccessMessage = "";
+
             if (string.IsNullOrWhiteSpace(EditingEmployee.LastName))
             {
-                MessageBox.Show("Введите фамилию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Введите фамилию!";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
             {
-                MessageBox.Show("Введите имя!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Введите имя!";
                 return;
             }
 
@@ -44,15 +62,13 @@ namespace Service.ViewModels
             {
                 if (!ValidationHelper.IsValidRussianPhone(EditingEmployee.ContactNumber))
                 {
-                    MessageBox.Show("Некорректный формат номера телефона!\nФормат: +7XXXXXXXXXX (10 цифр после +7)",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Некорректный формат номера телефона!\nФормат: +7XXXXXXXXXX (10 цифр после +7)";
                     return;
                 }
 
                 if (_model.PhoneExists(EditingEmployee.ContactNumber, _isEditMode ? EditingEmployee.Id : (int?)null))
                 {
-                    MessageBox.Show("Сотрудник с таким номером телефона уже существует!",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Сотрудник с таким номером телефона уже существует!";
                     return;
                 }
             }
@@ -66,17 +82,20 @@ namespace Service.ViewModels
                     _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName,
                         EditingEmployee.ContactNumber);
 
+                SuccessMessage = _isEditMode ? "Сотрудник успешно обновлен!" : "Сотрудник успешно добавлен!";
                 EmployeeSaved?.Invoke(this, EventArgs.Empty);
+
+                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
             }
         }
+
         public AddEmployeeViewModel(Employee employee = null)
         {
             if (employee == null)

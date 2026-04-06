@@ -27,38 +27,65 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+
+        private string _successMessage;
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+        }
+
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
 
         private void LoadCategories()
         {
             ServiceCategories = new ObservableCollection<ServiceCategory>(_model.GetCategories());
         }
 
-        private void Save(object parameter)
+        private async void Save(object parameter)
         {
+            ErrorMessage = "";
+            SuccessMessage = "";
+
             if (string.IsNullOrWhiteSpace(EditingService.Name) || EditingService.ServiceCategoryId == 0)
             {
-                MessageBox.Show("Заполните название и категорию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Заполните название и категорию!";
                 return;
             }
 
             try
             {
                 if (!_isEditMode)
+                {
                     _model.CreateService(EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
+                    SuccessMessage = "Услуга успешно добавлена!";
+                }
                 else
+                {
                     _model.EditService(EditingService.Id, EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
+                    SuccessMessage = "Услуга успешно обновлена!";
+                }
 
                 ServiceSaved?.Invoke(this, EventArgs.Empty);
+
+                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
             }
         }
+
         public AddServiceViewModel(ServiceModel service = null)
         {
             LoadCategories();

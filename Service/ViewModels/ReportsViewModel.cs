@@ -163,10 +163,8 @@ namespace Service.ViewModels
 
             var items = _workItemModel.GetWorkItemsByRequestId(SelectedRepairRequest.Id);
 
-            int index = 1;
             foreach (var item in items)
-            {
-                item.Index = index++;           // Если Index уже есть в WorkItem — оставит, иначе ошибка компиляции
+            {       // Если Index уже есть в WorkItem — оставит, иначе ошибка компиляции
                 WorkOrderItems.Add(item);
             }
 
@@ -248,7 +246,6 @@ namespace Service.ViewModels
 
                     foreach (var item in WorkOrderItems)
                     {
-                        ws.Cells[row, 1].Value = item.Index;
                         ws.Cells[row, 2].Value = item.ServiceName;
                         ws.Cells[row, 3].Value = item.EmployeeName;
                         ws.Cells[row, 4].Value = item.Cost;

@@ -2,7 +2,6 @@
 using Service.Models;
 using Service.Utility;
 using System;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
@@ -25,18 +24,37 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-
-        private void Save(object parameter)
+        private string _errorMessage;
+        public string ErrorMessage
         {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+
+        private string _successMessage;
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+        }
+
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
+
+        private async void Save(object parameter)
+        {
+            ErrorMessage = "";
+            SuccessMessage = "";
+
             if (string.IsNullOrWhiteSpace(EditingClient.LastName))
             {
-                MessageBox.Show("Введите фамилию!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Введите фамилию!";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(EditingClient.FirstName))
             {
-                MessageBox.Show("Введите имя!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Введите имя!";
                 return;
             }
 
@@ -44,15 +62,13 @@ namespace Service.ViewModels
             {
                 if (!ValidationHelper.IsValidRussianPhone(EditingClient.ContactNumber))
                 {
-                    MessageBox.Show("Некорректный формат номера телефона!\nФормат: +7XXXXXXXXXX (10 цифр после +7)",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Некорректный формат номера телефона!\nФормат: +7XXXXXXXXXX (10 цифр после +7)";
                     return;
                 }
 
                 if (_model.PhoneExists(EditingClient.ContactNumber, _isEditMode ? EditingClient.Id : (int?)null))
                 {
-                    MessageBox.Show("Клиент с таким номером телефона уже существует!",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Клиент с таким номером телефона уже существует!";
                     return;
                 }
             }
@@ -61,15 +77,13 @@ namespace Service.ViewModels
             {
                 if (!ValidationHelper.IsValidEmail(EditingClient.Email))
                 {
-                    MessageBox.Show("Некорректный формат email!\nПример: user@example.com",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Некорректный формат email!\nПример: user@example.com";
                     return;
                 }
 
                 if (_model.EmailExists(EditingClient.Email, _isEditMode ? EditingClient.Id : (int?)null))
                 {
-                    MessageBox.Show("Клиент с таким email уже существует!",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Клиент с таким email уже существует!";
                     return;
                 }
             }
@@ -78,20 +92,22 @@ namespace Service.ViewModels
             {
                 if (!_isEditMode)
                     _model.CreateClient(EditingClient.FirstName, EditingClient.LastName,
-                        EditingClient.ContactNumber, EditingClient.Discount, EditingClient.Email); 
+                        EditingClient.ContactNumber, EditingClient.Email);
                 else
                     _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName,
-                        EditingClient.ContactNumber, EditingClient.Discount, EditingClient.Email); 
+                        EditingClient.ContactNumber, EditingClient.Email);
 
+                SuccessMessage = _isEditMode ? "Клиент успешно обновлен!" : "Клиент успешно добавлен!";
                 ClientSaved?.Invoke(this, EventArgs.Empty);
+
+                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
             }
         }
 
@@ -100,7 +116,7 @@ namespace Service.ViewModels
             if (client == null)
             {
                 _isEditMode = false;
-                EditingClient = new Client { Discount = 0 };
+                EditingClient = new Client();
             }
             else
             {

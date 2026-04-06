@@ -20,12 +20,6 @@ namespace Service.Models
         public List<Car> GetCars() => _cars;
         public List<StatusRequest> GetStatuses() => _statuses;
 
-        public string GetClientNameByCarId(int carId)
-        {
-            var car = _cars.FirstOrDefault(c => c.Id == carId);
-            return car?.Client?.FullName ?? string.Empty;  
-        }
-
         public void CreateRepairRequest(int carId, DateTime startDate, DateTime? endDate,
                                         decimal totalCost, int statusId)
         {

@@ -24,11 +24,5 @@ namespace Service.Data
         public DbSet<ConsumablesCategory> ConsumablesCategories { get; set; } 
         public DbSet<StatusRequest> StatusRequests { get; set; } 
         public DbSet<StatusWork> StatusWorks { get; set; } 
-
-        protected override void OnModelCreating(DbModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-        }
     }
 }

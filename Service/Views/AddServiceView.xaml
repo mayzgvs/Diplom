@@ -5,44 +5,11 @@
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="Segoe UI">
-
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <Style TargetType="TextBox" x:Key="ModernTextBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#1ABC9C"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="ComboBox" x:Key="ModernComboBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#1ABC9C"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -80,26 +47,33 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Название" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingService.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Style="{StaticResource WatermarkTextBoxPurple}"
+                             Text="{Binding EditingService.Name, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="Введите название услуги"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Стоимость" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Style="{StaticResource ModernTextBox}" Text="{Binding EditingService.Cost, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="1" Grid.Column="1"
+                             Style="{StaticResource WatermarkTextBoxPurple}"
+                             Text="{Binding EditingService.Cost, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="Введите стоимость (например: 5000)"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Категория" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <ComboBox Grid.Row="2" Grid.Column="1" 
-                              Style="{StaticResource ModernComboBox}"
+                    <ComboBox Grid.Row="2" Grid.Column="1"
+                              Style="{StaticResource WatermarkComboBoxPurple}"
                               ItemsSource="{Binding ServiceCategories}"
                               SelectedValue="{Binding EditingService.ServiceCategoryId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
-                              DisplayMemberPath="Name"/>
+                              DisplayMemberPath="Name"
+                              Tag="Выберите категорию услуги"/>
                 </Grid>
             </ScrollViewer>
 
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Сохранить" Width="100" Height="38" Margin="5" 
+                    <Button Content="Сохранить" Width="100" Height="38" Margin="5"
                             Command="{Binding SaveCommand}"
-                            Background="#9B59B6" 
+                            Background="#9B59B6"
                             Foreground="White"
                             FontSize="13"
                             Cursor="Hand"/>

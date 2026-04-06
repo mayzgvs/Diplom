@@ -84,9 +84,6 @@ namespace Service.Data
         [NotMapped]
         public string ClientDisplayName => Car?.Client?.FullName ?? "Клиент не указан";
 
-        [NotMapped]
-        public string DisplayName => $"№{Id} - {Car?.Brand} {Car?.Model} ({Car?.RegistrationNumber})";
-
         public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
         protected virtual void OnStatusChanged(int oldStatusId, int newStatusId)
@@ -104,12 +101,5 @@ namespace Service.Data
             OldStatusId = oldStatusId;
             NewStatusId = newStatusId;
         }
-
-[NotMapped]
-        public int StatusId { get; set; }
-        
-        [NotMapped]
-        public string StatusName { get; set; }
-        
     }
 }

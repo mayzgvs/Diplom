@@ -5,60 +5,11 @@
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="Segoe UI">
-
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <Style TargetType="TextBox" x:Key="ModernTextBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#E67E22"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="ComboBox" x:Key="ModernComboBox">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#E67E22"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style TargetType="TextBox" x:Key="ModernTextBoxCost">
-                <Setter Property="Height" Value="38"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Padding" Value="12,8"/>
-                <Setter Property="BorderBrush" Value="#E0E0E0"/>
-                <Setter Property="BorderThickness" Value="1"/>
-                <Setter Property="Margin" Value="5"/>
-                <Setter Property="FontSize" Value="13"/>
-                <Style.Triggers>
-                    <Trigger Property="IsFocused" Value="True">
-                        <Setter Property="BorderBrush" Value="#E67E22"/>
-                        <Setter Property="BorderThickness" Value="2"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -74,7 +25,7 @@
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                         <TextBlock Text="🔩" FontSize="22" Foreground="#E67E22" Margin="0,0,10,0"/>
-                        <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Light" Foreground="White" VerticalAlignment="Center"/>
+                        <TextBlock Text="Добавление расходного материала" FontSize="20" FontWeight="Light" Foreground="White" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <Button Content="─" Style="{StaticResource WindowControlButtonStyle}" Click="MinimizeButton_Click" Width="35" Height="35"/>
@@ -96,37 +47,42 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Наименование" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="0" Grid.Column="1" Style="{StaticResource ModernTextBox}" 
-                             Text="{Binding EditingConsumable.Name, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             Style="{StaticResource WatermarkTextBoxOrange}"
+                             Text="{Binding EditingConsumable.Name, UpdateSourceTrigger=PropertyChanged}"
+                             Tag="Введите наименование"/>
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Категория" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <ComboBox Grid.Row="1" Grid.Column="1" 
-                              Style="{StaticResource ModernComboBox}"
+                    <ComboBox Grid.Row="1" Grid.Column="1"
+                              Style="{StaticResource WatermarkComboBoxOrange}"
                               ItemsSource="{Binding ConsumableCategories}"
                               SelectedValue="{Binding EditingConsumable.ConsumableCategoryId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
-                              DisplayMemberPath="Name"/>
+                              DisplayMemberPath="Name"
+                              Tag="Выберите категорию расходника"/>
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Стоимость" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Style="{StaticResource ModernTextBoxCost}" 
+                    <TextBox Grid.Row="2" Grid.Column="1"
+                             Style="{StaticResource WatermarkTextBoxCostOrange}"
                              Text="{Binding EditingConsumable.Cost, UpdateSourceTrigger=PropertyChanged, StringFormat=N2}"
+                             Tag="Введите стоимость (например: 1500.00)"
                              ToolTip="Введите стоимость расходника (необязательно)"/>
                 </Grid>
             </ScrollViewer>
 
             <Border Grid.Row="2" Background="#F8F9FA" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Отмена" Width="100" Height="38" Margin="5" 
+                    <Button Content="Отмена" Width="100" Height="38" Margin="5"
                             Command="{Binding CancelEditCommand}"
-                            Background="White" 
+                            Background="White"
                             Foreground="#7F8C8D"
                             BorderBrush="#E0E0E0"
                             BorderThickness="1"
                             FontSize="13"
                             Cursor="Hand"/>
-                    <Button Content="Сохранить" Width="100" Height="38" Margin="5" 
+                    <Button Content="Сохранить" Width="100" Height="38" Margin="5"
                             Command="{Binding SaveCommand}"
-                            Background="#E67E22" 
+                            Background="#E67E22"
                             Foreground="White"
                             FontSize="13"
                             Cursor="Hand"/>

@@ -21,11 +21,6 @@ namespace Service.Models
             _clients = DbManager.GetClients();
         }
 
-        public List<string> GetStatuses()
-        {
-            return _statuses;
-        }
-
         public List<Client> GetClients()
         {
             return _clients;

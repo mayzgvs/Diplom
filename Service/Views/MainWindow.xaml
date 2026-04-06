@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:Service.ViewModels"
         xmlns:views="clr-namespace:Service.Views"
         Title="Автосервис: управление сервисом"
-        Width="1300" Height="867"
+        Width="1300" Height="889"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -19,151 +19,18 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Utility/Style.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-
-            <Style x:Key="WindowControlButtonStyle" TargetType="Button">
-                <Setter Property="Width" Value="40"/>
-                <Setter Property="Height" Value="40"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Foreground" Value="#BDC3C7"/>
-                <Setter Property="FontSize" Value="18"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="5">
-                                <ContentPresenter HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#34495E"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource WindowControlButtonStyle}">
-                <Setter Property="Content" Value="✖"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#E74C3C"/>
-                        <Setter Property="Foreground" Value="White"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="NavigationMenuButtonStyle" TargetType="Button">
-                <Setter Property="Height" Value="60"/>
-                <Setter Property="Margin" Value="0,5"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderThickness" Value="0"/>
-                <Setter Property="Cursor" Value="Hand"/>
-                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                <Setter Property="VerticalContentAlignment" Value="Center"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Border Background="{TemplateBinding Background}"
-                                    CornerRadius="10"
-                                    Padding="12,8">
-                                <ContentPresenter HorizontalAlignment="Stretch"
-                                                  VerticalAlignment="Center"/>
-                            </Border>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="Background" Value="#F0F0F0"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-
-            <Style x:Key="MenuIconStyle" TargetType="Border">
-                <Setter Property="Width" Value="40"/>
-                <Setter Property="Height" Value="40"/>
-                <Setter Property="CornerRadius" Value="10"/>
-                <Setter Property="Margin" Value="0,0,12,0"/>
-                <Setter Property="Background" Value="#3498DB"/>
-            </Style>
-
-            <Style x:Key="MenuSectionHeaderStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="12"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="#95A5A6"/>
-                <Setter Property="Margin" Value="12,15,12,8"/>
-                <Setter Property="Text" Value="НАВИГАЦИЯ"/>
-            </Style>
-
-            <Style x:Key="MenuItemTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="FontWeight" Value="Medium"/>
-                <Setter Property="Foreground" Value="#2C3E50"/>
-            </Style>
-
-            <Style x:Key="DateTimeStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="15"/>
-                <Setter Property="Foreground" Value="#BDC3C7"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <Style x:Key="TimeStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="18"/>
-                <Setter Property="FontWeight" Value="SemiBold"/>
-                <Setter Property="Foreground" Value="#1ABC9C"/>
-                <Setter Property="VerticalAlignment" Value="Center"/>
-            </Style>
-
-            <Style x:Key="WelcomeIconStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="120"/>
-                <Setter Property="Foreground" Value="#3498DB"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="0,50,0,20"/>
-            </Style>
-
-            <Style x:Key="WelcomeTitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="32"/>
-                <Setter Property="FontWeight" Value="Light"/>
-                <Setter Property="Foreground" Value="#2C3E50"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="TextAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="20,0,20,20"/>
-            </Style>
-
-            <Style x:Key="WelcomeSubtitleStyle" TargetType="TextBlock">
-                <Setter Property="FontSize" Value="18"/>
-                <Setter Property="Foreground" Value="#7F8C8D"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="TextAlignment" Value="Center"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="20,0,20,50"/>
-            </Style>
         </ResourceDictionary>
     </Window.Resources>
 
-    <Border Background="White" 
-            CornerRadius="15" 
-            Margin="5"
-            BorderBrush="#E0E0E0"
-            BorderThickness="1">
+    <Border Background="White" CornerRadius="15" Margin="5"
+            BorderBrush="#E0E0E0" BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" 
-                    Background="#2C3E50" 
-                    CornerRadius="15,15,0,0" 
-                    Padding="20,15">
+            <Border Grid.Row="0" Background="#2C3E50" CornerRadius="15,15,0,0" Padding="20,15">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -172,301 +39,188 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal">
-                        <Border Background="#1ABC9C" 
-                                CornerRadius="12" 
-                                Width="44" 
-                                Height="44"
-                                Margin="0,0,15,0">
-                            <TextBlock Text="🔧" 
-                                       FontSize="28" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                        <Border Background="#1ABC9C" CornerRadius="12" Width="44" Height="44" Margin="0,0,15,0">
+                            <TextBlock Text="🔧" FontSize="28" Foreground="White"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
                         <StackPanel>
-                            <TextBlock Text="АВТОСЕРВИС" 
-                                       FontSize="22" 
-                                       FontWeight="SemiBold" 
-                                       Foreground="White"/>
-                            <TextBlock Text="профессиональное обслуживание" 
-                                       FontSize="12" 
-                                       Foreground="#BDC3C7" 
-                                       Margin="0,2,0,0"/>
+                            <TextBlock Text="АВТОСЕРВИС" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                            <TextBlock Text="профессиональное обслуживание" FontSize="12" Foreground="#BDC3C7" Margin="0,2,0,0"/>
                         </StackPanel>
                     </StackPanel>
 
-                    <StackPanel Grid.Column="1" 
-                                Orientation="Horizontal" 
-                                HorizontalAlignment="Center">
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
                         <TextBlock Text="Сегодня: " Style="{StaticResource DateTimeStyle}"/>
-                        <TextBlock Text="{Binding CurrentDate}" 
-                                   Style="{StaticResource DateTimeStyle}"
-                                   Foreground="White"
-                                   FontWeight="SemiBold"
-                                   Margin="0,0,10,0"/>
-                        <TextBlock Text="{Binding CurrentTime}" 
-                                   Style="{StaticResource TimeStyle}"/>
+                        <TextBlock Text="{Binding CurrentDate}" Style="{StaticResource DateTimeStyle}" Foreground="White" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                        <TextBlock Text="{Binding CurrentTime}" Style="{StaticResource TimeStyle}"/>
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Orientation="Horizontal">
-                        <Button x:Name="MinimizeButton" 
-                                Content="─" 
-                                Style="{StaticResource WindowControlButtonStyle}"/>
-                        <Button x:Name="MaximizeButton" 
-                                Content="□" 
-                                Style="{StaticResource WindowControlButtonStyle}"/>
-                        <Button x:Name="CloseButton" 
-                                Style="{StaticResource CloseButtonStyle}"/>
+                        <Button x:Name="MinimizeButton" Content="─" Style="{StaticResource WindowControlButtonStyle}"/>
+                        <Button x:Name="MaximizeButton" Content="□" Style="{StaticResource WindowControlButtonStyle}"/>
+                        <Button x:Name="CloseButton" Style="{StaticResource CloseButtonStyle}"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <Grid Grid.Row="1" Background="White">
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="280"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" 
-        Background="White" 
-        CornerRadius="0,0,0,15">
-                    <Border BorderThickness="0,0,1,0" 
-            BorderBrush="#F0F0F0">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" 
-                                      HorizontalScrollBarVisibility="Disabled">
+                <!-- Меню -->
+                <Border Grid.Column="0" Background="White" CornerRadius="0,0,0,15">
+                    <Border BorderThickness="0,0,1,0" BorderBrush="#F0F0F0">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                             <StackPanel Margin="15,20,15,20">
-                                <TextBlock Text="ОСНОВНОЕ" 
-                                            Style="{StaticResource MenuSectionHeaderStyle}"/>
-                                
-                                <Button Tag="WorkItems" 
-                                        Style="{StaticResource NavigationMenuButtonStyle}"
-                                        Command="{Binding NavigateCommand}"
-                                        CommandParameter="WorkItems">
+
+                                <TextBlock Text="ОСНОВНОЕ" Style="{StaticResource MenuSectionHeaderStyle}"/>
+
+                                <Button Tag="WorkItems" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="WorkItems">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                                Style="{StaticResource MenuIconStyle}"
-                                                Background="#FF6B6B">
-                                            <TextBlock Text="🔧" 
-                                                       FontSize="20" 
-                                                       Foreground="White" 
-                                                       HorizontalAlignment="Center" 
-                                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#FF6B6B">
+                                            <TextBlock Text="🔧" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Рабочие операции" 
-                                                       Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление работами" 
-                                                       FontSize="11" 
-                                                       Foreground="#95A5A6"
-                                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Рабочие операции" Style="{StaticResource MenuItemTitleStyle}"/>
+                                            <TextBlock Text="Управление работами" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
 
-                                <TextBlock Text="НАВИГАЦИЯ" 
-                           Style="{StaticResource MenuSectionHeaderStyle}"
-                           Margin="12,20,12,8"/>
+                                <TextBlock Text="НАВИГАЦИЯ" Style="{StaticResource MenuSectionHeaderStyle}" Margin="12,20,12,8"/>
 
-                                <Button Tag="Clients" 
-                        Style="{StaticResource NavigationMenuButtonStyle}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Clients">
+                                <Button Tag="Clients" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="Clients">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                Style="{StaticResource MenuIconStyle}"
-                                Background="#3498DB">
-                                            <TextBlock Text="👥" 
-                                       FontSize="20" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#3498DB">
+                                            <TextBlock Text="👥" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Клиенты" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление клиентами" 
-                                       FontSize="11" 
-                                       Foreground="#95A5A6"
-                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление клиентами" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
 
-                                <Button Tag="Cars" 
-                        Style="{StaticResource NavigationMenuButtonStyle}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Cars">
+                                <Button Tag="Cars" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="Cars">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                Style="{StaticResource MenuIconStyle}"
-                                Background="#E67E22">
-                                            <TextBlock Text="🚗" 
-                                       FontSize="20" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#E67E22">
+                                            <TextBlock Text="🚗" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Автомобили" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление автомобилями" 
-                                       FontSize="11" 
-                                       Foreground="#95A5A6"
-                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление автомобилями" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
 
-                                <Button Tag="RepairRequests" 
-                        Style="{StaticResource NavigationMenuButtonStyle}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="RepairRequests">
+                                <Button Tag="RepairRequests" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="RepairRequests">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                Style="{StaticResource MenuIconStyle}"
-                                Background="#27AE60">
-                                            <TextBlock Text="📋" 
-                                       FontSize="20" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#27AE60">
+                                            <TextBlock Text="📋" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Заявки" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление заявками на ремонт" 
-                                       FontSize="11" 
-                                       Foreground="#95A5A6"
-                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление заявками на ремонт" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
 
-                                <Button Tag="Services" 
-                        Style="{StaticResource NavigationMenuButtonStyle}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Services">
+                                <Button Tag="Services" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="Services">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                Style="{StaticResource MenuIconStyle}"
-                                Background="#9B59B6">
-                                            <TextBlock Text="⚙️" 
-                                       FontSize="20" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#9B59B6">
+                                            <TextBlock Text="⚙️" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Услуги" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление услугами" 
-                                       FontSize="11" 
-                                       Foreground="#95A5A6"
-                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление услугами" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
 
-                                <Button Tag="Consumables" 
-                        Style="{StaticResource NavigationMenuButtonStyle}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Consumables">
+                                <Button Tag="Consumables" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="Consumables">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                Style="{StaticResource MenuIconStyle}"
-                                Background="#E67E22">
-                                            <TextBlock Text="🔩" 
-                                       FontSize="20" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#E67E22">
+                                            <TextBlock Text="🔩" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Расходники" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление расходными материалами" 
-                                       FontSize="11" 
-                                       Foreground="#95A5A6"
-                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление расходными материалами" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
 
-                                <Button Tag="Employees" 
-                        Style="{StaticResource NavigationMenuButtonStyle}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Employees">
+                                <Button Tag="Employees" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="Employees">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                Style="{StaticResource MenuIconStyle}"
-                                Background="#1ABC9C">
-                                            <TextBlock Text="👨‍🔧" 
-                                       FontSize="20" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#1ABC9C">
+                                            <TextBlock Text="👨‍🔧" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Сотрудники" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление сотрудниками" 
-                                       FontSize="11" 
-                                       Foreground="#95A5A6"
-                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление сотрудниками" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
 
-                                <Border Height="1" 
-                        Background="#F0F0F0" 
-                        Margin="12,15,12,15"/>
+                                <Border Height="1" Background="#F0F0F0" Margin="12,15,12,15"/>
 
-                                <Button Tag="Reports" 
-                        Style="{StaticResource NavigationMenuButtonStyle}"
-                        Command="{Binding NavigateCommand}"
-                        CommandParameter="Reports">
+                                <Button Tag="Reports" Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Command="{Binding NavigateCommand}" CommandParameter="Reports">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" 
-                                Style="{StaticResource MenuIconStyle}"
-                                Background="#E74C3C">
-                                            <TextBlock Text="📊" 
-                                       FontSize="20" 
-                                       Foreground="White" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"/>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#E74C3C">
+                                            <TextBlock Text="📊" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Отчёты" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Аналитика и статистика" 
-                                       FontSize="11" 
-                                       Foreground="#95A5A6"
-                                       Margin="0,2,0,0"/>
+                                            <TextBlock Text="Аналитика и статистика" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>

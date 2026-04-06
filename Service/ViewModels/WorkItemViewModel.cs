@@ -65,13 +65,15 @@ namespace Service.ViewModels
         {
             if (SelectedRepairRequest != null)
             {
-                WorkItems = new ObservableCollection<WorkItem>(
-                    _model.GetWorkItemsByRequestId(SelectedRepairRequest.Id));
+                var workItems = _model.GetWorkItemsByRequestId(SelectedRepairRequest.Id);
+
+                WorkItems = new ObservableCollection<WorkItem>(workItems);
             }
             else
             {
                 WorkItems = new ObservableCollection<WorkItem>();
             }
+
             OnPropertyChanged(nameof(WorkItems));
         }
 

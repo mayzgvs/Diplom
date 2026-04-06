@@ -4,7 +4,6 @@ using Service.Utility;
 using Service.Views;
 using System;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Input;
 
@@ -30,6 +29,22 @@ namespace Service.ViewModels
         public ICommand CancelEditCommand { get; }
         public ICommand AddNewClientCommand { get; }
 
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+
+        private string _successMessage;
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+        }
+
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
 
         private void LoadClients()
         {
@@ -57,36 +72,38 @@ namespace Service.ViewModels
             LoadClients();
         }
 
-        private void Save(object parameter)
+        private async void Save(object parameter)
         {
+            ErrorMessage = "";
+            SuccessMessage = "";
+
             if (string.IsNullOrWhiteSpace(EditingCar.Brand))
             {
-                MessageBox.Show("Введите марку автомобиля!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Введите марку автомобиля!";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(EditingCar.Model))
             {
-                MessageBox.Show("Введите модель автомобиля!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Введите модель автомобиля!";
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(EditingCar.RegistrationNumber))
             {
-                MessageBox.Show("Введите государственный номер!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Введите государственный номер!";
                 return;
             }
 
             if (EditingCar.OwnerId == 0)
             {
-                MessageBox.Show("Выберите владельца автомобиля!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Выберите владельца автомобиля!";
                 return;
             }
 
             if (!ValidationHelper.IsValidRussianLicensePlate(EditingCar.RegistrationNumber))
             {
-                MessageBox.Show("Некорректный формат государственного номера!\nФормат: Б123ББ77 или Б123ББ777",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Некорректный формат государственного номера!\nФормат: Б123ББ77 или Б123ББ777";
                 return;
             }
 
@@ -94,23 +111,20 @@ namespace Service.ViewModels
             {
                 if (!ValidationHelper.IsValidVIN(EditingCar.VIN))
                 {
-                    MessageBox.Show("Некорректный формат VIN номера!\nVIN должен состоять из 17 символов (цифры и латинские буквы, кроме I, O, Q)",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Некорректный формат VIN номера!\nVIN должен состоять из 17 символов (цифры и латинские буквы, кроме I, O, Q)";
                     return;
                 }
 
                 if (_model.VinExists(EditingCar.VIN, _isEditMode ? EditingCar.Id : (int?)null))
                 {
-                    MessageBox.Show("Автомобиль с таким VIN номером уже существует в базе!",
-                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    ErrorMessage = "Автомобиль с таким VIN номером уже существует в базе!";
                     return;
                 }
             }
 
             if (_model.RegistrationNumberExists(EditingCar.RegistrationNumber, _isEditMode ? EditingCar.Id : (int?)null))
             {
-                MessageBox.Show("Автомобиль с таким государственным номером уже существует в базе!",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = "Автомобиль с таким государственным номером уже существует в базе!";
                 return;
             }
 
@@ -120,24 +134,28 @@ namespace Service.ViewModels
                 {
                     _model.CreateCar(EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber,
                         EditingCar.VIN, EditingCar.OwnerId);
+                    SuccessMessage = "Автомобиль успешно добавлен!";
                 }
                 else
                 {
                     _model.EditCar(EditingCar.Id, EditingCar.Brand, EditingCar.Model,
                         EditingCar.RegistrationNumber, EditingCar.VIN, EditingCar.OwnerId);
+                    SuccessMessage = "Автомобиль успешно обновлен!";
                 }
 
                 CarSaved?.Invoke(this, EventArgs.Empty);
+
+                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
             }
         }
+
         public AddCarViewModel(Car car = null)
         {
             LoadClients();

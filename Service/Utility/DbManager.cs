@@ -17,7 +17,7 @@ namespace Service.Utility
             }
         }
 
-        public static void CreateClient(string firstName, string lastName, string contactNumber, int discount, string email)
+        public static void CreateClient(string firstName, string lastName, string contactNumber, string email)
         {
             using (var context = new ApplicationContext())
             {
@@ -26,7 +26,6 @@ namespace Service.Utility
                     FirstName = firstName,
                     LastName = lastName,
                     ContactNumber = contactNumber,
-                    Discount = discount,
                     Email = email 
                 };
                 context.Clients.Add(client);
@@ -34,7 +33,7 @@ namespace Service.Utility
             }
         }
 
-        public static void EditClient(int id, string firstName, string lastName, string contactNumber, int discount, string email)
+        public static void EditClient(int id, string firstName, string lastName, string contactNumber, string email)
         {
             using (var context = new ApplicationContext())
             {
@@ -44,7 +43,6 @@ namespace Service.Utility
                     client.FirstName = firstName;
                     client.LastName = lastName;
                     client.ContactNumber = contactNumber;
-                    client.Discount = discount;
                     client.Email = email; 
                     context.SaveChanges();
                 }
@@ -63,14 +61,6 @@ namespace Service.Utility
                 }
             }
         }
-
-        public static int GetClientsCount()
-        {
-            using (var context = new ApplicationContext())
-            {
-                return context.Clients.Count();
-            }
-        }
         #endregion
 
         #region Cars
@@ -81,23 +71,6 @@ namespace Service.Utility
                 return context.Cars.Include(c => c.Client).ToList();
             }
         }
-
-        public static List<Car> GetCarsWithDetails()
-        {
-            using (var context = new ApplicationContext())
-            {
-                return context.Cars.Include(c => c.Client).ToList();
-            }
-        }
-
-        public static List<Car> GetCarsByClientId(int clientId)
-        {
-            using (var context = new ApplicationContext())
-            {
-                return context.Cars.Where(c => c.OwnerId == clientId).ToList();
-            }
-        }
-
         public static List<string> GetCarStatuses()
         {
             return new List<string> { "Активен", "В ремонте", "Продан", "Списан" };
@@ -120,7 +93,6 @@ namespace Service.Utility
                 context.SaveChanges();
             }
         }
-
 
         public static void EditCar(int id, string brand, string model, string registrationNumber, string vin, int ownerId)
         {
@@ -325,7 +297,6 @@ namespace Service.Utility
             }
         }
 
-        // DbManager.cs - исправленный метод (должен быть только один)
         public static decimal GetRevenueForPeriod(DateTime startDate, DateTime endDate)
         {
             using (var context = new ApplicationContext())
@@ -340,18 +311,6 @@ namespace Service.Utility
                     .Sum(w => (decimal?)w.Cost) ?? 0;
 
                 return total;
-            }
-        }
-        public static void UpdateRepairRequestStatus(int requestId, int statusId)
-        {
-            using (var context = new ApplicationContext())
-            {
-                var request = context.RepairRequests.Find(requestId);
-                if (request != null)
-                {
-                    request.StatusId = statusId;
-                    context.SaveChanges();
-                }
             }
         }
         #endregion
@@ -483,73 +442,20 @@ namespace Service.Utility
         #endregion
 
         #region WorkItems
-        public static List<WorkItem> GetWorkItems()
-        {
-            using (var context = new ApplicationContext())
-            {
-                return context.WorkItems
-                    .Include(w => w.RepairRequest)
-                    .Include(w => w.Employee)
-                    .Include(w => w.Service)
-                    .Include(w => w.Consumable)
-                    .Include(w => w.StatusWork)
-                    .ToList();
-            }
-        }
-
         public static List<WorkItem> GetWorkItemsByRequestId(int requestId)
         {
             using (var context = new ApplicationContext())
             {
-                return context.WorkItems
-                    .Include(w => w.Employee)
-                    .Include(w => w.Service)
-                    .Include(w => w.Consumable)
-                    .Include(w => w.StatusWork)
+                var workItems = context.WorkItems
+                    .AsNoTracking()
                     .Where(w => w.RepairRequestId == requestId)
-                    .ToList();
-            }
-        }
-
-        public static List<WorkItem> GetWorkItemsByEmployeeId(int employeeId)
-        {
-            using (var context = new ApplicationContext())
-            {
-                return context.WorkItems
-                    .Include(w => w.RepairRequest)
+                    .Include(w => w.Employee)
                     .Include(w => w.Service)
                     .Include(w => w.Consumable)
                     .Include(w => w.StatusWork)
-                    .Where(w => w.EmployeeId == employeeId)
+                    .OrderBy(w => w.Id)
                     .ToList();
-            }
-        }
-
-        public static List<WorkItem> GetWorkItemsByServiceId(int serviceId)
-        {
-            using (var context = new ApplicationContext())
-            {
-                return context.WorkItems
-                    .Include(w => w.RepairRequest)
-                    .Include(w => w.Employee)
-                    .Include(w => w.Consumable)
-                    .Include(w => w.StatusWork)
-                    .Where(w => w.ServiceId == serviceId)
-                    .ToList();
-            }
-        }
-
-        public static List<WorkItem> GetWorkItemsByConsumableId(int consumableId)
-        {
-            using (var context = new ApplicationContext())
-            {
-                return context.WorkItems
-                    .Include(w => w.RepairRequest)
-                    .Include(w => w.Employee)
-                    .Include(w => w.Service)
-                    .Include(w => w.StatusWork)
-                    .Where(w => w.ConsumableId == consumableId)
-                    .ToList();
+                return workItems;
             }
         }
 

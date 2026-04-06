@@ -4,7 +4,6 @@
         Title="Отправка уведомления" Height="562" Width="500"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize">
-
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -15,8 +14,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Отправить уведомление клиенту" 
-                   FontSize="16" FontWeight="Bold" 
+        <TextBlock Grid.Row="0" Text="Отправить уведомление клиенту"
+                   FontSize="16" FontWeight="Bold"
                    Foreground="#2C3E50" Margin="0,0,0,15"/>
 
         <GroupBox Grid.Row="1" Header="Информация о клиенте" Margin="0,5">
@@ -30,24 +29,24 @@
 
         <GroupBox Grid.Row="2" Header="Способ отправки" Margin="0,10">
             <StackPanel Margin="10">
-                <CheckBox x:Name="SendEmailCheckBox" Content="Отправить Email" 
+                <CheckBox x:Name="SendEmailCheckBox" Content="Отправить Email"
                           IsChecked="True" Margin="0,5" FontSize="13"/>
-                <CheckBox x:Name="SendSmsCheckBox" Content="Отправить SMS" 
+                <CheckBox x:Name="SendSmsCheckBox" Content="Отправить SMS"
                           IsChecked="True" Margin="0,5" FontSize="13"/>
             </StackPanel>
         </GroupBox>
 
         <GroupBox Grid.Row="3" Header="Текст сообщения" Margin="0,5">
-            <TextBox x:Name="MessageTextBox" TextWrapping="Wrap" 
-                     Height="100" AcceptsReturn="True" 
+            <TextBox x:Name="MessageTextBox" TextWrapping="Wrap"
+                     Height="100" AcceptsReturn="True"
                      Margin="5" FontSize="12"
                      VerticalScrollBarVisibility="Auto"/>
         </GroupBox>
 
-        <StackPanel Grid.Row="4" Orientation="Horizontal" 
+        <StackPanel Grid.Row="4" Orientation="Horizontal"
                     HorizontalAlignment="Right" Margin="0,15">
             <Button Content="Отправить" Width="100" Height="35" Margin="5"
-                    Click="SendButton_Click" 
+                    Click="SendButton_Click"
                     Background="#4CAF50" Foreground="White"
                     Cursor="Hand" FontWeight="SemiBold"/>
             <Button Content="Отмена" Width="100" Height="35" Margin="5"

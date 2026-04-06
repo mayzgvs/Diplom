@@ -48,6 +48,11 @@ namespace Service.ViewModels
                     EditingRepairRequest.TotalCost = value.Cost;
                     EditingRepairRequest.ServiceName = value.Name;
                 }
+                else if (!_isEditMode)
+                {
+                    EditingRepairRequest.TotalCost = 0;
+                    EditingRepairRequest.ServiceName = null;
+                }
             }
         }
 
@@ -57,6 +62,23 @@ namespace Service.ViewModels
             get => _dateError;
             set { _dateError = value; OnPropertyChanged(); }
         }
+
+        private string _errorMessage;
+        public string ErrorMessage
+        {
+            get => _errorMessage;
+            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+        }
+
+        private string _successMessage;
+        public string SuccessMessage
+        {
+            get => _successMessage;
+            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+        }
+
+        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
+        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
 
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
@@ -75,7 +97,8 @@ namespace Service.ViewModels
                 {
                     StartDate = DateTime.Now.Date,
                     EndDate = DateTime.Now.Date.AddDays(1),
-                    StatusId = 1 
+                    StatusId = 1,
+                    TotalCost = 0
                 };
                 ClientName = string.Empty;
                 SelectedService = null;
@@ -119,7 +142,15 @@ namespace Service.ViewModels
         {
             if (e.PropertyName == nameof(RepairRequest.CarId))
             {
-                ClientName = _model.GetClientNameByCarId(EditingRepairRequest.CarId);
+                var selectedCar = Cars.FirstOrDefault(c => c.Id == EditingRepairRequest.CarId);
+                if (selectedCar != null && selectedCar.Client != null)
+                {
+                    ClientName = selectedCar.Client.FullName;
+                }
+                else
+                {
+                    ClientName = string.Empty;
+                }
             }
 
             if (e.PropertyName == nameof(RepairRequest.StartDate) ||
@@ -146,29 +177,36 @@ namespace Service.ViewModels
             }
         }
 
-        private void Save(object parameter)
+        private async void Save(object parameter)
         {
+            ErrorMessage = "";
+            SuccessMessage = "";
+
             ValidateDates();
 
             if (!string.IsNullOrEmpty(DateError))
             {
-                MessageBox.Show(DateError, "Ошибка дат", MessageBoxButton.OK, MessageBoxImage.Warning);
+                ErrorMessage = DateError;
                 return;
             }
 
             if (EditingRepairRequest.CarId == 0)
             {
-                MessageBox.Show("Выберите автомобиль!", "Ошибка");
+                ErrorMessage = "Выберите автомобиль!";
                 return;
             }
 
-            if (SelectedService == null)
+            if (SelectedService == null && _isEditMode == false)
             {
-                MessageBox.Show("Выберите услугу!", "Ошибка");
+                ErrorMessage = "Выберите услугу!";
                 return;
             }
 
-            EditingRepairRequest.ServiceName = SelectedService.Name;
+            if (SelectedService != null)
+            {
+                EditingRepairRequest.ServiceName = SelectedService.Name;
+                EditingRepairRequest.TotalCost = SelectedService.Cost;
+            }
 
             try
             {
@@ -176,21 +214,24 @@ namespace Service.ViewModels
                 {
                     _model.CreateRepairRequest(EditingRepairRequest.CarId, EditingRepairRequest.StartDate,
                         EditingRepairRequest.EndDate, EditingRepairRequest.TotalCost, EditingRepairRequest.StatusId);
+                    SuccessMessage = "Заявка успешно создана!";
                 }
                 else
                 {
                     _model.EditRepairRequest(EditingRepairRequest.Id, EditingRepairRequest.CarId,
                         EditingRepairRequest.StartDate, EditingRepairRequest.EndDate,
                         EditingRepairRequest.TotalCost, EditingRepairRequest.StatusId);
+                    SuccessMessage = "Заявка успешно обновлена!";
                 }
+
+                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
             }
         }
 

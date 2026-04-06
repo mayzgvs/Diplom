@@ -111,10 +111,5 @@ namespace Service.Data
                 }
             }
         }
-        public string DisplayName => $"{Brand} {Model} ({RegistrationNumber})".Trim();
-        public string FullName
-        {
-            get { return string.Format("{0} {1}", Brand ?? "", Model ?? "").Trim(); }
-        }
     }
 }
