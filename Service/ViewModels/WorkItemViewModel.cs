@@ -79,6 +79,13 @@ namespace Service.ViewModels
 
         private void AddWorkItem()
         {
+            if (SelectedRepairRequest == null)
+            {
+                MessageBox.Show("Сначала выберите заявку!",
+                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var window = new AddWorkItemView();
             var viewModel = new AddWorkItemViewModel(SelectedRepairRequest);
             window.DataContext = viewModel;

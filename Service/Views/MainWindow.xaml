@@ -146,7 +146,7 @@
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Заявки" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление заявками на ремонт" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление заявками" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>
@@ -182,7 +182,7 @@
                                         </Border>
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="Расходники" Style="{StaticResource MenuItemTitleStyle}"/>
-                                            <TextBlock Text="Управление расходными материалами" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
+                                            <TextBlock Text="Управление материалами" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
                                         </StackPanel>
                                     </Grid>
                                 </Button>

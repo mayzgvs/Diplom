@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Windows.Media;
 
 namespace Service.Data
 {
@@ -77,12 +76,17 @@ namespace Service.Data
             set { if (_status != value) { _status = value; OnPropertyChanged(); } }
         }
 
-
         [NotMapped]
         public string ServiceName { get; set; }
 
         [NotMapped]
         public string ClientDisplayName => Car?.Client?.FullName ?? "Клиент не указан";
+
+        [NotMapped]
+        public string DisplayName => $"№{Id} - {Car?.Brand} {Car?.Model} ({Car?.RegistrationNumber})";
+
+        [NotMapped]
+        public string StatusName => Status?.Name ?? "Неизвестен";
 
         public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
@@ -91,6 +95,7 @@ namespace Service.Data
             StatusChanged?.Invoke(this, new StatusChangedEventArgs(oldStatusId, newStatusId));
         }
     }
+
     public class StatusChangedEventArgs : EventArgs
     {
         public int OldStatusId { get; }

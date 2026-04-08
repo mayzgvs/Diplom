@@ -77,21 +77,9 @@ namespace Service.ViewModels
             ErrorMessage = "";
             SuccessMessage = "";
 
-            if (string.IsNullOrWhiteSpace(EditingCar.Brand))
+            if (string.IsNullOrWhiteSpace(EditingCar.Brand) || string.IsNullOrWhiteSpace(EditingCar.Model))
             {
-                ErrorMessage = "Введите марку автомобиля!";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(EditingCar.Model))
-            {
-                ErrorMessage = "Введите модель автомобиля!";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(EditingCar.RegistrationNumber))
-            {
-                ErrorMessage = "Введите государственный номер!";
+                ErrorMessage = "Заполните обязательные поля!";
                 return;
             }
 
@@ -101,9 +89,15 @@ namespace Service.ViewModels
                 return;
             }
 
+            if (string.IsNullOrWhiteSpace(EditingCar.RegistrationNumber))
+            {
+                ErrorMessage = "Введите государственный номер!";
+                return;
+            }
+
             if (!ValidationHelper.IsValidRussianLicensePlate(EditingCar.RegistrationNumber))
             {
-                ErrorMessage = "Некорректный формат государственного номера!\nФормат: Б123ББ77 или Б123ББ777";
+                ErrorMessage = "Ошибка ввода: некорректный формат госномера!";
                 return;
             }
 
@@ -111,7 +105,7 @@ namespace Service.ViewModels
             {
                 if (!ValidationHelper.IsValidVIN(EditingCar.VIN))
                 {
-                    ErrorMessage = "Некорректный формат VIN номера!\nVIN должен состоять из 17 символов (цифры и латинские буквы, кроме I, O, Q)";
+                    ErrorMessage = "Ошибка ввода: некорректный VIN (должен быть 17 символов)!";
                     return;
                 }
 
@@ -127,7 +121,6 @@ namespace Service.ViewModels
                 ErrorMessage = "Автомобиль с таким государственным номером уже существует в базе!";
                 return;
             }
-
             try
             {
                 if (!_isEditMode)

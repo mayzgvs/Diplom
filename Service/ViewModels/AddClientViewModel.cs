@@ -46,15 +46,9 @@ namespace Service.ViewModels
             ErrorMessage = "";
             SuccessMessage = "";
 
-            if (string.IsNullOrWhiteSpace(EditingClient.LastName))
+            if (string.IsNullOrWhiteSpace(EditingClient.LastName) || string.IsNullOrWhiteSpace(EditingClient.FirstName))
             {
-                ErrorMessage = "Введите фамилию!";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(EditingClient.FirstName))
-            {
-                ErrorMessage = "Введите имя!";
+                ErrorMessage = "Заполните обязательные поля!";
                 return;
             }
 
@@ -62,7 +56,7 @@ namespace Service.ViewModels
             {
                 if (!ValidationHelper.IsValidRussianPhone(EditingClient.ContactNumber))
                 {
-                    ErrorMessage = "Некорректный формат номера телефона!\nФормат: +7XXXXXXXXXX (10 цифр после +7)";
+                    ErrorMessage = "Ошибка ввода: неверный формат телефона!";
                     return;
                 }
 
@@ -77,7 +71,7 @@ namespace Service.ViewModels
             {
                 if (!ValidationHelper.IsValidEmail(EditingClient.Email))
                 {
-                    ErrorMessage = "Некорректный формат email!\nПример: user@example.com";
+                    ErrorMessage = "Некорректный формат email!";
                     return;
                 }
 

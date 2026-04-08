@@ -37,7 +37,6 @@ namespace Service.ViewModels
                 _isServiceSelected = value;
                 OnPropertyChanged();
                 CalculateTotalCost();
-                ForceUpdateCommand();
                 if (!value) SelectedService = null;
             }
         }
@@ -51,7 +50,6 @@ namespace Service.ViewModels
                 _isConsumableSelected = value;
                 OnPropertyChanged();
                 CalculateTotalCost();
-                ForceUpdateCommand();
                 if (!value) SelectedConsumable = null;
             }
         }
@@ -64,8 +62,7 @@ namespace Service.ViewModels
             {
                 _selectedService = value;
                 OnPropertyChanged();
-                CalculateTotalCost();
-                ForceUpdateCommand();
+                CalculateTotalCost(); 
             }
         }
 
@@ -77,8 +74,7 @@ namespace Service.ViewModels
             {
                 _selectedConsumable = value;
                 OnPropertyChanged();
-                CalculateTotalCost();
-                ForceUpdateCommand();
+                CalculateTotalCost(); 
             }
         }
 
@@ -86,14 +82,14 @@ namespace Service.ViewModels
         public Employee SelectedEmployee
         {
             get => _selectedEmployee;
-            set { _selectedEmployee = value; OnPropertyChanged(); ForceUpdateCommand(); }
+            set { _selectedEmployee = value; OnPropertyChanged(); }
         }
 
         private StatusWork _selectedStatus;
         public StatusWork SelectedStatus
         {
             get => _selectedStatus;
-            set { _selectedStatus = value; OnPropertyChanged(); ForceUpdateCommand(); }
+            set { _selectedStatus = value; OnPropertyChanged(); }
         }
 
         private string _cost = "0";
@@ -104,8 +100,15 @@ namespace Service.ViewModels
             {
                 _cost = value;
                 OnPropertyChanged();
-                ForceUpdateCommand();
             }
+        }
+
+        // Отображаемая стоимость (с форматированием)
+        private string _displayCost;
+        public string DisplayCost
+        {
+            get => _displayCost;
+            set { _displayCost = value; OnPropertyChanged(); }
         }
 
         private string _errorMessage;
@@ -136,19 +139,6 @@ namespace Service.ViewModels
             InitializeValues();
 
             SaveCommand = new RelayCommand(Save, CanSave);
-
-            PropertyChanged += (s, e) =>
-            {
-                if (e.PropertyName == nameof(IsServiceSelected) ||
-                    e.PropertyName == nameof(IsConsumableSelected) ||
-                    e.PropertyName == nameof(SelectedService) ||
-                    e.PropertyName == nameof(SelectedConsumable) ||
-                    e.PropertyName == nameof(SelectedEmployee) ||
-                    e.PropertyName == nameof(SelectedStatus))
-                {
-                    CommandManager.InvalidateRequerySuggested();
-                }
-            };
         }
 
         private void LoadData()
@@ -179,52 +169,114 @@ namespace Service.ViewModels
 
                 SelectedEmployee = Employees.FirstOrDefault(e => e.Id == _editingWorkItem.EmployeeId);
                 SelectedStatus = WorkStatuses.FirstOrDefault(s => s.Id == _editingWorkItem.StatusId);
-                Cost = _editingWorkItem.Cost.ToString("0");
+
+                // Устанавливаем стоимость из редактируемой работы
+                decimal costValue = _editingWorkItem.Cost;
+                _cost = costValue.ToString();
+                UpdateDisplayCost(costValue);
             }
             else
             {
                 SelectedStatus = WorkStatuses.FirstOrDefault();
                 IsServiceSelected = true;
-                Cost = "0";
+                IsConsumableSelected = false;
+                _cost = "0";
+                UpdateDisplayCost(0);
             }
         }
 
+        /// <summary>
+        /// Автоматический расчет общей стоимости
+        /// </summary>
         private void CalculateTotalCost()
         {
             decimal total = 0;
-            if (IsServiceSelected && SelectedService != null)
-                total += SelectedService.Cost;
-            if (IsConsumableSelected && SelectedConsumable != null)
-                total += SelectedConsumable.Cost ?? 0;
 
-            Cost = total.ToString("0");
+            // Добавляем стоимость услуги, если выбрана
+            if (IsServiceSelected && SelectedService != null)
+            {
+                total += SelectedService.Cost;
+            }
+
+            // Добавляем стоимость расходника, если выбран
+            if (IsConsumableSelected && SelectedConsumable != null)
+            {
+                total += SelectedConsumable.Cost ?? 0;
+            }
+
+            // Сохраняем числовое значение
+            _cost = total.ToString();
+            OnPropertyChanged(nameof(Cost));
+
+            // Обновляем отображаемое значение с форматированием
+            UpdateDisplayCost(total);
+        }
+
+        /// <summary>
+        /// Обновление отображаемой стоимости с форматированием
+        /// </summary>
+        private void UpdateDisplayCost(decimal cost)
+        {
+            if (cost > 0)
+                DisplayCost = $"{cost:N0} ₽";
+            else
+                DisplayCost = "0 ₽";
         }
 
         private bool CanSave(object parameter)
         {
+            // Проверяем, что выбран хотя бы один тип работы
             bool hasWorkType = IsServiceSelected || IsConsumableSelected;
+
+            // Если выбрана услуга, она должна быть выбрана
             if (IsServiceSelected && SelectedService == null)
                 return false;
+
+            // Если выбран расходник, он должен быть выбран
             if (IsConsumableSelected && SelectedConsumable == null)
                 return false;
+
+            // Проверяем сотрудника и статус
             return hasWorkType && SelectedEmployee != null && SelectedStatus != null;
         }
 
-        private async void Save(object parameter)
+        private void Save(object parameter)
         {
             ErrorMessage = "";
             SuccessMessage = "";
 
-            if (!CanSave(parameter))
+            if (_repairRequest == null)
             {
-                ErrorMessage = "Выберите услугу/расходник, сотрудника и статус!";
+                ErrorMessage = "Сначала выберите заявку!";
                 return;
             }
 
-            if (!decimal.TryParse(Cost, out decimal costValue) || costValue <= 0)
+            if (!CanSave(parameter))
             {
-                ErrorMessage = "Укажите корректную стоимость!";
+                if (!IsServiceSelected && !IsConsumableSelected)
+                    ErrorMessage = "Выберите тип работы (услуга или расходный материал)!";
+                else if (SelectedEmployee == null)
+                    ErrorMessage = "Выберите сотрудника!";
+                else if (SelectedStatus == null)
+                    ErrorMessage = "Выберите статус!";
+                else
+                    ErrorMessage = "Заполните все обязательные поля!";
                 return;
+            }
+
+            if (!decimal.TryParse(_cost, out decimal costValue) || costValue <= 0)
+            {
+                // Если стоимость 0, но выбраны услуга или расходник - возможно они бесплатные
+                if (costValue == 0 && (IsServiceSelected || IsConsumableSelected))
+                {
+                    // Разрешаем сохранение с нулевой стоимостью
+                    costValue = 0;
+                }
+                else
+                {
+                    ErrorMessage = "Укажите корректную стоимость!";
+                    return;
+                }
             }
 
             try
@@ -247,8 +299,6 @@ namespace Service.ViewModels
 
                 WorkItemSaved?.Invoke(this, EventArgs.Empty);
 
-                await System.Threading.Tasks.Task.Delay(800);
-
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;
@@ -259,11 +309,6 @@ namespace Service.ViewModels
             {
                 ErrorMessage = $"Ошибка сохранения: {ex.Message}";
             }
-        }
-
-        private void ForceUpdateCommand()
-        {
-            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

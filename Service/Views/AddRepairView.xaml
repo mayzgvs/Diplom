@@ -6,15 +6,8 @@
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         FontFamily="Segoe UI">
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Utility/Style.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>
 
-    <Border Background="{StaticResource WindowBackgroundBrush}" CornerRadius="15" Margin="5,5,5,10">
+    <Border CornerRadius="15" Margin="5,5,5,10">
         <Grid Margin="0,0,0,43">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -22,6 +15,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
+            <!-- Заголовок окна -->
             <Border Grid.Row="0" Background="{StaticResource PrimaryDarkBrush}" CornerRadius="15,15,0,0" Padding="20,15">
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -52,6 +46,7 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Автомобиль -->
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Автомобиль" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <Grid Grid.Row="0" Grid.Column="1" Margin="5">
                         <Grid.ColumnDefinitions>
@@ -59,12 +54,11 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <ComboBox Grid.Column="0"
-                                  Style="{StaticResource WatermarkComboBoxGreen}"
+                                  Style="{StaticResource ModernComboBoxGreen}"
                                   ItemsSource="{Binding Cars}"
                                   SelectedValue="{Binding EditingRepairRequest.CarId, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedValuePath="Id"
-                                  DisplayMemberPath="RegistrationNumber"
-                                  Tag="Выберите автомобиль"/>
+                                  DisplayMemberPath="RegistrationNumber"/>
                         <Button Grid.Column="1"
                                 Content="+"
                                 Width="38"
@@ -76,10 +70,10 @@
                                 FontSize="16"
                                 FontWeight="Bold"
                                 BorderThickness="0"
-                                Cursor="Hand"
-                                ToolTip="Добавить новый автомобиль"/>
+                                Cursor="Hand"/>
                     </Grid>
 
+                    <!-- Клиент -->
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Клиент" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <TextBox Grid.Row="1" Grid.Column="1"
                              Style="{StaticResource ModernTextBoxGreen}"
@@ -88,53 +82,58 @@
                              Background="#F8F9FA"
                              IsEnabled="False"/>
 
+                    <!-- Дата начала -->
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Дата начала" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <DatePicker Grid.Row="2" Grid.Column="1"
                                 Style="{StaticResource ModernDatePickerGreen}"
                                 SelectedDate="{Binding EditingRepairRequest.StartDate}"
                                 Margin="5" Height="38"/>
 
+                    <!-- Дата окончания -->
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="Дата окончания" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <DatePicker Grid.Row="3" Grid.Column="1"
                                 Style="{StaticResource ModernDatePickerGreen}"
                                 SelectedDate="{Binding EditingRepairRequest.EndDate}"
                                 Margin="5" Height="38"/>
 
+                    <!-- Блок ошибки дат -->
                     <TextBlock Grid.Row="4" Grid.Column="1"
                                Text="{Binding DateError}"
                                Foreground="Red"
                                FontSize="12"
                                Margin="5,2,5,10"
-                               TextWrapping="Wrap"
-                               Visibility="{Binding DateError, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
+                               TextWrapping="Wrap"/>
 
+                    <!-- Услуга -->
                     <TextBlock Grid.Row="5" Grid.Column="0" Text="Услуга" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <ComboBox Grid.Row="5" Grid.Column="1"
-                              Style="{StaticResource WatermarkComboBoxGreen}"
+                              Style="{StaticResource ModernComboBoxGreen}"
                               ItemsSource="{Binding Services}"
                               SelectedItem="{Binding SelectedService, Mode=TwoWay}"
-                              DisplayMemberPath="Name"
-                              Tag="Выберите услугу"/>
+                              DisplayMemberPath="Name"/>
 
+                    <!-- Стоимость -->
                     <TextBlock Grid.Row="6" Grid.Column="0" Text="Стоимость" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
-                    <TextBox Grid.Row="6" Grid.Column="1"
-                             Style="{StaticResource ModernTextBoxGreen}"
+                    <TextBox Grid.Row="6" Grid.Column="1" 
+                             Style="{StaticResource ModernTextBoxGreen}" 
                              Text="{Binding EditingRepairRequest.TotalCost, StringFormat={}{0:N0} ₽}"
                              IsReadOnly="True"
                              Background="#F8F9FA"
                              IsEnabled="False"/>
 
+                    <!-- Статус -->
                     <TextBlock Grid.Row="7" Grid.Column="0" Text="Статус" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <ComboBox Grid.Row="7" Grid.Column="1"
-                              Style="{StaticResource WatermarkComboBoxGreen}"
+                              Style="{StaticResource ModernComboBoxGreen}"
                               ItemsSource="{Binding Statuses}"
                               SelectedValue="{Binding EditingRepairRequest.StatusId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
-                              DisplayMemberPath="Name"
-                              Tag="Выберите статус заявки"/>
+                              DisplayMemberPath="Name"/>
+
                 </Grid>
             </ScrollViewer>
 
+            <!-- Кнопки внизу -->
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Сохранить" Width="100" Height="38" Margin="5"

@@ -65,13 +65,15 @@ namespace Service.Data
 
         public virtual RepairRequest RepairRequest { get; set; }
         public virtual Employee Employee { get; set; }
-        public virtual Service Service { get; set; }
+        public virtual Data.Service Service { get; set; }
         public virtual Consumable Consumable { get; set; }
         public virtual StatusWork StatusWork { get; set; }
 
+        [NotMapped]
+        public string ServiceName => Service?.Name ?? "Не указана";
 
         [NotMapped]
-        public string ServiceName => Service?.Name ?? "Услуга не указана";
+        public string ConsumableName => Consumable?.Name ?? "Не указан";
 
         [NotMapped]
         public string EmployeeFullName => Employee != null
@@ -79,6 +81,22 @@ namespace Service.Data
             : "Не назначен";
 
         [NotMapped]
+        public string StatusName => StatusWork?.Name ?? "Неизвестен";
+
+        [NotMapped]
         public string EmployeeName => EmployeeFullName;
+
+        [NotMapped]
+        public string DisplayInfo
+        {
+            get
+            {
+                if (Service != null)
+                    return $"🔧 {Service.Name}";
+                if (Consumable != null)
+                    return $"🔩 {Consumable.Name}";
+                return "❌ Не указано";
+            }
+        }
     }
 }

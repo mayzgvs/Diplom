@@ -54,9 +54,21 @@ namespace Service.ViewModels
             ErrorMessage = "";
             SuccessMessage = "";
 
-            if (string.IsNullOrWhiteSpace(EditingService.Name) || EditingService.ServiceCategoryId == 0)
+            if (string.IsNullOrWhiteSpace(EditingService.Name))
             {
-                ErrorMessage = "Заполните название и категорию!";
+                ErrorMessage = "Заполните название услуги!";
+                return;
+            }
+
+            if (EditingService.Cost <= 0)
+            {
+                ErrorMessage = "Ошибка: стоимость должна быть положительным числом!";
+                return;
+            }
+
+            if (EditingService.ServiceCategoryId == 0)
+            {
+                ErrorMessage = "Выберите категорию услуги!";
                 return;
             }
 

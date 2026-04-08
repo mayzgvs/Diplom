@@ -14,6 +14,7 @@ namespace Service.ViewModels
     public class AddRepairRequestViewModel : BaseViewModel
     {
         private readonly RepairRequestAddEditModel _model = new RepairRequestAddEditModel();
+        private readonly ApplicationContext _context = new ApplicationContext();
 
         private RepairRequest _editingRepairRequest;
         private bool _isEditMode;
@@ -44,41 +45,17 @@ namespace Service.ViewModels
                 _selectedService = value;
                 OnPropertyChanged();
                 if (value != null)
-                {
                     EditingRepairRequest.TotalCost = value.Cost;
-                    EditingRepairRequest.ServiceName = value.Name;
-                }
-                else if (!_isEditMode)
-                {
-                    EditingRepairRequest.TotalCost = 0;
-                    EditingRepairRequest.ServiceName = null;
-                }
             }
         }
 
+        // Свойство для отображения ошибки дат
         private string _dateError;
         public string DateError
         {
             get => _dateError;
             set { _dateError = value; OnPropertyChanged(); }
         }
-
-        private string _errorMessage;
-        public string ErrorMessage
-        {
-            get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
-        }
-
-        private string _successMessage;
-        public string SuccessMessage
-        {
-            get => _successMessage;
-            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
-        }
-
-        public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
 
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
@@ -96,20 +73,15 @@ namespace Service.ViewModels
                 EditingRepairRequest = new RepairRequest
                 {
                     StartDate = DateTime.Now.Date,
-                    EndDate = DateTime.Now.Date.AddDays(1),
-                    StatusId = 1,
-                    TotalCost = 0
+                    EndDate = DateTime.Now.Date.AddDays(1)
                 };
-                ClientName = string.Empty;
-                SelectedService = null;
             }
             else
             {
                 _isEditMode = true;
                 EditingRepairRequest = request;
                 ClientName = EditingRepairRequest.ClientDisplayName;
-
-                LoadSelectedService();
+                SelectedService = Services.FirstOrDefault(s => s.Name == EditingRepairRequest.ServiceName);
             }
 
             EditingRepairRequest.PropertyChanged += EditingRepairRequest_PropertyChanged;
@@ -119,40 +91,34 @@ namespace Service.ViewModels
             AddNewCarCommand = new RelayCommand(AddNewCar);
         }
 
-        private void LoadSelectedService()
-        {
-            if (!string.IsNullOrEmpty(EditingRepairRequest.ServiceName))
-            {
-                SelectedService = Services.FirstOrDefault(s => s.Name == EditingRepairRequest.ServiceName);
-            }
-
-            if (SelectedService == null && EditingRepairRequest.TotalCost > 0)
-            {
-                SelectedService = Services.FirstOrDefault(s => s.Cost == EditingRepairRequest.TotalCost);
-            }
-        }
-
         private List<Data.Service> GetServices()
         {
             using (var context = new ApplicationContext())
                 return context.Services.ToList();
         }
 
+        private string GetClientNameByCarId(int carId)
+        {
+            var car = _context.Cars.FirstOrDefault(c => c.Id == carId);
+            if (car != null)
+            {
+                var client = _context.Clients.FirstOrDefault(c => c.Id == car.OwnerId);
+                if (client != null)
+                {
+                    return $"{client.LastName} {client.FirstName}".Trim();
+                }
+            }
+            return "Не указан";
+        }
+
         private void EditingRepairRequest_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(RepairRequest.CarId))
             {
-                var selectedCar = Cars.FirstOrDefault(c => c.Id == EditingRepairRequest.CarId);
-                if (selectedCar != null && selectedCar.Client != null)
-                {
-                    ClientName = selectedCar.Client.FullName;
-                }
-                else
-                {
-                    ClientName = string.Empty;
-                }
+                ClientName = GetClientNameByCarId(EditingRepairRequest.CarId);
             }
 
+            // Проверка дат при любом изменении StartDate или EndDate
             if (e.PropertyName == nameof(RepairRequest.StartDate) ||
                 e.PropertyName == nameof(RepairRequest.EndDate))
             {
@@ -162,77 +128,49 @@ namespace Service.ViewModels
 
         private void ValidateDates()
         {
-            if (EditingRepairRequest.EndDate.HasValue &&
-                EditingRepairRequest.EndDate.Value.Date < EditingRepairRequest.StartDate.Date)
-            {
+            if (EditingRepairRequest.StartDate > EditingRepairRequest.EndDate)
                 DateError = "Дата окончания не может быть раньше даты начала!";
-            }
-            else if (EditingRepairRequest.StartDate.Date > (EditingRepairRequest.EndDate?.Date ?? DateTime.MaxValue.Date))
-            {
-                DateError = "Дата начала не может быть позже даты окончания!";
-            }
             else
-            {
-                DateError = string.Empty;
-            }
+                DateError = null;
         }
 
-        private async void Save(object parameter)
+        private void Save(object parameter)
         {
-            ErrorMessage = "";
-            SuccessMessage = "";
-
             ValidateDates();
 
             if (!string.IsNullOrEmpty(DateError))
             {
-                ErrorMessage = DateError;
+                MessageBox.Show("Ошибка: дата окончания не может быть раньше даты начала!",
+                    "Ошибка дат", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (EditingRepairRequest.CarId == 0)
             {
-                ErrorMessage = "Выберите автомобиль!";
+                MessageBox.Show("Выберите автомобиль!", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (SelectedService == null && _isEditMode == false)
+            if (SelectedService == null)
             {
-                ErrorMessage = "Выберите услугу!";
+                MessageBox.Show("Выберите услугу!", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (SelectedService != null)
-            {
-                EditingRepairRequest.ServiceName = SelectedService.Name;
-                EditingRepairRequest.TotalCost = SelectedService.Cost;
-            }
+            EditingRepairRequest.ServiceName = SelectedService.Name;
 
-            try
-            {
-                if (!_isEditMode)
-                {
-                    _model.CreateRepairRequest(EditingRepairRequest.CarId, EditingRepairRequest.StartDate,
-                        EditingRepairRequest.EndDate, EditingRepairRequest.TotalCost, EditingRepairRequest.StatusId);
-                    SuccessMessage = "Заявка успешно создана!";
-                }
-                else
-                {
-                    _model.EditRepairRequest(EditingRepairRequest.Id, EditingRepairRequest.CarId,
-                        EditingRepairRequest.StartDate, EditingRepairRequest.EndDate,
-                        EditingRepairRequest.TotalCost, EditingRepairRequest.StatusId);
-                    SuccessMessage = "Заявка успешно обновлена!";
-                }
+            if (!_isEditMode)
+                _model.CreateRepairRequest(EditingRepairRequest.CarId, EditingRepairRequest.StartDate,
+                    EditingRepairRequest.EndDate, EditingRepairRequest.TotalCost, EditingRepairRequest.StatusId);
+            else
+                _model.EditRepairRequest(EditingRepairRequest.Id, EditingRepairRequest.CarId,
+                    EditingRepairRequest.StartDate, EditingRepairRequest.EndDate,
+                    EditingRepairRequest.TotalCost, EditingRepairRequest.StatusId);
 
-                await System.Threading.Tasks.Task.Delay(800);
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-            }
+            if (parameter is Window window)
+                window.DialogResult = true;
         }
 
         private void Cancel(object parameter)
@@ -242,20 +180,7 @@ namespace Service.ViewModels
 
         private void AddNewCar(object parameter)
         {
-            var addCarWindow = new AddCarView();
-            var addCarViewModel = new AddCarViewModel();
-            addCarWindow.DataContext = addCarViewModel;
-
-            addCarViewModel.CarSaved += (s, e) =>
-            {
-                Cars.Clear();
-                foreach (var car in _model.GetCars())
-                {
-                    Cars.Add(car);
-                }
-            };
-
-            addCarWindow.ShowDialog();
+            MessageBox.Show("Создание авто из формы заявки будет добавлено позже", "Инфо");
         }
     }
 }

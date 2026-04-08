@@ -219,18 +219,21 @@ namespace Service.ViewModels
 
             var client = SelectedRepairRequest.Car.Client;
             var carInfo = $"{SelectedRepairRequest.Car.Brand} {SelectedRepairRequest.Car.Model} " +
-                         $"({SelectedRepairRequest.Car.RegistrationNumber})";
+                          $"({SelectedRepairRequest.Car.RegistrationNumber})";
 
             var dialog = new SendNotificationView(client.FullName, client.Email, client.ContactNumber, carInfo);
             dialog.Owner = Application.Current.MainWindow;
 
             if (dialog.ShowDialog() == true)
             {
+                bool hasAnyNotification = false;
+
                 if (dialog.SendEmail && !string.IsNullOrEmpty(client.Email))
                 {
                     var emailService = new EmailService();
                     await emailService.SendEmailAsync(client.Email, "Автомобиль готов к выдаче",
                         $"Уважаемый(ая) {client.FullName}! Ваш автомобиль {carInfo} готов к выдаче.");
+                    hasAnyNotification = true;
                 }
 
                 if (dialog.SendSms && !string.IsNullOrEmpty(client.ContactNumber))
@@ -238,10 +241,19 @@ namespace Service.ViewModels
                     var smsService = new SmsService();
                     await smsService.SendSmsAsync(client.ContactNumber,
                         $"Уважаемый(ая) {client.FullName}! Автомобиль {carInfo} готов к выдаче.");
+                    hasAnyNotification = true;
                 }
 
-                MessageBox.Show("Уведомления отправлены", "Информация",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                if (!hasAnyNotification)
+                {
+                    MessageBox.Show("Нет контактных данных для отправки!",
+                        "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else
+                {
+                    MessageBox.Show("Уведомления отправлены", "Информация",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
         }
     }
