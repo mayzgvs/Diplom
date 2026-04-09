@@ -72,7 +72,7 @@ namespace Service.ViewModels
             LoadClients();
         }
 
-        private async void Save(object parameter)
+        private void Save(object parameter)
         {
             ErrorMessage = "";
             SuccessMessage = "";
@@ -128,17 +128,19 @@ namespace Service.ViewModels
                     _model.CreateCar(EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber,
                         EditingCar.VIN, EditingCar.OwnerId);
                     SuccessMessage = "Автомобиль успешно добавлен!";
+                    MessageBox.Show("Автомобиль успешно добавлен!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _model.EditCar(EditingCar.Id, EditingCar.Brand, EditingCar.Model,
                         EditingCar.RegistrationNumber, EditingCar.VIN, EditingCar.OwnerId);
                     SuccessMessage = "Автомобиль успешно обновлен!";
+                    MessageBox.Show("Автомобиль успешно обновлен!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 CarSaved?.Invoke(this, EventArgs.Empty);
-
-                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
@@ -146,6 +148,8 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

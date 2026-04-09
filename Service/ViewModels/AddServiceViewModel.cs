@@ -49,7 +49,7 @@ namespace Service.ViewModels
             ServiceCategories = new ObservableCollection<ServiceCategory>(_model.GetCategories());
         }
 
-        private async void Save(object parameter)
+        private void Save(object parameter)
         {
             ErrorMessage = "";
             SuccessMessage = "";
@@ -78,16 +78,18 @@ namespace Service.ViewModels
                 {
                     _model.CreateService(EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
                     SuccessMessage = "Услуга успешно добавлена!";
+                    MessageBox.Show("Услуга успешно добавлена!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _model.EditService(EditingService.Id, EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
                     SuccessMessage = "Услуга успешно обновлена!";
+                    MessageBox.Show("Услуга успешно обновлена!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 ServiceSaved?.Invoke(this, EventArgs.Empty);
-
-                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
@@ -95,6 +97,8 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -41,7 +41,7 @@ namespace Service.ViewModels
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
         public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
 
-        private async void Save(object parameter)
+        private void Save(object parameter)
         {
             ErrorMessage = "";
             SuccessMessage = "";
@@ -76,16 +76,23 @@ namespace Service.ViewModels
             try
             {
                 if (!_isEditMode)
+                {
                     _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName,
                         EditingEmployee.ContactNumber);
+                    SuccessMessage = "Сотрудник успешно добавлен!";
+                    MessageBox.Show("Сотрудник успешно добавлен!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
                 else
+                {
                     _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName,
                         EditingEmployee.ContactNumber);
+                    SuccessMessage = "Сотрудник успешно обновлен!";
+                    MessageBox.Show("Сотрудник успешно обновлен!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
 
-                SuccessMessage = _isEditMode ? "Сотрудник успешно обновлен!" : "Сотрудник успешно добавлен!";
                 EmployeeSaved?.Invoke(this, EventArgs.Empty);
-
-                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
@@ -93,6 +100,8 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

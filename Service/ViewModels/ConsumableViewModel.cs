@@ -163,6 +163,8 @@ namespace Service.ViewModels
                 {
                     _model.DeleteConsumable(SelectedConsumable);
                     LoadData();
+                    MessageBox.Show("Расходник успешно удален!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

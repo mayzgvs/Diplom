@@ -222,9 +222,11 @@ namespace Service.Utility
                     .Include(r => r.Car)
                     .Include(r => r.Car.Client)
                     .Include(r => r.Status)
+                    .Include(r => r.Service)         
                     .ToList();
             }
         }
+
         public static List<RepairRequest> GetRepairRequestsByCarId(int carId)
         {
             try
@@ -235,6 +237,7 @@ namespace Service.Utility
                         .AsNoTracking()
                         .Include(r => r.Car)
                         .Include(r => r.Status)
+                        .Include(r => r.Service)     
                         .Include(r => r.Car.Client)
                         .Where(r => r.CarId == carId)
                         .OrderByDescending(r => r.StartDate)
@@ -257,7 +260,7 @@ namespace Service.Utility
         }
 
         public static void CreateRepairRequest(int carId, DateTime startDate, DateTime? endDate,
-                                               decimal totalCost, int statusId)
+                                       decimal totalCost, int statusId, int serviceId)
         {
             using (var context = new ApplicationContext())
             {
@@ -267,7 +270,8 @@ namespace Service.Utility
                     StartDate = startDate,
                     EndDate = endDate,
                     TotalCost = totalCost,
-                    StatusId = statusId
+                    StatusId = statusId,
+                    ServiceId = serviceId
                 };
                 context.RepairRequests.Add(request);
                 context.SaveChanges();
@@ -275,7 +279,7 @@ namespace Service.Utility
         }
 
         public static void EditRepairRequest(int id, int carId, DateTime startDate, DateTime? endDate,
-                                             decimal totalCost, int statusId)
+                                             decimal totalCost, int statusId, int serviceId)
         {
             using (var context = new ApplicationContext())
             {
@@ -287,6 +291,7 @@ namespace Service.Utility
                     request.EndDate = endDate;
                     request.TotalCost = totalCost;
                     request.StatusId = statusId;
+                    request.ServiceId = serviceId;
                     context.SaveChanges();
                 }
             }
@@ -323,7 +328,6 @@ namespace Service.Utility
             }
         }
 
-        // DbManager.cs - исправленный метод (должен быть только один)
         public static decimal GetRevenueForPeriod(DateTime startDate, DateTime endDate)
         {
             using (var context = new ApplicationContext())
@@ -684,5 +688,204 @@ namespace Service.Utility
         }
 
         #endregion
+
+        // ====================== ДОБАВЛЕННЫЕ МЕТОДЫ ДЛЯ ОТЧЕТОВ ======================
+
+        /// <summary>
+        /// Получить все автомобили
+        /// </summary>
+        public static List<Car> GetAllCars()
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.Cars.Include(c => c.Client).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Получить все заявки
+        /// </summary>
+        public static List<RepairRequest> GetAllRequests()
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.RepairRequests
+                    .Include(r => r.Car)
+                    .Include(r => r.Car.Client)
+                    .Include(r => r.Status)
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Получить всех сотрудников
+        /// </summary>
+        public static List<Employee> GetAllEmployees()
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.Employees.ToList();
+            }
+        }
+
+        /// <summary>
+        /// Получить все выполненные работы
+        /// </summary>
+        public static List<WorkItem> GetAllWorkItems()
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.WorkItems
+                    .Include(w => w.RepairRequest)
+                    .Include(w => w.Employee)
+                    .Include(w => w.Service)
+                    .Include(w => w.Consumable)
+                    .Include(w => w.StatusWork)
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Получить все услуги
+        /// </summary>
+        public static List<Data.Service> GetAllServices()
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.Services.Include(s => s.ServiceCategory).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Получить всех клиентов
+        /// </summary>
+        public static List<Client> GetAllClients()
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.Clients.Include(c => c.Cars).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Получить статистику по маркам автомобилей
+        /// </summary>
+        public static Dictionary<string, int> GetCarBrandsStats()
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.Cars
+                    .Where(c => !string.IsNullOrEmpty(c.Brand))
+                    .GroupBy(c => c.Brand)
+                    .ToDictionary(g => g.Key, g => g.Count());
+            }
+        }
+
+        /// <summary>
+        /// Получить заявки клиента по ID клиента
+        /// </summary>
+        public static List<RepairRequest> GetRequestsByClientId(int clientId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var carIds = context.Cars.Where(c => c.OwnerId == clientId).Select(c => c.Id).ToList();
+                return context.RepairRequests
+                    .Include(r => r.Car)
+                    .Include(r => r.Car.Client)
+                    .Include(r => r.Status)
+                    .Where(r => carIds.Contains(r.CarId))
+                    .ToList();
+            }
+        }
+
+        /// <summary>
+        /// Получить выручку по услугам за период
+        /// </summary>
+        public static Dictionary<string, decimal> GetRevenueByServices(DateTime startDate, DateTime endDate)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var requests = context.RepairRequests
+                    .Where(r => r.StatusId == 3 && r.StartDate >= startDate && r.StartDate <= endDate)
+                    .Select(r => r.Id)
+                    .ToList();
+
+                var workItems = context.WorkItems
+                    .Where(w => requests.Contains(w.RepairRequestId) && w.ServiceId.HasValue)
+                    .ToList();
+
+                var result = new Dictionary<string, decimal>();
+
+                foreach (var wi in workItems)
+                {
+                    var service = GetServiceById(wi.ServiceId.Value);
+                    var serviceName = service?.Name ?? "Неизвестно";
+
+                    if (result.ContainsKey(serviceName))
+                        result[serviceName] += wi.Cost;
+                    else
+                        result[serviceName] = wi.Cost;
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Получить выручку по сотрудникам за период
+        /// </summary>
+        public static Dictionary<string, decimal> GetRevenueByEmployees(DateTime startDate, DateTime endDate)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var requests = context.RepairRequests
+                    .Where(r => r.StatusId == 3 && r.StartDate >= startDate && r.StartDate <= endDate)
+                    .Select(r => r.Id)
+                    .ToList();
+
+                var workItems = context.WorkItems
+                    .Where(w => requests.Contains(w.RepairRequestId) && w.EmployeeId.HasValue)
+                    .ToList();
+
+                var result = new Dictionary<string, decimal>();
+
+                foreach (var wi in workItems)
+                {
+                    var employee = GetEmployeeById(wi.EmployeeId.Value);
+                    var employeeName = employee != null ? $"{employee.FirstName} {employee.LastName}" : "Неизвестно";
+
+                    if (result.ContainsKey(employeeName))
+                        result[employeeName] += wi.Cost;
+                    else
+                        result[employeeName] = wi.Cost;
+                }
+
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Получить полное имя клиента по ID
+        /// </summary>
+        public static string GetClientFullName(int clientId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var client = context.Clients.Find(clientId);
+                return client != null ? $"{client.FirstName} {client.LastName}" : "Неизвестно";
+            }
+        }
+
+        /// <summary>
+        /// Получить полное имя сотрудника по ID
+        /// </summary>
+        public static string GetEmployeeFullName(int employeeId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                var employee = context.Employees.Find(employeeId);
+                return employee != null ? $"{employee.FirstName} {employee.LastName}" : "Неизвестно";
+            }
+        }
     }
 }

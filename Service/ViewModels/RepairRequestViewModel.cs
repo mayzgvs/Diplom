@@ -1,7 +1,7 @@
 ﻿using Service.Data;
 using Service.Models;
 using Service.Services;
-using Service.Views;   
+using Service.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -74,15 +74,52 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            var freshList = _model.GetRepairRequests();
+            try
+            {
+                var freshList = _model.GetRepairRequests();
 
-            RepairRequests = new ObservableCollection<RepairRequest>(freshList);
-            FilteredRequests = new ObservableCollection<RepairRequest>(freshList);
+                // Загружаем связанные данные
+                using (var context = new ApplicationContext())
+                {
+                    foreach (var request in freshList)
+                    {
+                        // Загружаем услугу
+                        if (request.ServiceId > 0)
+                        {
+                            request.Service = context.Services.FirstOrDefault(s => s.Id == request.ServiceId);
+                            request.ServiceName = request.Service?.Name ?? "Не указана";
+                        }
 
-            Statuses = new ObservableCollection<StatusRequest>(_model.GetStatuses());
+                        // Загружаем статус, если не загружен
+                        if (request.Status == null && request.StatusId > 0)
+                        {
+                            request.Status = context.StatusRequests.FirstOrDefault(s => s.Id == request.StatusId);
+                        }
+                    }
+                }
 
-            OnPropertyChanged(nameof(RepairRequests));
-            OnPropertyChanged(nameof(FilteredRequests));
+                RepairRequests = new ObservableCollection<RepairRequest>(freshList);
+                FilteredRequests = new ObservableCollection<RepairRequest>(freshList);
+
+                Statuses = new ObservableCollection<StatusRequest>(_model.GetStatuses());
+
+                OnPropertyChanged(nameof(RepairRequests));
+                OnPropertyChanged(nameof(FilteredRequests));
+                OnPropertyChanged(nameof(Statuses));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+
+                // Создаем пустые коллекции, чтобы интерфейс отображался
+                RepairRequests = new ObservableCollection<RepairRequest>();
+                FilteredRequests = new ObservableCollection<RepairRequest>();
+                Statuses = new ObservableCollection<StatusRequest>();
+
+                OnPropertyChanged(nameof(RepairRequests));
+                OnPropertyChanged(nameof(FilteredRequests));
+            }
         }
 
         private void Filter()
@@ -116,22 +153,48 @@ namespace Service.ViewModels
             SelectedFilterStatus = null;
         }
 
+        private void OnRepairRequestSaved(object sender, EventArgs e)
+        {
+            LoadData();
+
+            if (sender is AddRepairRequestViewModel viewModel)
+            {
+                viewModel.RepairRequestSaved -= OnRepairRequestSaved;
+            }
+        }
+
         private void AddRepairRequest()
         {
-            var window = new AddRepairView();
-            window.DataContext = new AddRepairRequestViewModel();
-
-            if (window.ShowDialog() == true)
-                LoadData();
+            try
+            {
+                var window = new AddRepairView();
+                var viewModel = new AddRepairRequestViewModel();
+                viewModel.RepairRequestSaved += OnRepairRequestSaved;
+                window.DataContext = viewModel;
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при открытии окна добавления: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void EditRepairRequest()
         {
-            var window = new AddRepairView();
-            window.DataContext = new AddRepairRequestViewModel(SelectedRepairRequest);
-
-            if (window.ShowDialog() == true)
-                LoadData();
+            try
+            {
+                var window = new AddRepairView();
+                var viewModel = new AddRepairRequestViewModel(SelectedRepairRequest);
+                viewModel.RepairRequestSaved += OnRepairRequestSaved;
+                window.DataContext = viewModel;
+                window.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при открытии окна редактирования: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void DeleteRepairRequest()
@@ -139,10 +202,21 @@ namespace Service.ViewModels
             if (MessageBox.Show($"Удалить заявку #{SelectedRepairRequest.Id}?",
                 "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                _model.DeleteRepairRequest(SelectedRepairRequest);
-                LoadData();
+                try
+                {
+                    _model.DeleteRepairRequest(SelectedRepairRequest);
+                    LoadData();
+                    MessageBox.Show("Заявка успешно удалена!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
+
         private async Task UpdateRepairStatus(RepairRequest request, int newStatusId)
         {
             if (request == null) return;
@@ -198,7 +272,7 @@ namespace Service.ViewModels
                 MessageBox.Show($"Статус заявки изменен на '{statusName}'", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
-                LoadData(); 
+                LoadData();
             }
             catch (Exception ex)
             {
@@ -210,7 +284,7 @@ namespace Service.ViewModels
         private bool CanSendNotification(object parameter)
         {
             return SelectedRepairRequest != null &&
-                   SelectedRepairRequest.StatusId == 3; 
+                   SelectedRepairRequest.StatusId == 3;
         }
 
         private async void SendNotificationManually(object parameter)

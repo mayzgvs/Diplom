@@ -53,7 +53,7 @@ namespace Service.Models
         public void DeleteRepairRequest(RepairRequest request)
         {
             DbManager.DeleteRepairRequestById(request.Id);
-            Refresh(); 
+            Refresh();
         }
     }
 }

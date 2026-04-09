@@ -150,6 +150,8 @@ namespace Service.ViewModels
                 {
                     _model.DeleteService(SelectedService);
                     LoadData();
+                    MessageBox.Show("Услуга успешно удалена!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

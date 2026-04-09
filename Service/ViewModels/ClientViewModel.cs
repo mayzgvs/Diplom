@@ -142,6 +142,8 @@ namespace Service.ViewModels
                     _model.DeleteClient(SelectedClient);
                     LoadData();
                     FilterClients();
+                    MessageBox.Show("Клиент успешно удален!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

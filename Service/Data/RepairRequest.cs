@@ -24,6 +24,14 @@ namespace Service.Data
             set { if (_carId != value) { _carId = value; OnPropertyChanged(); } }
         }
 
+        private int _serviceId; // ДОБАВИТЬ ЭТО
+        [ForeignKey(nameof(Service))]
+        public int ServiceId  // ДОБАВИТЬ ЭТО
+        {
+            get => _serviceId;
+            set { if (_serviceId != value) { _serviceId = value; OnPropertyChanged(); } }
+        }
+
         private DateTime _startDate;
         public DateTime StartDate
         {
@@ -56,8 +64,6 @@ namespace Service.Data
                     var oldStatusId = _statusId;
                     _statusId = value;
                     OnPropertyChanged();
-
-                    OnStatusChanged(oldStatusId, value);
                 }
             }
         }
@@ -67,6 +73,13 @@ namespace Service.Data
         {
             get => _car;
             set { if (_car != value) { _car = value; OnPropertyChanged(); } }
+        }
+
+        private Service _service;
+        public virtual Service Service
+        {
+            get => _service;
+            set { if (_service != value) { _service = value; OnPropertyChanged(); } }
         }
 
         private StatusRequest _status;
@@ -87,24 +100,5 @@ namespace Service.Data
 
         [NotMapped]
         public string StatusName => Status?.Name ?? "Неизвестен";
-
-        public event EventHandler<StatusChangedEventArgs> StatusChanged;
-
-        protected virtual void OnStatusChanged(int oldStatusId, int newStatusId)
-        {
-            StatusChanged?.Invoke(this, new StatusChangedEventArgs(oldStatusId, newStatusId));
-        }
-    }
-
-    public class StatusChangedEventArgs : EventArgs
-    {
-        public int OldStatusId { get; }
-        public int NewStatusId { get; }
-
-        public StatusChangedEventArgs(int oldStatusId, int newStatusId)
-        {
-            OldStatusId = oldStatusId;
-            NewStatusId = newStatusId;
-        }
     }
 }

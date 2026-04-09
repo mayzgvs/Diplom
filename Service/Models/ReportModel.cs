@@ -1,4 +1,4 @@
-﻿// ReportModels.cs - новые модели для отчетов
+﻿// ReportModels.cs - расширенные модели для отчетов
 using System;
 using System.Collections.Generic;
 
@@ -17,6 +17,11 @@ namespace Service.Models
         public List<TopEmployeeItem> TopEmployees { get; set; }
         public List<TopClientItem> TopClients { get; set; }
 
+        // Данные для диаграмм
+        public List<ChartDataItem> RevenueChartData { get; set; }
+        public List<ChartDataItem> StatusChartData { get; set; }
+        public List<ChartDataItem> ServicesChartData { get; set; }
+
         public RevenueReport()
         {
             RevenueByDay = new Dictionary<string, decimal>();
@@ -25,7 +30,18 @@ namespace Service.Models
             TopServices = new List<TopServiceItem>();
             TopEmployees = new List<TopEmployeeItem>();
             TopClients = new List<TopClientItem>();
+            RevenueChartData = new List<ChartDataItem>();
+            StatusChartData = new List<ChartDataItem>();
+            ServicesChartData = new List<ChartDataItem>();
         }
+    }
+
+    public class ChartDataItem
+    {
+        public string Label { get; set; }
+        public decimal Value { get; set; }
+        public int Count { get; set; }
+        public string Color { get; set; }
     }
 
     public class TopServiceItem

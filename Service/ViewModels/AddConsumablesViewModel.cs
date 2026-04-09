@@ -69,7 +69,7 @@ namespace Service.ViewModels
             ConsumableCategories = new ObservableCollection<ConsumablesCategory>(_model.GetCategories());
         }
 
-        private async void Save(object parameter)
+        private void Save(object parameter)
         {
             ErrorMessage = "";
             SuccessMessage = "";
@@ -96,15 +96,22 @@ namespace Service.ViewModels
             try
             {
                 if (!_isEditMode)
+                {
                     _model.CreateConsumable(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId, EditingConsumable.Cost);
+                    SuccessMessage = "Расходник успешно добавлен!";
+                    MessageBox.Show("Расходник успешно добавлен!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
                 else
+                {
                     _model.EditConsumable(EditingConsumable.Id, EditingConsumable.Name,
                         EditingConsumable.ConsumableCategoryId, EditingConsumable.Cost);
+                    SuccessMessage = "Расходник успешно обновлен!";
+                    MessageBox.Show("Расходник успешно обновлен!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
 
-                SuccessMessage = _isEditMode ? "Расходник успешно обновлен!" : "Расходник успешно добавлен!";
                 ConsumableSaved?.Invoke(this, EventArgs.Empty);
-
-                await System.Threading.Tasks.Task.Delay(800);
 
                 if (parameter is Window window)
                     window.DialogResult = true;
@@ -112,6 +119,8 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

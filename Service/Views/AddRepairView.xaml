@@ -109,7 +109,7 @@
                     <ComboBox Grid.Row="5" Grid.Column="1"
                               Style="{StaticResource ModernComboBoxGreen}"
                               ItemsSource="{Binding Services}"
-                              SelectedItem="{Binding SelectedService, Mode=TwoWay}"
+                              SelectedItem="{Binding SelectedService, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               DisplayMemberPath="Name"/>
 
                     <!-- Стоимость -->

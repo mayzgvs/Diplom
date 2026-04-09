@@ -125,6 +125,8 @@ namespace Service.ViewModels
                 {
                     _model.DeleteEmployee(SelectedEmployee);
                     LoadData();
+                    MessageBox.Show("Сотрудник успешно удален!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

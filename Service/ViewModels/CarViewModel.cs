@@ -133,6 +133,8 @@ namespace Service.ViewModels
                     _model.DeleteCar(SelectedCar);
                     LoadData();
                     FilterCars();
+                    MessageBox.Show("Автомобиль успешно удален!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {

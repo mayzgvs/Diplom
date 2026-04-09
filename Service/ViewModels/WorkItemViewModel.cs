@@ -1,4 +1,4 @@
-﻿ using Service.Data;
+﻿using Service.Data;
 using Service.Models;
 using Service.Views;
 using System;
@@ -90,7 +90,11 @@ namespace Service.ViewModels
             var viewModel = new AddWorkItemViewModel(SelectedRepairRequest);
             window.DataContext = viewModel;
 
-            viewModel.WorkItemSaved += (s, e) => LoadWorkItems();
+            viewModel.WorkItemSaved += (s, e) =>
+            {
+                LoadWorkItems();
+                UpdateRequestTotalCost();
+            };
 
             if (window.ShowDialog() == true)
             {
@@ -105,7 +109,11 @@ namespace Service.ViewModels
             var viewModel = new AddWorkItemViewModel(SelectedRepairRequest, SelectedWorkItem);
             window.DataContext = viewModel;
 
-            viewModel.WorkItemSaved += (s, e) => LoadWorkItems();
+            viewModel.WorkItemSaved += (s, e) =>
+            {
+                LoadWorkItems();
+                UpdateRequestTotalCost();
+            };
 
             if (window.ShowDialog() == true)
             {
@@ -116,12 +124,24 @@ namespace Service.ViewModels
 
         private void DeleteWorkItem()
         {
+            if (SelectedWorkItem == null) return;
+
             if (MessageBox.Show($"Удалить работу '{SelectedWorkItem.ServiceName}'?",
                 "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
-                _model.DeleteWorkItem(SelectedWorkItem);
-                LoadWorkItems();
-                UpdateRequestTotalCost();
+                try
+                {
+                    _model.DeleteWorkItem(SelectedWorkItem);
+                    LoadWorkItems();
+                    UpdateRequestTotalCost();
+                    MessageBox.Show("Работа успешно удалена!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 

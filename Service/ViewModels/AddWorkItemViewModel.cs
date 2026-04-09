@@ -62,7 +62,7 @@ namespace Service.ViewModels
             {
                 _selectedService = value;
                 OnPropertyChanged();
-                CalculateTotalCost(); 
+                CalculateTotalCost();
             }
         }
 
@@ -74,7 +74,7 @@ namespace Service.ViewModels
             {
                 _selectedConsumable = value;
                 OnPropertyChanged();
-                CalculateTotalCost(); 
+                CalculateTotalCost();
             }
         }
 
@@ -103,7 +103,6 @@ namespace Service.ViewModels
             }
         }
 
-        // Отображаемая стоимость (с форматированием)
         private string _displayCost;
         public string DisplayCost
         {
@@ -170,7 +169,6 @@ namespace Service.ViewModels
                 SelectedEmployee = Employees.FirstOrDefault(e => e.Id == _editingWorkItem.EmployeeId);
                 SelectedStatus = WorkStatuses.FirstOrDefault(s => s.Id == _editingWorkItem.StatusId);
 
-                // Устанавливаем стоимость из редактируемой работы
                 decimal costValue = _editingWorkItem.Cost;
                 _cost = costValue.ToString();
                 UpdateDisplayCost(costValue);
@@ -185,36 +183,25 @@ namespace Service.ViewModels
             }
         }
 
-        /// <summary>
-        /// Автоматический расчет общей стоимости
-        /// </summary>
         private void CalculateTotalCost()
         {
             decimal total = 0;
 
-            // Добавляем стоимость услуги, если выбрана
             if (IsServiceSelected && SelectedService != null)
             {
                 total += SelectedService.Cost;
             }
 
-            // Добавляем стоимость расходника, если выбран
             if (IsConsumableSelected && SelectedConsumable != null)
             {
                 total += SelectedConsumable.Cost ?? 0;
             }
 
-            // Сохраняем числовое значение
             _cost = total.ToString();
             OnPropertyChanged(nameof(Cost));
-
-            // Обновляем отображаемое значение с форматированием
             UpdateDisplayCost(total);
         }
 
-        /// <summary>
-        /// Обновление отображаемой стоимости с форматированием
-        /// </summary>
         private void UpdateDisplayCost(decimal cost)
         {
             if (cost > 0)
@@ -225,18 +212,14 @@ namespace Service.ViewModels
 
         private bool CanSave(object parameter)
         {
-            // Проверяем, что выбран хотя бы один тип работы
             bool hasWorkType = IsServiceSelected || IsConsumableSelected;
 
-            // Если выбрана услуга, она должна быть выбрана
             if (IsServiceSelected && SelectedService == null)
                 return false;
 
-            // Если выбран расходник, он должен быть выбран
             if (IsConsumableSelected && SelectedConsumable == null)
                 return false;
 
-            // Проверяем сотрудника и статус
             return hasWorkType && SelectedEmployee != null && SelectedStatus != null;
         }
 
@@ -266,10 +249,8 @@ namespace Service.ViewModels
 
             if (!decimal.TryParse(_cost, out decimal costValue) || costValue <= 0)
             {
-                // Если стоимость 0, но выбраны услуга или расходник - возможно они бесплатные
                 if (costValue == 0 && (IsServiceSelected || IsConsumableSelected))
                 {
-                    // Разрешаем сохранение с нулевой стоимостью
                     costValue = 0;
                 }
                 else
@@ -289,12 +270,16 @@ namespace Service.ViewModels
                     _model.CreateWorkItem(_repairRequest.Id, SelectedEmployee?.Id,
                         serviceId, consumableId, costValue, SelectedStatus.Id);
                     SuccessMessage = "Работа успешно добавлена!";
+                    MessageBox.Show("Работа успешно добавлена!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _model.EditWorkItem(_editingWorkItem.Id, _repairRequest.Id, SelectedEmployee?.Id,
                         serviceId, consumableId, costValue, SelectedStatus.Id);
                     SuccessMessage = "Работа успешно обновлена!";
+                    MessageBox.Show("Работа успешно обновлена!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 WorkItemSaved?.Invoke(this, EventArgs.Empty);
@@ -308,6 +293,8 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка сохранения: {ex.Message}";
+                MessageBox.Show($"Ошибка сохранения: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
