@@ -126,7 +126,7 @@ namespace Service.ViewModels
         {
             if (SelectedWorkItem == null) return;
 
-            if (MessageBox.Show($"Удалить работу '{SelectedWorkItem.ServiceName}'?",
+            if (MessageBox.Show($"Удалить выбранную работу?",
                 "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
             {
                 try

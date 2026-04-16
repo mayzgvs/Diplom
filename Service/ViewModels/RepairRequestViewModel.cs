@@ -78,19 +78,16 @@ namespace Service.ViewModels
             {
                 var freshList = _model.GetRepairRequests();
 
-                // Загружаем связанные данные
                 using (var context = new ApplicationContext())
                 {
                     foreach (var request in freshList)
                     {
-                        // Загружаем услугу
                         if (request.ServiceId > 0)
                         {
                             request.Service = context.Services.FirstOrDefault(s => s.Id == request.ServiceId);
                             request.ServiceName = request.Service?.Name ?? "Не указана";
                         }
 
-                        // Загружаем статус, если не загружен
                         if (request.Status == null && request.StatusId > 0)
                         {
                             request.Status = context.StatusRequests.FirstOrDefault(s => s.Id == request.StatusId);
@@ -112,7 +109,6 @@ namespace Service.ViewModels
                 MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
-                // Создаем пустые коллекции, чтобы интерфейс отображался
                 RepairRequests = new ObservableCollection<RepairRequest>();
                 FilteredRequests = new ObservableCollection<RepairRequest>();
                 Statuses = new ObservableCollection<StatusRequest>();

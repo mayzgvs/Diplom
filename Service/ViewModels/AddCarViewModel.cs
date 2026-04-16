@@ -29,129 +29,19 @@ namespace Service.ViewModels
         public ICommand CancelEditCommand { get; }
         public ICommand AddNewClientCommand { get; }
 
-        private string _errorMessage;
+        private string _errorMessage = "";
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
-        }
-
-        private string _successMessage;
-        public string SuccessMessage
-        {
-            get => _successMessage;
-            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
         }
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
-
-        private void LoadClients()
-        {
-            Clients = new ObservableCollection<Client>(_model.GetClients());
-        }
-
-        private void AddNewClient(object parameter)
-        {
-            var addClientWindow = new AddClient();
-            var addClientViewModel = new AddClientViewModel();
-            addClientWindow.DataContext = addClientViewModel;
-
-            addClientViewModel.ClientSaved += OnClientSaved;
-
-            if (addClientWindow.ShowDialog() == true)
-            {
-                LoadClients();
-            }
-
-            addClientViewModel.ClientSaved -= OnClientSaved;
-        }
-
-        private void OnClientSaved(object sender, EventArgs e)
-        {
-            LoadClients();
-        }
-
-        private void Save(object parameter)
-        {
-            ErrorMessage = "";
-            SuccessMessage = "";
-
-            if (string.IsNullOrWhiteSpace(EditingCar.Brand) || string.IsNullOrWhiteSpace(EditingCar.Model))
-            {
-                ErrorMessage = "Заполните обязательные поля!";
-                return;
-            }
-
-            if (EditingCar.OwnerId == 0)
-            {
-                ErrorMessage = "Выберите владельца автомобиля!";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(EditingCar.RegistrationNumber))
-            {
-                ErrorMessage = "Введите государственный номер!";
-                return;
-            }
-
-            if (!ValidationHelper.IsValidRussianLicensePlate(EditingCar.RegistrationNumber))
-            {
-                ErrorMessage = "Ошибка ввода: некорректный формат госномера!";
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(EditingCar.VIN))
-            {
-                if (!ValidationHelper.IsValidVIN(EditingCar.VIN))
-                {
-                    ErrorMessage = "Ошибка ввода: некорректный VIN (должен быть 17 символов)!";
-                    return;
-                }
-
-                if (_model.VinExists(EditingCar.VIN, _isEditMode ? EditingCar.Id : (int?)null))
-                {
-                    ErrorMessage = "Автомобиль с таким VIN номером уже существует в базе!";
-                    return;
-                }
-            }
-
-            if (_model.RegistrationNumberExists(EditingCar.RegistrationNumber, _isEditMode ? EditingCar.Id : (int?)null))
-            {
-                ErrorMessage = "Автомобиль с таким государственным номером уже существует в базе!";
-                return;
-            }
-            try
-            {
-                if (!_isEditMode)
-                {
-                    _model.CreateCar(EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber,
-                        EditingCar.VIN, EditingCar.OwnerId);
-                    SuccessMessage = "Автомобиль успешно добавлен!";
-                    MessageBox.Show("Автомобиль успешно добавлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    _model.EditCar(EditingCar.Id, EditingCar.Brand, EditingCar.Model,
-                        EditingCar.RegistrationNumber, EditingCar.VIN, EditingCar.OwnerId);
-                    SuccessMessage = "Автомобиль успешно обновлен!";
-                    MessageBox.Show("Автомобиль успешно обновлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-
-                CarSaved?.Invoke(this, EventArgs.Empty);
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         public AddCarViewModel(Car car = null)
         {
@@ -168,10 +58,118 @@ namespace Service.ViewModels
                 EditingCar = car;
             }
 
-            SaveCommand = new RelayCommand(Save);
+            SaveCommand = new RelayCommand(Save);             
             CancelEditCommand = new RelayCommand(Cancel);
             AddNewClientCommand = new RelayCommand(AddNewClient);
         }
+
+        private void LoadClients()
+        {
+            Clients = new ObservableCollection<Client>(_model.GetClients());
+            OnPropertyChanged(nameof(Clients));
+        }
+
+        private void Save(object parameter)
+        {
+            ErrorMessage = "";
+
+            if (string.IsNullOrWhiteSpace(EditingCar.Brand) || string.IsNullOrWhiteSpace(EditingCar.Model))
+            {
+                ErrorMessage = "Заполните марку и модель автомобиля!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (EditingCar.OwnerId == 0)
+            {
+                ErrorMessage = "Выберите владельца автомобиля!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(EditingCar.RegistrationNumber))
+            {
+                ErrorMessage = "Введите государственный номер автомобиля!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!ValidationHelper.IsValidRussianLicensePlate(EditingCar.RegistrationNumber))
+            {
+                ErrorMessage = "Некорректный формат государственного номера!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(EditingCar.VIN))
+            {
+                if (!ValidationHelper.IsValidVIN(EditingCar.VIN))
+                {
+                    ErrorMessage = "Некорректный VIN-номер! Должен содержать 17 символов.";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (_model.VinExists(EditingCar.VIN, _isEditMode ? EditingCar.Id : (int?)null))
+                {
+                    ErrorMessage = "Автомобиль с таким VIN уже существует!";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            if (_model.RegistrationNumberExists(EditingCar.RegistrationNumber, _isEditMode ? EditingCar.Id : (int?)null))
+            {
+                ErrorMessage = "Автомобиль с таким государственным номером уже существует!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                if (!_isEditMode)
+                {
+                    _model.CreateCar(EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber,
+                                   EditingCar.VIN, EditingCar.OwnerId);
+                    MessageBox.Show("Автомобиль успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _model.EditCar(EditingCar.Id, EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber,
+                                 EditingCar.VIN, EditingCar.OwnerId);
+                    MessageBox.Show("Автомобиль успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                CarSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                {
+                    window.DialogResult = true;
+                    window.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void AddNewClient(object parameter)
+        {
+            var addClientWindow = new AddClient();
+            var addClientViewModel = new AddClientViewModel();
+            addClientWindow.DataContext = addClientViewModel;
+
+            addClientViewModel.ClientSaved += OnClientSaved;
+
+            if (addClientWindow.ShowDialog() == true)
+                LoadClients();
+
+            addClientViewModel.ClientSaved -= OnClientSaved;
+        }
+
+        private void OnClientSaved(object sender, EventArgs e) => LoadClients();
 
         private void Cancel(object parameter)
         {

@@ -1,12 +1,6 @@
 ﻿using Service.ViewModels;
-using Service.Data;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Data
 {
@@ -63,10 +57,10 @@ namespace Service.Data
             get => _serviceCategoryId;
             set
             {
-                if (_serviceCategoryId != value)
+                if (_serviceCategoryId != value) 
                 {
                     _serviceCategoryId = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged();     
                 }
             }
         }

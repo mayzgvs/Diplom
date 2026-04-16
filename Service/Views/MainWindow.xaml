@@ -122,7 +122,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#E67E22">
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="{StaticResource TealBrush}">
                                             <TextBlock Text="🚗" FontSize="20" Foreground="White"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>
@@ -194,7 +194,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#1ABC9C">
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#2980B9">
                                             <TextBlock Text="👨‍🔧" FontSize="20" Foreground="White"
                                                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         </Border>

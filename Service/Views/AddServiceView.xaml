@@ -53,7 +53,7 @@
 
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Категория" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <ComboBox Grid.Row="2" Grid.Column="1"
-                              Style="{StaticResource WatermarkComboBoxPurple}"
+                              Style="{StaticResource ModernComboBoxGreen}"
                               ItemsSource="{Binding ServiceCategories}"
                               SelectedValue="{Binding EditingService.ServiceCategoryId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"

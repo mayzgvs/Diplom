@@ -47,7 +47,7 @@
 
                     <TextBlock Grid.Row="1" Grid.Column="0" Text="Категория" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
                     <ComboBox Grid.Row="1" Grid.Column="1"
-                              Style="{StaticResource WatermarkComboBoxOrange}"
+                              Style="{StaticResource ModernComboBoxGreen}"
                               ItemsSource="{Binding ConsumableCategories}"
                               SelectedValue="{Binding EditingConsumable.ConsumableCategoryId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
@@ -65,14 +65,6 @@
 
             <Border Grid.Row="2" Background="#F8F9FA" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Отмена" Width="100" Height="38" Margin="5"
-                            Command="{Binding CancelEditCommand}"
-                            Background="White"
-                            Foreground="#7F8C8D"
-                            BorderBrush="#E0E0E0"
-                            BorderThickness="1"
-                            FontSize="13"
-                            Cursor="Hand"/>
                     <Button Content="Сохранить" Width="100" Height="38" Margin="5"
                             Command="{Binding SaveCommand}"
                             Background="#E67E22"

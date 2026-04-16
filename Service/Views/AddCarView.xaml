@@ -101,7 +101,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Сохранить" Width="100" Height="38" Margin="5"
                             Command="{Binding SaveCommand}"
-                            Background="#1ABC9C"
+                            Background="{StaticResource TealBrush}"
                             Foreground="White"
                             FontSize="13"
                             Cursor="Hand"/>

@@ -141,7 +141,7 @@
                         </GridViewColumn.HeaderTemplate>
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding TotalCost, StringFormat={}{0:N0} ₽}"
+                                <TextBlock Text="{Binding TotalCost, StringFormat={}{0:N2} ₽}"
                                            Style="{StaticResource CostStyle}" Padding="8,5" TextAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

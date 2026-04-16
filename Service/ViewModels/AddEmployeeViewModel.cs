@@ -24,86 +24,19 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-        private string _errorMessage;
+        private string _errorMessage = "";
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
-        }
-
-        private string _successMessage;
-        public string SuccessMessage
-        {
-            get => _successMessage;
-            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
         }
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
-
-        private void Save(object parameter)
-        {
-            ErrorMessage = "";
-            SuccessMessage = "";
-
-            if (string.IsNullOrWhiteSpace(EditingEmployee.LastName))
-            {
-                ErrorMessage = "Введите фамилию!";
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
-            {
-                ErrorMessage = "Введите имя!";
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(EditingEmployee.ContactNumber))
-            {
-                if (!ValidationHelper.IsValidRussianPhone(EditingEmployee.ContactNumber))
-                {
-                    ErrorMessage = "Некорректный формат номера телефона!\nФормат: +7XXXXXXXXXX (10 цифр после +7)";
-                    return;
-                }
-
-                if (_model.PhoneExists(EditingEmployee.ContactNumber, _isEditMode ? EditingEmployee.Id : (int?)null))
-                {
-                    ErrorMessage = "Сотрудник с таким номером телефона уже существует!";
-                    return;
-                }
-            }
-
-            try
-            {
-                if (!_isEditMode)
-                {
-                    _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName,
-                        EditingEmployee.ContactNumber);
-                    SuccessMessage = "Сотрудник успешно добавлен!";
-                    MessageBox.Show("Сотрудник успешно добавлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName,
-                        EditingEmployee.ContactNumber);
-                    SuccessMessage = "Сотрудник успешно обновлен!";
-                    MessageBox.Show("Сотрудник успешно обновлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-
-                EmployeeSaved?.Invoke(this, EventArgs.Empty);
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         public AddEmployeeViewModel(Employee employee = null)
         {
@@ -120,6 +53,63 @@ namespace Service.ViewModels
 
             SaveCommand = new RelayCommand(Save);
             CancelEditCommand = new RelayCommand(Cancel);
+        }
+
+        private void Save(object parameter)
+        {
+            ErrorMessage = "";
+
+            if (string.IsNullOrWhiteSpace(EditingEmployee.LastName) ||
+                string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
+            {
+                ErrorMessage = "Введите фамилию и имя сотрудника!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(EditingEmployee.ContactNumber))
+            {
+                if (!ValidationHelper.IsValidRussianPhone(EditingEmployee.ContactNumber))
+                {
+                    ErrorMessage = "Некорректный формат номера телефона!\nПример: +7XXXXXXXXXX";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (_model.PhoneExists(EditingEmployee.ContactNumber, _isEditMode ? EditingEmployee.Id : (int?)null))
+                {
+                    ErrorMessage = "Сотрудник с таким номером телефона уже существует!";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            try
+            {
+                if (!_isEditMode)
+                {
+                    _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
+                    MessageBox.Show("Сотрудник успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
+                    MessageBox.Show("Сотрудник успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                EmployeeSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                {
+                    window.DialogResult = true;
+                    window.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)

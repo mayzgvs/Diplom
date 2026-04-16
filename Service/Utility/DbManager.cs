@@ -482,6 +482,14 @@ namespace Service.Utility
                 }
             }
         }
+
+        public static Consumable GetConsumableById(int consumableId)
+        {
+            using (var context = new ApplicationContext())
+            {
+                return context.Consumables.FirstOrDefault(c => c.Id == consumableId);
+            }
+        }
         #endregion
 
         #region WorkItems
@@ -688,8 +696,6 @@ namespace Service.Utility
         }
 
         #endregion
-
-        // ====================== ДОБАВЛЕННЫЕ МЕТОДЫ ДЛЯ ОТЧЕТОВ ======================
 
         /// <summary>
         /// Получить все автомобили

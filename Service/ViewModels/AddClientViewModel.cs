@@ -24,95 +24,19 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-        private string _errorMessage;
+        private string _errorMessage = "";
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
-        }
-
-        private string _successMessage;
-        public string SuccessMessage
-        {
-            get => _successMessage;
-            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
         }
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
-
-        private void Save(object parameter)
-        {
-            ErrorMessage = "";
-            SuccessMessage = "";
-
-            if (string.IsNullOrWhiteSpace(EditingClient.LastName) || string.IsNullOrWhiteSpace(EditingClient.FirstName))
-            {
-                ErrorMessage = "Заполните обязательные поля!";
-                return;
-            }
-
-            if (!string.IsNullOrWhiteSpace(EditingClient.ContactNumber))
-            {
-                if (!ValidationHelper.IsValidRussianPhone(EditingClient.ContactNumber))
-                {
-                    ErrorMessage = "Ошибка ввода: неверный формат телефона!";
-                    return;
-                }
-
-                if (_model.PhoneExists(EditingClient.ContactNumber, _isEditMode ? EditingClient.Id : (int?)null))
-                {
-                    ErrorMessage = "Клиент с таким номером телефона уже существует!";
-                    return;
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(EditingClient.Email))
-            {
-                if (!ValidationHelper.IsValidEmail(EditingClient.Email))
-                {
-                    ErrorMessage = "Некорректный формат email!";
-                    return;
-                }
-
-                if (_model.EmailExists(EditingClient.Email, _isEditMode ? EditingClient.Id : (int?)null))
-                {
-                    ErrorMessage = "Клиент с таким email уже существует!";
-                    return;
-                }
-            }
-
-            try
-            {
-                if (!_isEditMode)
-                {
-                    _model.CreateClient(EditingClient.FirstName, EditingClient.LastName,
-                        EditingClient.ContactNumber, EditingClient.Email);
-                    SuccessMessage = "Клиент успешно добавлен!";
-                    MessageBox.Show("Клиент успешно добавлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName,
-                        EditingClient.ContactNumber, EditingClient.Email);
-                    SuccessMessage = "Клиент успешно обновлен!";
-                    MessageBox.Show("Клиент успешно обновлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-
-                ClientSaved?.Invoke(this, EventArgs.Empty);
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         public AddClientViewModel(Client client = null)
         {
@@ -127,8 +51,84 @@ namespace Service.ViewModels
                 EditingClient = client;
             }
 
-            SaveCommand = new RelayCommand(Save);
+            SaveCommand = new RelayCommand(Save);   
             CancelEditCommand = new RelayCommand(Cancel);
+        }
+
+        private void Save(object parameter)
+        {
+            ErrorMessage = "";
+
+            if (string.IsNullOrWhiteSpace(EditingClient.LastName) ||
+                string.IsNullOrWhiteSpace(EditingClient.FirstName))
+            {
+                ErrorMessage = "Введите фамилию и имя клиента!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (!string.IsNullOrWhiteSpace(EditingClient.ContactNumber))
+            {
+                if (!ValidationHelper.IsValidRussianPhone(EditingClient.ContactNumber))
+                {
+                    ErrorMessage = "Некорректный формат номера телефона!\nПример: +7XXXXXXXXXX";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (_model.PhoneExists(EditingClient.ContactNumber, _isEditMode ? EditingClient.Id : (int?)null))
+                {
+                    ErrorMessage = "Клиент с таким номером телефона уже существует!";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            if (!string.IsNullOrWhiteSpace(EditingClient.Email))
+            {
+                if (!ValidationHelper.IsValidEmail(EditingClient.Email))
+                {
+                    ErrorMessage = "Некорректный формат email-адреса!";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (_model.EmailExists(EditingClient.Email, _isEditMode ? EditingClient.Id : (int?)null))
+                {
+                    ErrorMessage = "Клиент с таким email уже существует!";
+                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+            }
+
+            try
+            {
+                if (!_isEditMode)
+                {
+                    _model.CreateClient(EditingClient.FirstName, EditingClient.LastName,
+                                      EditingClient.ContactNumber, EditingClient.Email);
+                    MessageBox.Show("Клиент успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName,
+                                    EditingClient.ContactNumber, EditingClient.Email);
+                    MessageBox.Show("Клиент успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                ClientSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                {
+                    window.DialogResult = true;
+                    window.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)

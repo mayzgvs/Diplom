@@ -27,80 +27,19 @@ namespace Service.ViewModels
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
 
-        private string _errorMessage;
+        private string _errorMessage = "";
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
-        }
-
-        private string _successMessage;
-        public string SuccessMessage
-        {
-            get => _successMessage;
-            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
         }
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
-        public bool HasSuccess => !string.IsNullOrEmpty(SuccessMessage);
-
-        private void LoadCategories()
-        {
-            ServiceCategories = new ObservableCollection<ServiceCategory>(_model.GetCategories());
-        }
-
-        private void Save(object parameter)
-        {
-            ErrorMessage = "";
-            SuccessMessage = "";
-
-            if (string.IsNullOrWhiteSpace(EditingService.Name))
-            {
-                ErrorMessage = "Заполните название услуги!";
-                return;
-            }
-
-            if (EditingService.Cost <= 0)
-            {
-                ErrorMessage = "Ошибка: стоимость должна быть положительным числом!";
-                return;
-            }
-
-            if (EditingService.ServiceCategoryId == 0)
-            {
-                ErrorMessage = "Выберите категорию услуги!";
-                return;
-            }
-
-            try
-            {
-                if (!_isEditMode)
-                {
-                    _model.CreateService(EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
-                    SuccessMessage = "Услуга успешно добавлена!";
-                    MessageBox.Show("Услуга успешно добавлена!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-                else
-                {
-                    _model.EditService(EditingService.Id, EditingService.Name, EditingService.Cost, EditingService.ServiceCategoryId);
-                    SuccessMessage = "Услуга успешно обновлена!";
-                    MessageBox.Show("Услуга успешно обновлена!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-
-                ServiceSaved?.Invoke(this, EventArgs.Empty);
-
-                if (parameter is Window window)
-                    window.DialogResult = true;
-            }
-            catch (Exception ex)
-            {
-                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
         public AddServiceViewModel(ServiceModel service = null)
         {
@@ -109,7 +48,7 @@ namespace Service.ViewModels
             if (service == null)
             {
                 _isEditMode = false;
-                EditingService = new ServiceModel();
+                EditingService = new ServiceModel { ServiceCategoryId = 0 };
             }
             else
             {
@@ -117,8 +56,67 @@ namespace Service.ViewModels
                 EditingService = service;
             }
 
-            SaveCommand = new RelayCommand(Save);
+            SaveCommand = new RelayCommand(Save);     
             CancelEditCommand = new RelayCommand(Cancel);
+        }
+
+        private void LoadCategories()
+        {
+            ServiceCategories = new ObservableCollection<ServiceCategory>(_model.GetCategories());
+            OnPropertyChanged(nameof(ServiceCategories));
+        }
+
+        private void Save(object parameter)
+        {
+            ErrorMessage = "";
+
+            if (string.IsNullOrWhiteSpace(EditingService?.Name?.Trim()))
+            {
+                ErrorMessage = "Заполните название услуги!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (EditingService.Cost <= 0)
+            {
+                ErrorMessage = "Стоимость должна быть больше нуля!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (EditingService.ServiceCategoryId == 0)
+            {
+                ErrorMessage = "Выберите категорию услуги!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                if (!_isEditMode)
+                {
+                    _model.CreateService(EditingService.Name.Trim(), EditingService.Cost, EditingService.ServiceCategoryId);
+                    MessageBox.Show("Услуга успешно добавлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    _model.EditService(EditingService.Id, EditingService.Name.Trim(), EditingService.Cost, EditingService.ServiceCategoryId);
+                    MessageBox.Show("Услуга успешно обновлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+
+                ServiceSaved?.Invoke(this, EventArgs.Empty);
+
+                if (parameter is Window window)
+                {
+                    window.DialogResult = true;
+                    window.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
+                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void Cancel(object parameter)

@@ -20,11 +20,5 @@ namespace Service.Views
         {
             this.Close();
         }
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            this.DialogResult = false;
-            this.Close();
-        }
     }
 }

@@ -10,13 +10,11 @@
              Background="#F0F2F5">
 
     <UserControl.Resources>
-        <!-- Градиенты -->
         <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,0">
             <GradientStop Color="#2C3E50" Offset="0"/>
             <GradientStop Color="#3498DB" Offset="1"/>
         </LinearGradientBrush>
 
-        <!-- Стили карточек -->
         <Style x:Key="StatCardStyle" TargetType="Border">
             <Setter Property="Background" Value="White"/>
             <Setter Property="CornerRadius" Value="16"/>
@@ -41,7 +39,6 @@
             </Setter>
         </Style>
 
-        <!-- Кнопки -->
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#3498DB"/>
             <Setter Property="Foreground" Value="White"/>
@@ -113,7 +110,6 @@
             </Style.Triggers>
         </Style>
 
-        <!-- Статус бейджи -->
         <Style x:Key="StatusBadgeStyle" TargetType="Border">
             <Setter Property="CornerRadius" Value="12"/>
             <Setter Property="Padding" Value="8,4"/>
@@ -166,15 +162,13 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="25">
 
-            <!-- Шапка -->
             <Border Background="{StaticResource HeaderGradient}" CornerRadius="20" Padding="30,25" Margin="0,0,0,25">
                 <StackPanel>
                     <TextBlock Text="📊 ОТЧЁТЫ И АНАЛИТИКА" FontSize="28" FontWeight="Bold" Foreground="White"/>
                     <TextBlock Text="Полная статистика работы автосервиса" FontSize="14" Foreground="#BDC3C7" Margin="0,5,0,0"/>
                 </StackPanel>
             </Border>
-
-            <!-- Период -->
+            
             <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,20">
                 <StackPanel>
                     <TextBlock Text="📅 ПЕРИОД ОТЧЁТА" FontSize="14" FontWeight="SemiBold" Foreground="#7F8C8D" Margin="0,0,0,15"/>
@@ -199,7 +193,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- Ключевые метрики -->
             <WrapPanel Margin="0,0,0,20">
                 <Border Style="{StaticResource MetricCardStyle}" Width="220">
                     <StackPanel>
@@ -250,12 +243,10 @@
                 </StackPanel>
             </Border>
 
-            <!-- Таблица заявок -->
             <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,20">
                 <StackPanel>
                     <TextBlock Text="📋 СПИСОК ЗАЯВОК" FontSize="14" FontWeight="SemiBold" Foreground="#7F8C8D" Margin="0,0,0,15"/>
 
-                    <!-- Фильтры -->
                     <WrapPanel Margin="0,0,0,15" Width="789">
                         <Border Background="#F5F5F5" CornerRadius="8" Padding="10,5" Margin="0,0,10,5" Width="774">
                             <StackPanel Orientation="Horizontal">
@@ -295,7 +286,6 @@
                         </Border>
                     </WrapPanel>
 
-                    <!-- Таблица -->
                     <DataGrid ItemsSource="{Binding FilteredRequests}" 
                               AutoGenerateColumns="False" IsReadOnly="True"
                               SelectionMode="Single" SelectedItem="{Binding SelectedRequest}"
@@ -333,7 +323,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- Топ услуги -->
             <Border Style="{StaticResource StatCardStyle}" Margin="0,0,0,20">
                 <StackPanel>
                     <TextBlock Text="🏆 ТОП-5 УСЛУГ ПО ВЫРУЧКЕ" FontSize="14" FontWeight="SemiBold" Foreground="#7F8C8D" Margin="0,0,0,15"/>
@@ -360,7 +349,6 @@
                 </StackPanel>
             </Border>
 
-            <!-- Топ сотрудники -->
             <Border Style="{StaticResource StatCardStyle}">
                 <StackPanel>
                     <TextBlock Text="👨‍🔧 ТОП-5 СОТРУДНИКОВ ПО ВЫРУЧКЕ" FontSize="14" FontWeight="SemiBold" Foreground="#7F8C8D" Margin="0,0,0,15"/>

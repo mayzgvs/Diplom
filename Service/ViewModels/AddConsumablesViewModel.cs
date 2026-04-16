@@ -32,14 +32,24 @@ namespace Service.ViewModels
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
         }
 
         private string _successMessage;
         public string SuccessMessage
         {
             get => _successMessage;
-            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+            set
+            {
+                _successMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSuccess));
+            }
         }
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
@@ -60,7 +70,7 @@ namespace Service.ViewModels
                 EditingConsumable = consumable;
             }
 
-            SaveCommand = new RelayCommand(Save);
+            SaveCommand = new RelayCommand(Save);    
             CancelEditCommand = new RelayCommand(Cancel);
         }
 
@@ -74,22 +84,27 @@ namespace Service.ViewModels
             ErrorMessage = "";
             SuccessMessage = "";
 
-            if (string.IsNullOrWhiteSpace(EditingConsumable.Name))
+            if (string.IsNullOrWhiteSpace(EditingConsumable?.Name?.Trim()))
             {
                 ErrorMessage = "Введите наименование расходника!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (EditingConsumable.ConsumableCategoryId == 0)
             {
                 ErrorMessage = "Выберите категорию расходника!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            if (_model.ConsumableNameExistsInCategory(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId,
-                _isEditMode ? EditingConsumable.Id : (int?)null))
+            if (_model.ConsumableNameExistsInCategory(
+                    EditingConsumable.Name.Trim(),
+                    EditingConsumable.ConsumableCategoryId,
+                    _isEditMode ? EditingConsumable.Id : (int?)null))
             {
                 ErrorMessage = "Расходник с таким наименованием уже существует в выбранной категории!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -97,30 +112,36 @@ namespace Service.ViewModels
             {
                 if (!_isEditMode)
                 {
-                    _model.CreateConsumable(EditingConsumable.Name, EditingConsumable.ConsumableCategoryId, EditingConsumable.Cost);
+                    _model.CreateConsumable(EditingConsumable.Name.Trim(),
+                                          EditingConsumable.ConsumableCategoryId,
+                                          EditingConsumable.Cost);
+
                     SuccessMessage = "Расходник успешно добавлен!";
-                    MessageBox.Show("Расходник успешно добавлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Расходник успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    _model.EditConsumable(EditingConsumable.Id, EditingConsumable.Name,
-                        EditingConsumable.ConsumableCategoryId, EditingConsumable.Cost);
+                    _model.EditConsumable(EditingConsumable.Id,
+                                        EditingConsumable.Name.Trim(),
+                                        EditingConsumable.ConsumableCategoryId,
+                                        EditingConsumable.Cost);
+
                     SuccessMessage = "Расходник успешно обновлен!";
-                    MessageBox.Show("Расходник успешно обновлен!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Расходник успешно обновлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 ConsumableSaved?.Invoke(this, EventArgs.Empty);
 
                 if (parameter is Window window)
+                {
                     window.DialogResult = true;
+                    window.Close();
+                }
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

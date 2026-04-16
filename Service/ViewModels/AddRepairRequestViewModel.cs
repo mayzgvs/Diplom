@@ -65,14 +65,24 @@ namespace Service.ViewModels
         public string ErrorMessage
         {
             get => _errorMessage;
-            set { _errorMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasError)); }
+            set
+            {
+                _errorMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasError));
+            }
         }
 
         private string _successMessage;
         public string SuccessMessage
         {
             get => _successMessage;
-            set { _successMessage = value; OnPropertyChanged(); OnPropertyChanged(nameof(HasSuccess)); }
+            set
+            {
+                _successMessage = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(HasSuccess));
+            }
         }
 
         public bool HasError => !string.IsNullOrEmpty(ErrorMessage);
@@ -112,7 +122,7 @@ namespace Service.ViewModels
 
             EditingRepairRequest.PropertyChanged += EditingRepairRequest_PropertyChanged;
 
-            SaveCommand = new RelayCommand(Save);
+            SaveCommand = new RelayCommand(Save);       
             CancelEditCommand = new RelayCommand(Cancel);
             AddNewCarCommand = new RelayCommand(AddNewCar);
         }
@@ -182,18 +192,21 @@ namespace Service.ViewModels
             if (!string.IsNullOrEmpty(DateError))
             {
                 ErrorMessage = DateError;
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (EditingRepairRequest.CarId == 0)
             {
                 ErrorMessage = "Выберите автомобиль!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (SelectedService == null)
             {
                 ErrorMessage = "Выберите услугу!";
+                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -235,7 +248,7 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show($"Ошибка при сохранении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
