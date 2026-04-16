@@ -486,11 +486,9 @@ namespace Service.ViewModels
 
                     row += 4;
                     ws.Cells[$"A{row}"].Value = "_________________________";
-                    ws.Cells[$"B{row}"].Value = "_________________________";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
                     ws.Cells[$"A{row}"].Value = "Руководитель";
-                    ws.Cells[$"B{row}"].Value = "Главный бухгалтер";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Bold = true;
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
@@ -743,7 +741,6 @@ namespace Service.ViewModels
                 signaturesTable.Rows[3].Range.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
 
                 signaturesTable.Cell(1, 1).Range.Text = "_________________________";
-                signaturesTable.Cell(1, 2).Range.Text = "_________________________";
                 signaturesTable.Cell(1, 1).Range.Font.Size = 10;
                 signaturesTable.Cell(1, 2).Range.Font.Size = 10;
                 signaturesTable.Cell(1, 1).Range.Font.Name = "Times New Roman";
@@ -752,7 +749,6 @@ namespace Service.ViewModels
                 signaturesTable.Cell(1, 2).Range.ParagraphFormat.Alignment = Word.WdParagraphAlignment.wdAlignParagraphCenter;
 
                 signaturesTable.Cell(2, 1).Range.Text = "Руководитель";
-                signaturesTable.Cell(2, 2).Range.Text = "Главный бухгалтер";
                 signaturesTable.Cell(2, 1).Range.Font.Size = 10;
                 signaturesTable.Cell(2, 2).Range.Font.Size = 10;
                 signaturesTable.Cell(2, 1).Range.Font.Name = "Times New Roman";
@@ -969,12 +965,10 @@ namespace Service.ViewModels
                     displayRow += 3;
 
                     ws.Cells[$"A{displayRow}"].Value = "_________________________";
-                    ws.Cells[$"B{displayRow}"].Value = "_________________________";
                     ws.Cells[$"A{displayRow}:B{displayRow}"].Style.Font.Size = 10;
                     displayRow++;
 
                     ws.Cells[$"A{displayRow}"].Value = "Руководитель";
-                    ws.Cells[$"B{displayRow}"].Value = "Главный бухгалтер";
                     ws.Cells[$"A{displayRow}:B{displayRow}"].Style.Font.Bold = true;
                     ws.Cells[$"A{displayRow}:B{displayRow}"].Style.Font.Size = 10;
                     displayRow++;
@@ -1081,11 +1075,9 @@ namespace Service.ViewModels
                     row += 3;
 
                     ws.Cells[$"A{row}"].Value = "_________________________";
-                    ws.Cells[$"B{row}"].Value = "_________________________";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
                     ws.Cells[$"A{row}"].Value = "Руководитель";
-                    ws.Cells[$"B{row}"].Value = "Главный бухгалтер";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Bold = true;
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
@@ -1159,11 +1151,9 @@ namespace Service.ViewModels
                     row += 3;
 
                     ws.Cells[$"A{row}"].Value = "_________________________";
-                    ws.Cells[$"B{row}"].Value = "_________________________";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
                     ws.Cells[$"A{row}"].Value = "Руководитель";
-                    ws.Cells[$"B{row}"].Value = "Главный бухгалтер";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Bold = true;
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
@@ -1194,7 +1184,7 @@ namespace Service.ViewModels
                 using (var package = new ExcelPackage())
                 {
                     var ws = package.Workbook.Worksheets.Add("Заказ-наряд");
-                    ws.Cells["A1"].Value = "АВТОСЕРВИС JDM TERRITORY";
+                    ws.Cells["A1"].Value = "АВТОСЕРВИС";
                     ws.Cells["A1:E1"].Merge = true;
                     ws.Cells["A1"].Style.Font.Size = 20;
                     ws.Cells["A1"].Style.Font.Bold = true;
@@ -1272,13 +1262,12 @@ namespace Service.ViewModels
                     ws.Cells[$"B{row}"].Value = "_________________________";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
-                    ws.Cells[$"A{row}"].Value = "Мастер";
+                    ws.Cells[$"A{row}"].Value = "Руководитель";
                     ws.Cells[$"B{row}"].Value = "Клиент";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Bold = true;
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 10;
                     row++;
                     ws.Cells[$"A{row}"].Value = $"\"___\" ______________ 20___ г.";
-                    ws.Cells[$"B{row}"].Value = $"\"___\" ______________ 20___ г.";
                     ws.Cells[$"A{row}:B{row}"].Style.Font.Size = 9;
 
                     ws.Cells.AutoFitColumns();
