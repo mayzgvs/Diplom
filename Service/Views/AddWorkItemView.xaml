@@ -66,7 +66,6 @@
                                   FontSize="13"/>
                     </StackPanel>
 
-                    <!-- Услуга -->
                     <StackPanel>
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
@@ -85,7 +84,6 @@
                                   DisplayMemberPath="Name"/>
                     </StackPanel>
 
-                    <!-- Расходный материал -->
                     <StackPanel>
                         <StackPanel.Style>
                             <Style TargetType="StackPanel">
@@ -104,7 +102,6 @@
                                   DisplayMemberPath="Name"/>
                     </StackPanel>
 
-                    <!-- Сотрудник -->
                     <TextBlock Text="Сотрудник" FontWeight="SemiBold" Foreground="#2C3E50" Margin="0,0,0,8"/>
                     <ComboBox Style="{StaticResource ModernComboBox}"
                               ItemsSource="{Binding Employees}"
@@ -112,7 +109,6 @@
                               DisplayMemberPath="FullName"
                               Margin="0,0,0,20"/>
 
-                    <!-- Стоимость -->
                     <TextBlock Text="Стоимость" FontWeight="SemiBold" Foreground="#2C3E50" Margin="0,0,0,8"/>
                     <Border Background="#F8F9FA" CornerRadius="6" BorderBrush="#E0E0E0" BorderThickness="1" Margin="0,0,0,20">
                         <TextBlock Text="{Binding DisplayCost}"
@@ -123,7 +119,6 @@
                                    Foreground="#27AE60"/>
                     </Border>
 
-                    <!-- Статус -->
                     <TextBlock Text="Статус" FontWeight="SemiBold" Foreground="#2C3E50" Margin="0,0,0,8"/>
                     <ComboBox Style="{StaticResource ModernComboBox}"
                               ItemsSource="{Binding WorkStatuses}"

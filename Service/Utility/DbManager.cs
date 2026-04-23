@@ -697,9 +697,6 @@ namespace Service.Utility
 
         #endregion
 
-        /// <summary>
-        /// Получить все автомобили
-        /// </summary>
         public static List<Car> GetAllCars()
         {
             using (var context = new ApplicationContext())
@@ -708,9 +705,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить все заявки
-        /// </summary>
         public static List<RepairRequest> GetAllRequests()
         {
             using (var context = new ApplicationContext())
@@ -723,9 +717,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить всех сотрудников
-        /// </summary>
         public static List<Employee> GetAllEmployees()
         {
             using (var context = new ApplicationContext())
@@ -734,9 +725,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить все выполненные работы
-        /// </summary>
         public static List<WorkItem> GetAllWorkItems()
         {
             using (var context = new ApplicationContext())
@@ -751,9 +739,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить все услуги
-        /// </summary>
         public static List<Data.Service> GetAllServices()
         {
             using (var context = new ApplicationContext())
@@ -762,9 +747,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить всех клиентов
-        /// </summary>
         public static List<Client> GetAllClients()
         {
             using (var context = new ApplicationContext())
@@ -773,9 +755,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить статистику по маркам автомобилей
-        /// </summary>
         public static Dictionary<string, int> GetCarBrandsStats()
         {
             using (var context = new ApplicationContext())
@@ -787,9 +766,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить заявки клиента по ID клиента
-        /// </summary>
         public static List<RepairRequest> GetRequestsByClientId(int clientId)
         {
             using (var context = new ApplicationContext())
@@ -804,9 +780,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить выручку по услугам за период
-        /// </summary>
         public static Dictionary<string, decimal> GetRevenueByServices(DateTime startDate, DateTime endDate)
         {
             using (var context = new ApplicationContext())
@@ -837,9 +810,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить выручку по сотрудникам за период
-        /// </summary>
         public static Dictionary<string, decimal> GetRevenueByEmployees(DateTime startDate, DateTime endDate)
         {
             using (var context = new ApplicationContext())
@@ -870,9 +840,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить полное имя клиента по ID
-        /// </summary>
         public static string GetClientFullName(int clientId)
         {
             using (var context = new ApplicationContext())
@@ -882,9 +849,6 @@ namespace Service.Utility
             }
         }
 
-        /// <summary>
-        /// Получить полное имя сотрудника по ID
-        /// </summary>
         public static string GetEmployeeFullName(int employeeId)
         {
             using (var context = new ApplicationContext())

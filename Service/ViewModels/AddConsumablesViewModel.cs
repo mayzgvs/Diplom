@@ -20,7 +20,11 @@ namespace Service.ViewModels
         public Consumable EditingConsumable
         {
             get => _editingConsumable;
-            set { _editingConsumable = value; OnPropertyChanged(); }
+            set 
+            { 
+                _editingConsumable = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         public ObservableCollection<ConsumablesCategory> ConsumableCategories { get; private set; }

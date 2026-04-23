@@ -20,7 +20,11 @@ namespace Service.ViewModels
         public Consumable SelectedConsumable
         {
             get => _selectedConsumable;
-            set { _selectedConsumable = value; OnPropertyChanged(); }
+            set 
+            { 
+                _selectedConsumable = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         private string _searchText;

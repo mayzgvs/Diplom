@@ -18,7 +18,6 @@ namespace Service.Services
             _smsService = new SmsService();
         }
 
-        // Автоматическая отправка при смене статуса
         public async Task SendNotificationOnStatusChange(RepairRequest request, int oldStatusId, int newStatusId)
         {
             if (newStatusId == READY_STATUS_ID && oldStatusId != READY_STATUS_ID)
@@ -27,7 +26,6 @@ namespace Service.Services
             }
         }
 
-        // Ручная отправка уведомления
         public async Task SendManualNotificationAsync(RepairRequest request, bool sendEmail, bool sendSms)
         {
             var client = request.Car?.Client;

@@ -20,14 +20,23 @@ namespace Service.ViewModels
         public Client SelectedClient
         {
             get => _selectedClient;
-            set { _selectedClient = value; OnPropertyChanged(); }
+            set
+            { 
+                _selectedClient = value; 
+                OnPropertyChanged();
+            }
         }
 
         private string _searchText;
         public string SearchText
         {
             get => _searchText;
-            set { _searchText = value; OnPropertyChanged(); FilterClients(); }
+            set 
+            { 
+                _searchText = value; 
+                OnPropertyChanged();
+                FilterClients(); 
+            }
         }
 
         public ICommand LoadedCommand { get; }

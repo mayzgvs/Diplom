@@ -21,7 +21,7 @@ namespace Service.Utility
             if (value is Color mediaColor)
                 return mediaColor;
 
-            return Colors.Gray; // цвет по умолчанию, если ничего не подошло
+            return Colors.Gray;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

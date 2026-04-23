@@ -20,14 +20,23 @@ namespace Service.ViewModels
         public Car SelectedCar
         {
             get => _selectedCar;
-            set { _selectedCar = value; OnPropertyChanged(); }
+            set 
+            { 
+                _selectedCar = value;
+                OnPropertyChanged(); 
+            }
         }
 
         private string _searchText;
         public string SearchText
         {
             get => _searchText;
-            set { _searchText = value; OnPropertyChanged(); FilterCars(); }
+            set
+            { 
+                _searchText = value; 
+                OnPropertyChanged();
+                FilterCars(); 
+            }
         }
 
         public ICommand LoadedCommand { get; }

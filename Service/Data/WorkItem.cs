@@ -13,7 +13,14 @@ namespace Service.Data
         public int Id
         {
             get => _id;
-            set { if (_id != value) { _id = value; OnPropertyChanged(); } }
+            set 
+            { 
+                if (_id != value) 
+                { 
+                    _id = value;
+                    OnPropertyChanged(); 
+                } 
+            }
         }
 
         private int _repairRequestId;
@@ -21,7 +28,14 @@ namespace Service.Data
         public int RepairRequestId
         {
             get => _repairRequestId;
-            set { if (_repairRequestId != value) { _repairRequestId = value; OnPropertyChanged(); } }
+            set 
+            { 
+                if (_repairRequestId != value) 
+                { 
+                    _repairRequestId = value; 
+                    OnPropertyChanged(); 
+                } 
+            }
         }
 
         private int? _employeeId;
@@ -29,7 +43,14 @@ namespace Service.Data
         public int? EmployeeId
         {
             get => _employeeId;
-            set { if (_employeeId != value) { _employeeId = value; OnPropertyChanged(); } }
+            set 
+            { 
+                if (_employeeId != value) 
+                { 
+                    _employeeId = value; 
+                    OnPropertyChanged(); 
+                } 
+            }
         }
 
         private int? _serviceId;
@@ -37,7 +58,14 @@ namespace Service.Data
         public int? ServiceId
         {
             get => _serviceId;
-            set { if (_serviceId != value) { _serviceId = value; OnPropertyChanged(); } }
+            set 
+            { 
+                if (_serviceId != value) 
+                { 
+                    _serviceId = value;
+                    OnPropertyChanged(); 
+                } 
+            }
         }
 
         private int? _consumableId;
@@ -45,14 +73,28 @@ namespace Service.Data
         public int? ConsumableId
         {
             get => _consumableId;
-            set { if (_consumableId != value) { _consumableId = value; OnPropertyChanged(); } }
+            set 
+            { 
+                if (_consumableId != value) 
+                {
+                    _consumableId = value; 
+                    OnPropertyChanged();
+                } 
+            }
         }
 
         private decimal _cost;
         public decimal Cost
         {
             get => _cost;
-            set { if (_cost != value) { _cost = value; OnPropertyChanged(); } }
+            set
+            { 
+                if (_cost != value)
+                { 
+                    _cost = value; 
+                    OnPropertyChanged(); 
+                } 
+            }
         }
 
         private int _statusId;
@@ -60,7 +102,14 @@ namespace Service.Data
         public int StatusId
         {
             get => _statusId;
-            set { if (_statusId != value) { _statusId = value; OnPropertyChanged(); } }
+            set 
+            { 
+                if (_statusId != value) 
+                { 
+                    _statusId = value; 
+                    OnPropertyChanged(); 
+                }
+            }
         }
 
         public virtual RepairRequest RepairRequest { get; set; }
@@ -92,10 +141,10 @@ namespace Service.Data
             get
             {
                 if (Service != null)
-                    return $"🔧 {Service.Name}";
+                    return $"{Service.Name}";
                 if (Consumable != null)
-                    return $"🔩 {Consumable.Name}";
-                return "❌ Не указано";
+                    return $"{Consumable.Name}";
+                return "Не указано";
             }
         }
     }

@@ -38,9 +38,6 @@ namespace Service.Utility
                    Regex.IsMatch(plate, patternTaxi);
         }
 
-        /// <summary>
-        /// Проверяет корректность VIN-номера (17 символов, буквы и цифры, без I, O, Q)
-        /// </summary>
         public static bool IsValidVIN(string vin)
         {
             if (string.IsNullOrWhiteSpace(vin))
@@ -56,7 +53,7 @@ namespace Service.Utility
             if (vin.Contains("I") || vin.Contains("O") || vin.Contains("Q"))
                 return false;
 
-            // Допустимые символы: 0-9, A-Z (кроме I,O,Q)
+            // Допустимые символы: 0-9, A-Z
             return Regex.IsMatch(vin, @"^[A-HJ-NPR-Z0-9]{17}$");
         }
 

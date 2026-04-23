@@ -12,17 +12,12 @@ namespace Service.Models
             return DbManager.GetRepairRequests();
         }
 
-        /// <summary>
-        /// Получить список всех автомобилей
-        /// </summary>
         public List<Car> GetCars()
         {
             return DbManager.GetCars();
         }
 
-        /// <summary>
-        /// Получить все заявки по выбранному автомобилю
-        /// </summary>
+        // Получить все заявки по выбранному автомобилю
         public List<RepairRequest> GetRepairRequestsByCarId(int carId)
         {
             return DbManager.GetRepairRequestsByCarId(carId);

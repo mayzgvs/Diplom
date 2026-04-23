@@ -69,7 +69,6 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Меню -->
                 <Border Grid.Column="0" Background="White" CornerRadius="0,0,0,15">
                     <Border BorderThickness="0,0,1,0" BorderBrush="#F0F0F0">
                         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">

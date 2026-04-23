@@ -12,25 +12,41 @@ namespace Service.ViewModels
         public string ClientPhone
         {
             get => _clientPhone;
-            set { _clientPhone = value; OnPropertyChanged(); }
+            set 
+            { 
+                _clientPhone = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         public string ClientName
         {
             get => _clientName;
-            set { _clientName = value; OnPropertyChanged(); }
+            set 
+            { 
+                _clientName = value; 
+                OnPropertyChanged();
+            }
         }
 
         public string CarInfo
         {
             get => $"{_carInfo}";
-            set { _carInfo = value; OnPropertyChanged(); }
+            set 
+            { 
+                _carInfo = value; 
+                OnPropertyChanged();
+            }
         }
 
         public bool SendSms
         {
             get => _sendSms;
-            set { _sendSms = value; OnPropertyChanged(); }
+            set 
+            { 
+                _sendSms = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         public string MessagePreview

@@ -50,7 +50,6 @@
                        FontSize="13" Foreground="#7F8C8D" Margin="40,5,0,0"/>
         </StackPanel>
 
-        <!-- Панель выбора заявки -->
         <Border Grid.Row="1" Style="{StaticResource SearchPanelStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -80,7 +79,6 @@
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled">
                     </ComboBox>
 
-                    <!-- Кнопка обновления списка заявок -->
                     <Button Grid.Column="2"
                             Content="🔄"
                             Width="38"
@@ -97,7 +95,6 @@
             </Grid>
         </Border>
 
-        <!-- Список работ -->
         <ListView Grid.Row="3"
                   Margin="20,0,20,20"
                   ItemsSource="{Binding WorkItems}"
@@ -124,7 +121,6 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <StackPanel Margin="8,5" Orientation="Vertical">
-                                    <!-- Услуга -->
                                     <Border Style="{StaticResource ServiceTagStyle}"
                                             Visibility="{Binding ServiceName, Converter={StaticResource NullToVisibilityConverter}}">
                                         <StackPanel Orientation="Horizontal">
@@ -136,7 +132,6 @@
                                         </StackPanel>
                                     </Border>
 
-                                    <!-- Расходник -->
                                     <Border Style="{StaticResource ConsumableTagStyle}"
                                             Visibility="{Binding ConsumableName, Converter={StaticResource NullToVisibilityConverter}}">
                                         <StackPanel Orientation="Horizontal">
@@ -273,7 +268,6 @@
             </ListView.ItemContainerStyle>
         </ListView>
 
-        <!-- Нижняя панель с кнопкой -->
         <Border Grid.Row="4"
                 Background="White"
                 CornerRadius="8"
@@ -294,7 +288,7 @@
                         IsEnabled="{Binding CanAddWorkItem}"
                         Command="{Binding AddCommand}"/>
 
-                <Button Content="🔄 Обновить"
+                <Button Content="Обновить"
                         Width="100"
                         Height="38"
                         Margin="10,0,0,0"

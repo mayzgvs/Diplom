@@ -24,9 +24,9 @@ namespace Service.Data
             set { if (_carId != value) { _carId = value; OnPropertyChanged(); } }
         }
 
-        private int _serviceId; // ДОБАВИТЬ ЭТО
+        private int _serviceId;
         [ForeignKey(nameof(Service))]
-        public int ServiceId  // ДОБАВИТЬ ЭТО
+        public int ServiceId 
         {
             get => _serviceId;
             set { if (_serviceId != value) { _serviceId = value; OnPropertyChanged(); } }

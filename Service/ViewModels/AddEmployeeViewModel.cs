@@ -18,7 +18,11 @@ namespace Service.ViewModels
         public Employee EditingEmployee
         {
             get => _editingEmployee;
-            set { _editingEmployee = value; OnPropertyChanged(); }
+            set 
+            { 
+                _editingEmployee = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         public ICommand SaveCommand { get; }

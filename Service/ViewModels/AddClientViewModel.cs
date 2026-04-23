@@ -18,7 +18,11 @@ namespace Service.ViewModels
         public Client EditingClient
         {
             get => _editingClient;
-            set { _editingClient = value; OnPropertyChanged(); }
+            set 
+            { 
+                _editingClient = value; 
+                OnPropertyChanged();
+            }
         }
 
         public ICommand SaveCommand { get; }

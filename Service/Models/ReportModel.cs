@@ -1,5 +1,4 @@
-﻿// ReportModels.cs - расширенные модели для отчетов
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Service.Models
@@ -16,8 +15,6 @@ namespace Service.Models
         public List<TopServiceItem> TopServices { get; set; }
         public List<TopEmployeeItem> TopEmployees { get; set; }
         public List<TopClientItem> TopClients { get; set; }
-
-        // Данные для диаграмм
         public List<ChartDataItem> RevenueChartData { get; set; }
         public List<ChartDataItem> StatusChartData { get; set; }
         public List<ChartDataItem> ServicesChartData { get; set; }

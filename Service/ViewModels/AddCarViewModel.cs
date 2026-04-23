@@ -20,7 +20,11 @@ namespace Service.ViewModels
         public Car EditingCar
         {
             get => _editingCar;
-            set { _editingCar = value; OnPropertyChanged(); }
+            set
+            { 
+                _editingCar = value; 
+                OnPropertyChanged(); 
+            }
         }
 
         public ObservableCollection<Client> Clients { get; private set; }
