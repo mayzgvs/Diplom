@@ -14,6 +14,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
+            <!-- Заголовок -->
             <Border Grid.Row="0" Background="{StaticResource PrimaryDarkBrush}" CornerRadius="15,15,0,0" Padding="20,15">
                 <Grid>
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
@@ -33,6 +34,7 @@
                 </Grid>
             </Border>
 
+            <!-- Основное содержимое -->
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
                           Background="White" Padding="30,25,30,15">
                 <Grid>
@@ -41,37 +43,47 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/> <!-- для пояснения -->
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="110"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
+                    <!-- Фамилия -->
                     <TextBlock Grid.Row="0" Grid.Column="0"
-                               Text="Фамилия"
-                               Style="{StaticResource FormLabelStyle}"/>
+                               Style="{StaticResource FormLabelStyle}">
+                        Фамилия 
+                        <TextBlock Text="*" Foreground="#E74C3C" FontWeight="Bold" Margin="2,0,0,0"/>
+                    </TextBlock>
                     <TextBox Grid.Row="0" Grid.Column="1"
                              Style="{StaticResource WatermarkTextBoxBlue}"
                              Text="{Binding EditingClient.LastName, UpdateSourceTrigger=PropertyChanged}"
                              Tag="Введите фамилию (например: Иванов)"/>
 
+                    <!-- Имя -->
                     <TextBlock Grid.Row="1" Grid.Column="0"
-                               Text="Имя"
-                               Style="{StaticResource FormLabelStyle}"/>
+                               Style="{StaticResource FormLabelStyle}">
+                        Имя 
+                        <TextBlock Text="*" Foreground="#E74C3C" FontWeight="Bold" Margin="2,0,0,0"/>
+                    </TextBlock>
                     <TextBox Grid.Row="1" Grid.Column="1"
                              Style="{StaticResource WatermarkTextBoxBlue}"
                              Text="{Binding EditingClient.FirstName, UpdateSourceTrigger=PropertyChanged}"
                              Tag="Введите имя (например: Иван)"/>
 
+                    <!-- Телефон -->
                     <TextBlock Grid.Row="2" Grid.Column="0"
-                               Text="Телефон"
-                               Style="{StaticResource FormLabelStyle}"/>
+                               Style="{StaticResource FormLabelStyle}">
+                        Телефон 
+                        <TextBlock Text="*" Foreground="#E74C3C" FontWeight="Bold" Margin="2,0,0,0"/>
+                    </TextBlock>
                     <TextBox Grid.Row="2" Grid.Column="1"
                              Style="{StaticResource WatermarkTextBoxBlue}"
                              Text="{Binding EditingClient.ContactNumber, UpdateSourceTrigger=PropertyChanged}"
                              Tag="Формат: +7 (999) 123-45-67"/>
 
+                    <!-- Email -->
                     <TextBlock Grid.Row="3" Grid.Column="0"
                                Text="Email"
                                Style="{StaticResource FormLabelStyle}"/>
@@ -79,9 +91,18 @@
                              Style="{StaticResource WatermarkTextBoxBlue}"
                              Text="{Binding EditingClient.Email, UpdateSourceTrigger=PropertyChanged}"
                              Tag="example@mail.ru"/>
+
+                    <!-- Пояснение к звёздочкам -->
+                    <TextBlock Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"
+                               Margin="5,20,5,5"
+                               FontSize="13"
+                               Foreground="#7F8C8E"
+                               Text="* — обязательное для заполнения поле"/>
+
                 </Grid>
             </ScrollViewer>
 
+            <!-- Нижняя панель с кнопкой -->
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}"
                     CornerRadius="0,0,15,15" Padding="20,15">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -91,7 +112,8 @@
                             Foreground="White"
                             FontSize="13"
                             FontWeight="SemiBold"
-                            Cursor="Hand"/>
+                            Cursor="Hand"
+                            ToolTip="Сохранить клиента"/>
                 </StackPanel>
             </Border>
         </Grid>

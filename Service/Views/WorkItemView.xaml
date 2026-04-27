@@ -180,7 +180,7 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding Cost, StringFormat={}{0:N0} ₽}"
-                                           Style="{StaticResource CostStyle}"
+                                           Style="{StaticResource FullSumStyle}"
                                            Padding="8,5"
                                            TextAlignment="Center"/>
                             </DataTemplate>

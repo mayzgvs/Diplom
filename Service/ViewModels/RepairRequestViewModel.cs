@@ -20,6 +20,9 @@ namespace Service.ViewModels
         public ObservableCollection<RepairRequest> FilteredRequests { get; private set; }
         public ObservableCollection<StatusRequest> Statuses { get; private set; }
 
+        // Специальная коллекция для фильтрации с дополнительным элементом "Все заявки"
+        public ObservableCollection<StatusFilterItem> FilterStatuses { get; private set; }
+
         private RepairRequest _selectedRepairRequest;
         public RepairRequest SelectedRepairRequest
         {
@@ -39,8 +42,9 @@ namespace Service.ViewModels
             }
         }
 
-        private StatusRequest _selectedFilterStatus;
-        public StatusRequest SelectedFilterStatus
+        // Изменяем тип свойства на StatusFilterItem
+        private StatusFilterItem _selectedFilterStatus;
+        public StatusFilterItem SelectedFilterStatus
         {
             get => _selectedFilterStatus;
             set
@@ -98,11 +102,25 @@ namespace Service.ViewModels
                 RepairRequests = new ObservableCollection<RepairRequest>(freshList);
                 FilteredRequests = new ObservableCollection<RepairRequest>(freshList);
 
-                Statuses = new ObservableCollection<StatusRequest>(_model.GetStatuses());
+                // Получаем реальные статусы из БД
+                var realStatuses = _model.GetStatuses();
+                Statuses = new ObservableCollection<StatusRequest>(realStatuses);
+
+                // Создаем коллекцию для фильтрации с элементом "Все заявки"
+                FilterStatuses = new ObservableCollection<StatusFilterItem>();
+                FilterStatuses.Add(new StatusFilterItem { Id = null, Name = "Все заявки" });
+                foreach (var status in realStatuses)
+                {
+                    FilterStatuses.Add(new StatusFilterItem { Id = status.Id, Name = status.Name });
+                }
+
+                // Устанавливаем фильтр по умолчанию - "Все заявки"
+                SelectedFilterStatus = FilterStatuses.FirstOrDefault();
 
                 OnPropertyChanged(nameof(RepairRequests));
                 OnPropertyChanged(nameof(FilteredRequests));
                 OnPropertyChanged(nameof(Statuses));
+                OnPropertyChanged(nameof(FilterStatuses));
             }
             catch (Exception ex)
             {
@@ -112,9 +130,13 @@ namespace Service.ViewModels
                 RepairRequests = new ObservableCollection<RepairRequest>();
                 FilteredRequests = new ObservableCollection<RepairRequest>();
                 Statuses = new ObservableCollection<StatusRequest>();
+                FilterStatuses = new ObservableCollection<StatusFilterItem>();
+                FilterStatuses.Add(new StatusFilterItem { Id = null, Name = "Все заявки" });
+                SelectedFilterStatus = FilterStatuses.FirstOrDefault();
 
                 OnPropertyChanged(nameof(RepairRequests));
                 OnPropertyChanged(nameof(FilteredRequests));
+                OnPropertyChanged(nameof(FilterStatuses));
             }
         }
 
@@ -132,9 +154,10 @@ namespace Service.ViewModels
                     (r.ClientDisplayName?.ToLowerInvariant().Contains(search) == true));
             }
 
-            if (SelectedFilterStatus != null)
+            // Фильтрация по статусу с учетом "Все заявки" (когда Id == null)
+            if (SelectedFilterStatus != null && SelectedFilterStatus.Id.HasValue)
             {
-                query = query.Where(r => r.StatusId == SelectedFilterStatus.Id);
+                query = query.Where(r => r.StatusId == SelectedFilterStatus.Id.Value);
             }
 
             FilteredRequests = new ObservableCollection<RepairRequest>(
@@ -146,7 +169,7 @@ namespace Service.ViewModels
         private void ClearFilters()
         {
             SearchText = string.Empty;
-            SelectedFilterStatus = null;
+            SelectedFilterStatus = FilterStatuses?.FirstOrDefault();
         }
 
         private void OnRepairRequestSaved(object sender, EventArgs e)
@@ -326,5 +349,10 @@ namespace Service.ViewModels
                 }
             }
         }
+    }
+    public class StatusFilterItem
+    {
+        public int? Id { get; set; }
+        public string Name { get; set; }
     }
 }

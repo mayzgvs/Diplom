@@ -49,17 +49,21 @@
                 </Border>
 
                 <Border Grid.Column="1" Background="{StaticResource LightBackgroundBrush}" CornerRadius="5"
-                        BorderBrush="#E0E0E0" BorderThickness="1" Height="38" Width="190" Margin="10,0,0,0">
+        BorderBrush="#E0E0E0" BorderThickness="1" Height="38" Width="190" Margin="10,0,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="⚡" Margin="12,0" VerticalAlignment="Center" Foreground="#95A5A6" FontSize="14"/>
-                        <ComboBox Grid.Column="1" ItemsSource="{Binding Statuses}"
-                                  SelectedItem="{Binding SelectedFilterStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  DisplayMemberPath="Name" BorderThickness="0" Background="Transparent"
-                                  VerticalAlignment="Center" Margin="5,0"/>
+                        <ComboBox Grid.Column="1" 
+                  ItemsSource="{Binding FilterStatuses}"
+                  SelectedItem="{Binding SelectedFilterStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  DisplayMemberPath="Name" 
+                  BorderThickness="0" 
+                  Background="Transparent"
+                  VerticalAlignment="Center" 
+                  Margin="5,0"/>
                     </Grid>
                 </Border>
             </Grid>
@@ -142,7 +146,7 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock Text="{Binding TotalCost, StringFormat={}{0:N2} ₽}"
-                                           Style="{StaticResource CostStyle}" Padding="8,5" TextAlignment="Center"/>
+                                           Style="{StaticResource SumStyle}" Padding="8,5" TextAlignment="Center"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

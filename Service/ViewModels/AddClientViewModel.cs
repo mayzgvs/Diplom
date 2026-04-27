@@ -18,9 +18,9 @@ namespace Service.ViewModels
         public Client EditingClient
         {
             get => _editingClient;
-            set 
-            { 
-                _editingClient = value; 
+            set
+            {
+                _editingClient = value;
                 OnPropertyChanged();
             }
         }
@@ -55,7 +55,7 @@ namespace Service.ViewModels
                 EditingClient = client;
             }
 
-            SaveCommand = new RelayCommand(Save);   
+            SaveCommand = new RelayCommand(Save);
             CancelEditCommand = new RelayCommand(Cancel);
         }
 

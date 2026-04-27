@@ -195,7 +195,19 @@
 
     <Style x:Key="CostStyle" TargetType="TextBlock">
         <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="#9B59B6"/>
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <Style x:Key="SumStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Bold"/>
         <Setter Property="Foreground" Value="#27AE60"/>
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <Style x:Key="FullSumStyle" TargetType="TextBlock">
+        <Setter Property="FontWeight" Value="Bold"/>
+        <Setter Property="Foreground" Value="#FF6B6B"/>
         <Setter Property="FontSize" Value="13"/>
     </Style>
 
@@ -204,7 +216,7 @@
         <Setter Property="Padding" Value="5,2"/>
     </Style>
 
-    <!-- ========== ТЕГИ WORKITEMVIEW ========== -->
+    <!-- ========== WORKITEMVIEW ========== -->
     <Style x:Key="ServiceTagStyle" TargetType="Border">
         <Setter Property="Background" Value="#E3F2FD"/>
         <Setter Property="CornerRadius" Value="4"/>
@@ -722,4 +734,161 @@
         </Style.Triggers>
     </Style>
 
+
+    <!-- ========== ГРАДИЕНТЫ ========== -->
+    <LinearGradientBrush x:Key="HeaderGradient" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#2C3E50" Offset="0"/>
+        <GradientStop Color="#3498DB" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- ========== СТИЛИ КАРТОЧЕК ========== -->
+    <Style x:Key="StatCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="CornerRadius" Value="16"/>
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="Margin" Value="10"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="2" Opacity="0.08" Color="#000000"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MetricCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="15"/>
+        <Setter Property="Margin" Value="8"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect BlurRadius="8" ShadowDepth="1" Opacity="0.06" Color="#000000"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ========== СТИЛИ КНОПОК ========== -->
+    <!-- Единый стиль для всех кнопок -->
+    <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="#3498DB"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="Padding" Value="16,10"/>
+        <Setter Property="Margin" Value="6"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#2980B9"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Стиль для Excel кнопок (зеленый) -->
+    <Style x:Key="ExcelButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+        <Setter Property="Background" Value="#27AE60"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#229954"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Стиль для Word кнопок (синий) -->
+    <Style x:Key="WordButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+        <Setter Property="Background" Value="#2C3E50"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#1A252F"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Стиль для Outline кнопок -->
+    <Style x:Key="OutlineButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="#3498DB"/>
+        <Setter Property="BorderBrush" Value="#3498DB"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Padding" Value="14,9"/>
+        <Setter Property="Margin" Value="6"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="8" 
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#EBF5FB"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- ========== СТИЛИ БЕЙДЖЕЙ СТАТУСОВ ========== -->
+    <Style x:Key="ReportStatusBadgeStyle" TargetType="Border">
+        <Setter Property="CornerRadius" Value="12"/>
+        <Setter Property="Padding" Value="8,4"/>
+    </Style>
+
+    <!-- ========== ШАБЛОНЫ ДАННЫХ ========== -->
+    <DataTemplate x:Key="StatusTemplate">
+        <Border CornerRadius="12" Padding="8,4">
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Status}" Value="Завершённые">
+                            <Setter Property="Background" Value="#D5F5E3"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="В работе">
+                            <Setter Property="Background" Value="#EBF5FB"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="Новые">
+                            <Setter Property="Background" Value="#FEF9E7"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="Отменённые">
+                            <Setter Property="Background" Value="#FDEDEC"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="SemiBold" HorizontalAlignment="Center">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Status}" Value="Завершённые">
+                                <Setter Property="Foreground" Value="#27AE60"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="В работе">
+                                <Setter Property="Foreground" Value="#2980B9"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="Новые">
+                                <Setter Property="Foreground" Value="#F39C12"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Status}" Value="Отменённые">
+                                <Setter Property="Foreground" Value="#E74C3C"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Border>
+    </DataTemplate>
 </ResourceDictionary>

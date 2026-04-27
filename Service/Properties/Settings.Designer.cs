@@ -82,5 +82,17 @@ namespace Service.Properties {
                 this["SmtpSenderName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string AdminEmail {
+            get {
+                return ((string)(this["AdminEmail"]));
+            }
+            set {
+                this["AdminEmail"] = value;
+            }
+        }
     }
 }
