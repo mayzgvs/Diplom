@@ -57,12 +57,15 @@
                         Категория <TextBlock Text="*" Foreground="#E74C3C" FontWeight="Bold" Margin="2,0,0,0"/>
                     </TextBlock>
                     <ComboBox Grid.Row="1" Grid.Column="1"
-                              Style="{StaticResource ModernComboBoxGreen}"
+                              Style="{StaticResource ModernComboBox}"
                               ItemsSource="{Binding ConsumableCategories}"
                               SelectedValue="{Binding EditingConsumable.ConsumableCategoryId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
                               DisplayMemberPath="Name"
-                              ToolTip="Выберите категорию расходника"/>
+                              IsEditable="True"
+                              IsTextSearchEnabled="True"
+                              Text="{Binding SearchCategoryText, UpdateSourceTrigger=PropertyChanged}"
+                              ToolTip="Начните вводить для поиска категории"/>
 
                     <!-- Стоимость -->
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Стоимость" VerticalAlignment="Center" Margin="5" Foreground="#2C3E50" FontSize="15"/>
@@ -85,7 +88,7 @@
             <Border Grid.Row="2" Background="#F8F9FA" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-42">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Сохранить" Width="100" Height="38" Margin="5"
-                            Command="{Binding SaveCommand}"
+                            Command="{Binding SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                             Background="#E67E22"
                             Foreground="White"
                             FontSize="13"

@@ -20,10 +20,10 @@ namespace Service.ViewModels
         public Consumable SelectedConsumable
         {
             get => _selectedConsumable;
-            set 
-            { 
-                _selectedConsumable = value; 
-                OnPropertyChanged(); 
+            set
+            {
+                _selectedConsumable = value;
+                OnPropertyChanged();
             }
         }
 
@@ -160,20 +160,20 @@ namespace Service.ViewModels
         {
             if (SelectedConsumable == null) return;
 
-            if (MessageBox.Show($"Удалить расходник '{SelectedConsumable.Name}'?",
-                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            var result = CustomMessageBox.Show($"Удалить расходник '{SelectedConsumable.Name}'?",
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
                     _model.DeleteConsumable(SelectedConsumable);
                     LoadData();
-                    MessageBox.Show("Расходник успешно удален!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Расходник успешно удален!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

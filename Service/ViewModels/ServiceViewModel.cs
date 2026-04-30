@@ -143,19 +143,21 @@ namespace Service.ViewModels
         {
             if (SelectedService == null) return;
 
-            if (MessageBox.Show($"Удалить услугу '{SelectedService.Name}'?",
-                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            var result = CustomMessageBox.Show($"Удалить услугу '{SelectedService.Name}'?",
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
                     _model.DeleteService(SelectedService);
                     LoadData();
-                    MessageBox.Show("Услуга успешно удалена!", "Успех",
+                    CustomMessageBox.Show("Услуга успешно удалена!", "Успех",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                    CustomMessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }

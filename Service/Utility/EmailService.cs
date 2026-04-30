@@ -12,33 +12,45 @@ namespace Service.Services
         {
             try
             {
-                var settings = Properties.Settings.Default;
+                var s = Properties.Settings.Default;
 
-                string smtpHost = settings.SmtpHost ?? "smtp.yandex.ru";
-                int smtpPort = settings.SmtpPort > 0 ? settings.SmtpPort : 587;
-                string senderEmail = settings.SmtpEmail;
-                string senderPassword = settings.SmtpPassword;
-                string senderName = settings.SmtpSenderName ?? "Автосервис";
+                string host = s.SmtpHost?.Trim() ?? "smtp.yandex.ru";
+                int port = s.SmtpPort > 0 ? s.SmtpPort : 587;
+                bool enableSsl = s.SmtpEnableSsl;
+                bool useDefaultCreds = s.SmtpUseDefaultCredentials;
 
-                if (string.IsNullOrWhiteSpace(senderEmail) || string.IsNullOrWhiteSpace(senderPassword))
+                string authEmail = s.SmtpEmail?.Trim();
+                string password = s.SmtpPassword;
+                string fromEmail = string.IsNullOrWhiteSpace(s.SmtpFromEmail)
+                    ? authEmail
+                    : s.SmtpFromEmail.Trim();
+
+                string senderName = s.SmtpSenderName ?? "Автосервис";
+
+                if (string.IsNullOrWhiteSpace(host))
                 {
-                    var result = MessageBox.Show(
-                        "Email не настроен.\nХотите открыть настройки сейчас?",
-                        "Настройка почты",
-                        MessageBoxButton.YesNo,
-                        MessageBoxImage.Question);
+                    MessageBox.Show("SMTP сервер не настроен.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return false;
                 }
 
-                using (var smtpClient = new SmtpClient(smtpHost, smtpPort))
+                using (var smtpClient = new SmtpClient(host, port))
                 {
-                    smtpClient.EnableSsl = true;
-                    smtpClient.Credentials = new NetworkCredential(senderEmail, senderPassword);
-                    smtpClient.Timeout = 20000;
+                    smtpClient.EnableSsl = enableSsl;
+                    smtpClient.Timeout = 30000;
+
+                    if (useDefaultCreds)
+                    {
+                        smtpClient.UseDefaultCredentials = true;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(authEmail) && !string.IsNullOrWhiteSpace(password))
+                    {
+                        smtpClient.UseDefaultCredentials = false;
+                        smtpClient.Credentials = new NetworkCredential(authEmail, password);
+                    }
 
                     using (var mailMessage = new MailMessage())
                     {
-                        mailMessage.From = new MailAddress(senderEmail, senderName);
+                        mailMessage.From = new MailAddress(fromEmail, senderName);
                         mailMessage.Subject = subject;
                         mailMessage.Body = body;
                         mailMessage.IsBodyHtml = true;
@@ -49,6 +61,12 @@ namespace Service.Services
                 }
 
                 return true;
+            }
+            catch (SmtpException ex)
+            {
+                MessageBox.Show($"Ошибка SMTP:\n{ex.Message}\nКод: {ex.StatusCode}",
+                    "Ошибка отправки", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
             catch (Exception ex)
             {

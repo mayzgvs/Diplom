@@ -124,7 +124,7 @@ namespace Service.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
+                CustomMessageBox.Show($"Ошибка при загрузке данных: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
                 RepairRequests = new ObservableCollection<RepairRequest>();
@@ -194,7 +194,7 @@ namespace Service.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при открытии окна добавления: {ex.Message}", "Ошибка",
+                CustomMessageBox.Show($"Ошибка при открытии окна добавления: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -211,26 +211,28 @@ namespace Service.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при открытии окна редактирования: {ex.Message}", "Ошибка",
+                CustomMessageBox.Show($"Ошибка при открытии окна редактирования: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void DeleteRepairRequest()
         {
-            if (MessageBox.Show($"Удалить заявку #{SelectedRepairRequest.Id}?",
-                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            var result = CustomMessageBox.Show($"Удалить заявку #{SelectedRepairRequest.Id}?",
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
                     _model.DeleteRepairRequest(SelectedRepairRequest);
                     LoadData();
-                    MessageBox.Show("Заявка успешно удалена!", "Успех",
+                    CustomMessageBox.Show("Заявка успешно удалена!", "Успех",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                    CustomMessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -288,14 +290,14 @@ namespace Service.ViewModels
                 await UpdateRepairStatus(SelectedRepairRequest, newStatusId.Value);
 
                 var statusName = Statuses.FirstOrDefault(s => s.Id == newStatusId.Value)?.Name ?? "новый";
-                MessageBox.Show($"Статус заявки изменен на '{statusName}'", "Успех",
+                CustomMessageBox.Show($"Статус заявки изменен на '{statusName}'", "Успех",
                     MessageBoxButton.OK, MessageBoxImage.Information);
 
                 LoadData();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при изменении статуса: {ex.Message}", "Ошибка",
+                CustomMessageBox.Show($"Ошибка при изменении статуса: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
@@ -314,38 +316,49 @@ namespace Service.ViewModels
             var carInfo = $"{SelectedRepairRequest.Car.Brand} {SelectedRepairRequest.Car.Model} " +
                           $"({SelectedRepairRequest.Car.RegistrationNumber})";
 
+            // Используем новое окно подтверждения (лучше, чем было)
             var dialog = new SendNotificationView(client.FullName, client.Email, client.ContactNumber, carInfo);
             dialog.Owner = Application.Current.MainWindow;
 
             if (dialog.ShowDialog() == true)
             {
-                bool hasAnyNotification = false;
+                bool emailSent = false;
+                bool smsSent = false;
 
-                if (dialog.SendEmail && !string.IsNullOrEmpty(client.Email))
+                if (dialog.SendEmail && !string.IsNullOrWhiteSpace(client.Email))
                 {
-                    var emailService = new EmailService();
-                    await emailService.SendEmailAsync(client.Email, "Автомобиль готов к выдаче",
-                        $"Уважаемый(ая) {client.FullName}! Ваш автомобиль {carInfo} готов к выдаче.");
-                    hasAnyNotification = true;
+                    var subject = "Автомобиль готов к выдаче";
+                    var htmlBody = $@"
+                <html>
+                <body style='font-family: Arial, sans-serif;'>
+                    <h2 style='color: #3498DB;'>Уважаемый(ая) {client.FullName}!</h2>
+                    <p>Ваш автомобиль <strong>{carInfo}</strong> готов к выдаче.</p>
+                    <p>Ждем Вас в нашем автосервисе.</p>
+                    <br/>
+                    <hr/>
+                    <p style='color: #7F8C8D; font-size: 12px;'>Это сообщение отправлено автоматически.</p>
+                </body>
+                </html>";
+
+                    emailSent = await new EmailService().SendEmailAsync(client.Email, subject, htmlBody);
                 }
 
-                if (dialog.SendSms && !string.IsNullOrEmpty(client.ContactNumber))
+                if (dialog.SendSms && !string.IsNullOrWhiteSpace(client.ContactNumber))
                 {
                     var smsService = new SmsService();
-                    await smsService.SendSmsAsync(client.ContactNumber,
-                        $"Уважаемый(ая) {client.FullName}! Автомобиль {carInfo} готов к выдаче.");
-                    hasAnyNotification = true;
+                    smsSent = await smsService.SendSmsAsync(client.ContactNumber,
+                        $"Уважаемый(ая) {client.FullName}! Ваш автомобиль {carInfo} готов к выдаче. Ждем Вас в автосервисе.");
                 }
 
-                if (!hasAnyNotification)
+                if (emailSent || smsSent)
                 {
-                    MessageBox.Show("Нет контактных данных для отправки!",
-                        "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show("Уведомления успешно отправлены!", "Успех",
+                        MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
-                    MessageBox.Show("Уведомления отправлены", "Информация",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Не удалось отправить уведомления.\nПроверьте настройки почты и SMS.",
+                        "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
         }

@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:Service.ViewModels"
         xmlns:views="clr-namespace:Service.Views"
         Title="Автосервис: управление сервисом"
-        Width="1300" Height="889"
+        Width="1300" Height="1006"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -223,10 +223,31 @@
                                         </StackPanel>
                                     </Grid>
                                 </Button>
+                                <!-- ПРАВИЛЬНЫЙ ВАРИАНТ -->
+                                <Border Height="1" Background="#F0F0F0" Margin="12,15,12,15"/>
+
+                                <Button Style="{StaticResource NavigationMenuButtonStyle}"
+                                        Click="menuService_Click">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Style="{StaticResource MenuIconStyle}" Background="#9C27B0">
+                                            <TextBlock Text="✉️" FontSize="20" Foreground="White"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Настройки SMTP" Style="{StaticResource MenuItemTitleStyle}"/>
+                                            <TextBlock Text="Почта и уведомления" FontSize="11" Foreground="#95A5A6" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
                             </StackPanel>
                         </ScrollViewer>
                     </Border>
                 </Border>
+                
 
                 <Grid Grid.Column="1" Background="White">
                     <ContentControl Content="{Binding Navigation.CurrentViewModel}">

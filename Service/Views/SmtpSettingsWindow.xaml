@@ -1,0 +1,65 @@
+﻿<Window x:Class="Service.Views.SmtpSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Настройки SMTP" 
+        Height="520" Width="570"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="#F8F9FA">
+
+    <Grid Margin="25">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Настройки SMTP-сервера" FontSize="18" FontWeight="SemiBold" Margin="0,0,0,20"/>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="170"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="SMTP Сервер:" Margin="0,8"/>
+                <TextBlock Text="Порт:" Margin="0,8"/>
+                <TextBlock Text="Email для входа:" Margin="0,8"/>
+                <TextBlock Text="Пароль:" Margin="0,8"/>
+                <TextBlock Text="Email отправителя (From):" Margin="0,8"/>
+                <TextBlock Text="Имя отправителя:" Margin="0,8"/>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="10,0,0,0">
+                <TextBox Text="{Binding SmtpHost, UpdateSourceTrigger=PropertyChanged}" Margin="0,5"/>
+                <TextBox Text="{Binding SmtpPort, UpdateSourceTrigger=PropertyChanged}" Width="120" HorizontalAlignment="Left" Margin="0,5"/>
+                <TextBox Text="{Binding SmtpEmail, UpdateSourceTrigger=PropertyChanged}" Margin="0,5"/>
+                <PasswordBox x:Name="pbPassword" Margin="0,5" PasswordChanged="pbPassword_PasswordChanged"/>
+                <TextBox Text="{Binding SmtpFromEmail, UpdateSourceTrigger=PropertyChanged}" Margin="0,5"/>
+                <TextBox Text="{Binding SmtpSenderName, UpdateSourceTrigger=PropertyChanged}" Margin="0,5"/>
+            </StackPanel>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Margin="0,25,0,0">
+            <CheckBox IsChecked="{Binding SmtpEnableSsl}" Content="Использовать SSL/TLS" Margin="0,6"/>
+            <CheckBox IsChecked="{Binding SmtpUseDefaultCredentials}" 
+                      Content="Использовать учётные данные Windows (без логина и пароля)" 
+                      Margin="0,8,0,5"/>
+            <TextBlock Text="• Включайте для корпоративных серверов (Exchange, внутренний relay)" 
+                       Foreground="#555" FontSize="12" Margin="25,0,0,0"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,30,0,0">
+            <Button Content="Протестировать" 
+                    Command="{Binding TestCommand}"
+                    Width="160" Height="38" Margin="0,0,12,0"/>
+
+            <Button Content="Сохранить" 
+                    Command="{Binding SaveCommand}"
+                    Width="120" Height="38" Margin="0,0,12,0" 
+                    Background="#2196F3" Foreground="White" FontWeight="Medium"/>
+        </StackPanel>
+    </Grid>
+</Window>

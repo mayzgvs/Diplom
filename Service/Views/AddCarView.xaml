@@ -89,14 +89,16 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <xctk:WatermarkComboBox Grid.Column="0"
-                                                Style="{StaticResource ModernWatermarkComboBox}"
-                                                ItemsSource="{Binding Clients}"
-                                                SelectedValue="{Binding EditingCar.OwnerId, UpdateSourceTrigger=PropertyChanged}"
-                                                SelectedValuePath="Id"
-                                                DisplayMemberPath="FullName"
-                                                Watermark="Выберите владельца из списка"
-                                                Margin="0,5,5,5"/>
+                        <Grid Grid.Column="0" Margin="0,5,5,5">
+                            <ComboBox x:Name="OwnerComboBox"
+                                      ItemsSource="{Binding Clients}"
+                                      SelectedValue="{Binding EditingCar.OwnerId, UpdateSourceTrigger=PropertyChanged}"
+                                      SelectedValuePath="Id"
+                                      DisplayMemberPath="FullName"
+                                      IsEditable="True"
+                                      IsTextSearchEnabled="True"
+                                      Style="{StaticResource ModernComboBox}"/>
+                        </Grid>
                         <Button Grid.Column="1"
                                 Content="+"
                                 Width="38"
@@ -126,7 +128,7 @@
             <Border Grid.Row="2" Background="{StaticResource LightBackgroundBrush}" CornerRadius="0,0,15,15" Padding="20,15" Margin="0,0,0,-44">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Сохранить" Width="100" Height="38" Margin="5"
-                            Command="{Binding SaveCommand}"
+                            Command="{Binding SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                             Background="{StaticResource TealBrush}"
                             Foreground="White"
                             FontSize="13"

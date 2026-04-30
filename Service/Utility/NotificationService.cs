@@ -1,4 +1,5 @@
 ﻿using Service.Data;
+using Service.Services;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -62,8 +63,15 @@ namespace Service.Services
 
             if (emailSent || smsSent)
             {
-                MessageBox.Show($"Уведомления отправлены:\n{(emailSent ? "✓ Email\n" : "")}{(smsSent ? "✓ SMS" : "")}",
+                MessageBox.Show($"Уведомления отправлены:\n" +
+                               $"{(emailSent ? "✓ Email\n" : "")}" +
+                               $"{(smsSent ? "✓ SMS" : "")}",
                     "Успешно", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else if (sendEmail || sendSms)
+            {
+                MessageBox.Show("Не удалось отправить уведомления. Проверьте настройки.",
+                    "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

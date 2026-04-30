@@ -1,6 +1,7 @@
 ﻿using Service.Data;
 using Service.Models;
 using Service.Utility;
+using Service.Views;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -18,10 +19,10 @@ namespace Service.ViewModels
         public Employee EditingEmployee
         {
             get => _editingEmployee;
-            set 
-            { 
-                _editingEmployee = value; 
-                OnPropertyChanged(); 
+            set
+            {
+                _editingEmployee = value;
+                OnPropertyChanged();
             }
         }
 
@@ -67,7 +68,7 @@ namespace Service.ViewModels
                 string.IsNullOrWhiteSpace(EditingEmployee.FirstName))
             {
                 ErrorMessage = "Введите фамилию и имя сотрудника!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -76,14 +77,14 @@ namespace Service.ViewModels
                 if (!ValidationHelper.IsValidRussianPhone(EditingEmployee.ContactNumber))
                 {
                     ErrorMessage = "Некорректный формат номера телефона!\nПример: +7XXXXXXXXXX";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (_model.PhoneExists(EditingEmployee.ContactNumber, _isEditMode ? EditingEmployee.Id : (int?)null))
                 {
                     ErrorMessage = "Сотрудник с таким номером телефона уже существует!";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -93,16 +94,17 @@ namespace Service.ViewModels
                 if (!_isEditMode)
                 {
                     _model.CreateEmployee(EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
-                    MessageBox.Show("Сотрудник успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Сотрудник успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _model.EditEmployee(EditingEmployee.Id, EditingEmployee.FirstName, EditingEmployee.LastName, EditingEmployee.ContactNumber);
-                    MessageBox.Show("Сотрудник успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Сотрудник успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 EmployeeSaved?.Invoke(this, EventArgs.Empty);
 
+                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;
@@ -112,7 +114,7 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

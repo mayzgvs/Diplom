@@ -49,11 +49,11 @@ namespace Service.Utility
             }
         }
 
-        public static void DeleteClientById(int id)
+        public static void DeleteClientById(int clientId)
         {
             using (var context = new ApplicationContext())
             {
-                var client = context.Clients.Find(id);
+                var client = context.Clients.Find(clientId);
                 if (client != null)
                 {
                     context.Clients.Remove(client);
@@ -137,11 +137,11 @@ namespace Service.Utility
             }
         }
 
-        public static void DeleteCarById(int id)
+        public static void DeleteCarById(int carId)
         {
             using (var context = new ApplicationContext())
             {
-                var car = context.Cars.Find(id);
+                var car = context.Cars.Find(carId);
                 if (car != null)
                 {
                     context.Cars.Remove(car);
@@ -297,11 +297,11 @@ namespace Service.Utility
             }
         }
 
-        public static void DeleteRepairRequestById(int id)
+        public static void DeleteRepairRequestById(int requestId)
         {
             using (var context = new ApplicationContext())
             {
-                var request = context.RepairRequests.Find(id);
+                var request = context.RepairRequests.Find(requestId);
                 if (request != null)
                 {
                     context.RepairRequests.Remove(request);
@@ -612,11 +612,11 @@ namespace Service.Utility
             }
         }
 
-        public static void DeleteWorkItemById(int id)
+        public static void DeleteWorkItemById(int workItemId)
         {
             using (var context = new ApplicationContext())
             {
-                var workItem = context.WorkItems.Find(id);
+                var workItem = context.WorkItems.Find(workItemId);
                 if (workItem != null)
                 {
                     context.WorkItems.Remove(workItem);

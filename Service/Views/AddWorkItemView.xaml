@@ -139,7 +139,7 @@
                             FontWeight="SemiBold"
                             BorderThickness="0"
                             Cursor="Hand"
-                            Command="{Binding SaveCommand}"
+                            Command="{Binding SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                             ToolTip="Сохранить работу"/>
                 </StackPanel>
             </Border>

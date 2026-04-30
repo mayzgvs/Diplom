@@ -85,13 +85,37 @@ namespace Service.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string AdminEmail {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool SmtpEnableSsl {
             get {
-                return ((string)(this["AdminEmail"]));
+                return ((bool)(this["SmtpEnableSsl"]));
             }
             set {
-                this["AdminEmail"] = value;
+                this["SmtpEnableSsl"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SmtpUseDefaultCredentials {
+            get {
+                return ((bool)(this["SmtpUseDefaultCredentials"]));
+            }
+            set {
+                this["SmtpUseDefaultCredentials"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SmtpFromEmail {
+            get {
+                return ((string)(this["SmtpFromEmail"]));
+            }
+            set {
+                this["SmtpFromEmail"] = value;
             }
         }
     }

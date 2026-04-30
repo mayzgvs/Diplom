@@ -20,10 +20,10 @@ namespace Service.ViewModels
         public Car SelectedCar
         {
             get => _selectedCar;
-            set 
-            { 
+            set
+            {
                 _selectedCar = value;
-                OnPropertyChanged(); 
+                OnPropertyChanged();
             }
         }
 
@@ -32,10 +32,10 @@ namespace Service.ViewModels
         {
             get => _searchText;
             set
-            { 
-                _searchText = value; 
+            {
+                _searchText = value;
                 OnPropertyChanged();
-                FilterCars(); 
+                FilterCars();
             }
         }
 
@@ -134,21 +134,71 @@ namespace Service.ViewModels
         {
             if (SelectedCar == null) return;
 
-            if (MessageBox.Show($"Удалить автомобиль {SelectedCar.Brand} {SelectedCar.Model}?",
-                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            // Сохраняем информацию об автомобиле до удаления
+            var carToDelete = SelectedCar;
+            var carBrand = carToDelete.Brand;
+            var carModel = carToDelete.Model;
+            var carRegistration = carToDelete.RegistrationNumber;
+
+            // Получаем информацию о связанных заявках до удаления
+            var requestsCount = _model.GetRepairRequestsByCarId(carToDelete.Id).Count;
+
+            string warningMessage;
+            MessageBoxImage icon = MessageBoxImage.Question;
+
+            if (requestsCount > 0)
+            {
+                warningMessage = $"Вы действительно хотите удалить автомобиль:\n" +
+                                $"«{carBrand} {carModel}»\n" +
+                                $"Госномер: {carRegistration}\n\n" +
+                                $"ВНИМАНИЕ! Это приведет к КАСКАДНОМУ удалению:\n" +
+                                $"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                                $"• {requestsCount} заявок на ремонт\n" +
+                                $"• Всех связанных работ и материалов\n" +
+                                $"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
+                                $"Данное действие НЕОБРАТИМО!\n\n" +
+                                $"Вы уверены, что хотите продолжить?";
+                icon = MessageBoxImage.Warning;
+            }
+            else
+            {
+                warningMessage = $"Удалить автомобиль {carBrand} {carModel}?\n" +
+                                $"Госномер: {carRegistration}";
+            }
+
+            var result = CustomMessageBox.Show(warningMessage,
+                requestsCount > 0 ? "Подтверждение каскадного удаления" : "Подтверждение удаления",
+                MessageBoxButton.YesNo, icon);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    _model.DeleteCar(SelectedCar);
+                    // Выполняем удаление
+                    _model.DeleteCar(carToDelete);
+
+                    // Очищаем выбранный элемент
+                    SelectedCar = null;
+
+                    // Обновляем списки
                     LoadData();
                     FilterCars();
-                    MessageBox.Show("Автомобиль успешно удален!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Показываем сообщение об успехе
+                    var message = requestsCount > 0
+                        ? $"✓ Автомобиль и все связанные данные успешно удалены!\n\n" +
+                          $"Удалено:\n" +
+                          $"• Автомобиль: {carBrand} {carModel}\n" +
+                          $"• Заявок: {requestsCount}\n" +
+                          $"• Все связанные работы"
+                        : $"✓ Автомобиль {carBrand} {carModel} успешно удален!";
+
+                    CustomMessageBox.Show(message, "Каскадное удаление выполнено", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show($"Ошибка при удалении: {ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

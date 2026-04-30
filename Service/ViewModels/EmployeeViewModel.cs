@@ -118,20 +118,20 @@ namespace Service.ViewModels
         {
             if (SelectedEmployee == null) return;
 
-            if (MessageBox.Show($"Удалить сотрудника {SelectedEmployee.FullName}?",
-                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            var result = CustomMessageBox.Show($"Удалить сотрудника {SelectedEmployee.FullName}?",
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
                     _model.DeleteEmployee(SelectedEmployee);
                     LoadData();
-                    MessageBox.Show("Сотрудник успешно удален!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Сотрудник успешно удален!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

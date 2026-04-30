@@ -4,6 +4,7 @@ using OfficeOpenXml.Style;
 using Service.Data;
 using Service.Models;
 using Service.Utility;
+using Service.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -250,7 +251,7 @@ namespace Service.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки отчёта по выручке: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка загрузки отчёта по выручке: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -316,12 +317,12 @@ namespace Service.ViewModels
                                 }
                                 else
                                 {
-                                    workName = ""; 
+                                    workName = "";
                                 }
 
                                 reportItem.WorkItems.Add(new ReportWorkItem
                                 {
-                                    ServiceName = workName, 
+                                    ServiceName = workName,
                                     EmployeeName = employee != null ? $"{employee.FirstName} {employee.LastName}" : "Не назначен",
                                     Cost = wi.Cost
                                 });
@@ -359,7 +360,7 @@ namespace Service.ViewModels
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки детального отчёта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка загрузки детального отчёта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -500,11 +501,11 @@ namespace Service.ViewModels
                     ws.Cells.AutoFitColumns();
                     package.SaveAs(new FileInfo(dialog.FileName));
                 }
-                MessageBox.Show("Отчёт по выручке успешно сохранён в Excel!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Отчёт по выручке успешно сохранён в Excel!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -772,11 +773,11 @@ namespace Service.ViewModels
                 doc.Close();
                 wordApp.Quit();
 
-                MessageBox.Show("Отчёт по выручке успешно сохранён в Word!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Отчёт по выручке успешно сохранён в Word!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка экспорта: {ex.Message}\n\nУбедитесь, что установлен Microsoft Word", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка экспорта: {ex.Message}\n\nУбедитесь, что установлен Microsoft Word", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -786,7 +787,7 @@ namespace Service.ViewModels
             {
                 if (CurrentDetailedReport == null || !CurrentDetailedReport.Requests.Any())
                 {
-                    MessageBox.Show("Нет данных для экспорта", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Нет данных для экспорта", "Информация", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
                 var dialog = new SaveFileDialog { Filter = "Excel файлы (*.xlsx)|*.xlsx", FileName = $"Детальный_отчёт_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx" };
@@ -796,14 +797,14 @@ namespace Service.ViewModels
                 {
                     var ws = package.Workbook.Worksheets.Add("Детальный отчёт");
 
-                    ws.Column(1).Width = 8;  
-                    ws.Column(2).Width = 25;  
-                    ws.Column(3).Width = 30; 
-                    ws.Column(4).Width = 12; 
-                    ws.Column(5).Width = 18;  
-                    ws.Column(6).Width = 14; 
-                    ws.Column(7).Width = 8;   
-                    ws.Column(8).Width = 45;  
+                    ws.Column(1).Width = 8;
+                    ws.Column(2).Width = 25;
+                    ws.Column(3).Width = 30;
+                    ws.Column(4).Width = 12;
+                    ws.Column(5).Width = 18;
+                    ws.Column(6).Width = 14;
+                    ws.Column(7).Width = 8;
+                    ws.Column(8).Width = 45;
 
                     ws.Cells["A1"].Value = "ДЕТАЛЬНЫЙ ОТЧЁТ АВТОСЕРВИСА";
                     ws.Cells["A1:H1"].Merge = true;
@@ -996,11 +997,11 @@ namespace Service.ViewModels
                     ws.Cells.AutoFitColumns();
                     package.SaveAs(new FileInfo(dialog.FileName));
                 }
-                MessageBox.Show("Детальный отчёт успешно сохранён в Excel!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Детальный отчёт успешно сохранён в Excel!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1089,11 +1090,11 @@ namespace Service.ViewModels
                     ws.Cells.AutoFitColumns();
                     package.SaveAs(new FileInfo(dialog.FileName));
                 }
-                MessageBox.Show("Отчёт по автомобилям успешно сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Отчёт по автомобилям успешно сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1165,11 +1166,11 @@ namespace Service.ViewModels
                     ws.Cells.AutoFitColumns();
                     package.SaveAs(new FileInfo(dialog.FileName));
                 }
-                MessageBox.Show("Отчёт по сотрудникам успешно сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Отчёт по сотрудникам успешно сохранён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -1273,11 +1274,11 @@ namespace Service.ViewModels
                     ws.Cells.AutoFitColumns();
                     package.SaveAs(new FileInfo(dialog.FileName));
                 }
-                MessageBox.Show("Заказ-наряд успешно сохранён в Excel!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                CustomMessageBox.Show("Заказ-наряд успешно сохранён в Excel!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка экспорта: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

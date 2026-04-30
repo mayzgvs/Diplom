@@ -1,6 +1,7 @@
 ﻿using Service.Data;
 using Service.Models;
 using Service.Utility;
+using Service.Views;
 using System;
 using System.Windows;
 using System.Windows.Input;
@@ -67,7 +68,7 @@ namespace Service.ViewModels
                 string.IsNullOrWhiteSpace(EditingClient.FirstName))
             {
                 ErrorMessage = "Введите фамилию и имя клиента!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -76,14 +77,14 @@ namespace Service.ViewModels
                 if (!ValidationHelper.IsValidRussianPhone(EditingClient.ContactNumber))
                 {
                     ErrorMessage = "Некорректный формат номера телефона!\nПример: +7XXXXXXXXXX";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (_model.PhoneExists(EditingClient.ContactNumber, _isEditMode ? EditingClient.Id : (int?)null))
                 {
                     ErrorMessage = "Клиент с таким номером телефона уже существует!";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -93,14 +94,14 @@ namespace Service.ViewModels
                 if (!ValidationHelper.IsValidEmail(EditingClient.Email))
                 {
                     ErrorMessage = "Некорректный формат email-адреса!";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (_model.EmailExists(EditingClient.Email, _isEditMode ? EditingClient.Id : (int?)null))
                 {
                     ErrorMessage = "Клиент с таким email уже существует!";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -111,17 +112,18 @@ namespace Service.ViewModels
                 {
                     _model.CreateClient(EditingClient.FirstName, EditingClient.LastName,
                                       EditingClient.ContactNumber, EditingClient.Email);
-                    MessageBox.Show("Клиент успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Клиент успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _model.EditClient(EditingClient.Id, EditingClient.FirstName, EditingClient.LastName,
                                     EditingClient.ContactNumber, EditingClient.Email);
-                    MessageBox.Show("Клиент успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Клиент успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 ClientSaved?.Invoke(this, EventArgs.Empty);
 
+                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;
@@ -131,7 +133,7 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

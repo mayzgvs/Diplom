@@ -21,8 +21,8 @@ namespace Service.ViewModels
         {
             get => _selectedClient;
             set
-            { 
-                _selectedClient = value; 
+            {
+                _selectedClient = value;
                 OnPropertyChanged();
             }
         }
@@ -31,11 +31,11 @@ namespace Service.ViewModels
         public string SearchText
         {
             get => _searchText;
-            set 
-            { 
-                _searchText = value; 
+            set
+            {
+                _searchText = value;
                 OnPropertyChanged();
-                FilterClients(); 
+                FilterClients();
             }
         }
 
@@ -143,21 +143,67 @@ namespace Service.ViewModels
         {
             if (SelectedClient == null) return;
 
-            if (MessageBox.Show($"Удалить клиента {SelectedClient.FullName}?",
-                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            // Сохраняем информацию о клиенте до удаления
+            var clientToDelete = SelectedClient;
+            var clientName = clientToDelete.FullName;
+
+            // Получаем информацию о связанных данных до удаления
+            var carsCount = _model.GetCarsByClientId(clientToDelete.Id).Count;
+            var requestsCount = _model.GetRepairRequestsCountByClientId(clientToDelete.Id);
+
+            string warningMessage;
+            MessageBoxImage icon = MessageBoxImage.Question;
+
+            if (carsCount > 0 || requestsCount > 0)
+            {
+                warningMessage = $"Вы действительно хотите удалить клиента {clientName}?\n\n" +
+                                $"ВНИМАНИЕ! Это приведет к КАСКАДНОМУ удалению:\n" +
+                                $"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                                $"• {carsCount} автомобилей\n" +
+                                $"• {requestsCount} заявок на ремонт\n" +
+                                $"• Всех связанных работ и материалов\n" +
+                                $"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" +
+                                $"Данное действие НЕОБРАТИМО!\n\n" +
+                                $"Вы уверены, что хотите продолжить?";
+                icon = MessageBoxImage.Warning;
+            }
+            else
+            {
+                warningMessage = $"Удалить клиента {clientName}?";
+            }
+
+            var result = CustomMessageBox.Show(warningMessage,
+                "Подтверждение каскадного удаления", MessageBoxButton.YesNo, icon);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    _model.DeleteClient(SelectedClient);
+                    // Выполняем удаление
+                    _model.DeleteClient(clientToDelete);
+
+                    // Очищаем выбранный элемент
+                    SelectedClient = null;
+
+                    // Обновляем списки
                     LoadData();
                     FilterClients();
-                    MessageBox.Show("Клиент успешно удален!", "Успех",
-                        MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Показываем сообщение об успехе
+                    var message = carsCount > 0 || requestsCount > 0
+                        ? $"✓ Клиент и все связанные данные успешно удалены!\n\n" +
+                          $"Удалено:\n" +
+                          $"• Клиент: {clientName}\n" +
+                          $"• Автомобилей: {carsCount}\n" +
+                          $"• Заявок: {requestsCount}"
+                        : $"✓ Клиент {clientName} успешно удален!";
+
+                    CustomMessageBox.Show(message, "Каскадное удаление выполнено", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
+                    CustomMessageBox.Show($"Ошибка при каскадном удалении: {ex.Message}",
+                        "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }

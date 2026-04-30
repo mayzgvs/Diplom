@@ -81,7 +81,7 @@ namespace Service.ViewModels
         {
             if (SelectedRepairRequest == null)
             {
-                MessageBox.Show("Сначала выберите заявку!",
+                CustomMessageBox.Show("Сначала выберите заявку!",
                     "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
@@ -126,20 +126,22 @@ namespace Service.ViewModels
         {
             if (SelectedWorkItem == null) return;
 
-            if (MessageBox.Show($"Удалить выбранную работу?",
-                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            var result = CustomMessageBox.Show($"Удалить выбранную работу?",
+                "Подтверждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (result == MessageBoxResult.Yes)
             {
                 try
                 {
                     _model.DeleteWorkItem(SelectedWorkItem);
                     LoadWorkItems();
                     UpdateRequestTotalCost();
-                    MessageBox.Show("Работа успешно удалена!", "Успех",
+                    CustomMessageBox.Show("Работа успешно удалена!", "Успех",
                         MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
+                    CustomMessageBox.Show($"Ошибка при удалении: {ex.Message}", "Ошибка",
                         MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }

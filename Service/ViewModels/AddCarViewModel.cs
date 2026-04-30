@@ -4,6 +4,7 @@ using Service.Utility;
 using Service.Views;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,6 +15,9 @@ namespace Service.ViewModels
         private readonly CarAddEditModel _model = new CarAddEditModel();
         private Car _editingCar;
         private bool _isEditMode;
+        private string _searchClientText;
+        private ObservableCollection<Client> _allClients;
+        private ObservableCollection<Client> _filteredClients;
 
         public event EventHandler CarSaved;
 
@@ -21,13 +25,32 @@ namespace Service.ViewModels
         {
             get => _editingCar;
             set
-            { 
-                _editingCar = value; 
-                OnPropertyChanged(); 
+            {
+                _editingCar = value;
+                OnPropertyChanged();
             }
         }
 
-        public ObservableCollection<Client> Clients { get; private set; }
+        public ObservableCollection<Client> Clients
+        {
+            get => _filteredClients;
+            private set
+            {
+                _filteredClients = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SearchClientText
+        {
+            get => _searchClientText;
+            set
+            {
+                _searchClientText = value;
+                OnPropertyChanged();
+                FilterClients();
+            }
+        }
 
         public ICommand SaveCommand { get; }
         public ICommand CancelEditCommand { get; }
@@ -62,15 +85,24 @@ namespace Service.ViewModels
                 EditingCar = car;
             }
 
-            SaveCommand = new RelayCommand(Save);             
+            SaveCommand = new RelayCommand(Save);
             CancelEditCommand = new RelayCommand(Cancel);
             AddNewClientCommand = new RelayCommand(AddNewClient);
         }
 
         private void LoadClients()
         {
-            Clients = new ObservableCollection<Client>(_model.GetClients());
-            OnPropertyChanged(nameof(Clients));
+            _allClients = new ObservableCollection<Client>(_model.GetClients());
+            FilterClients();
+        }
+
+        private void FilterClients()
+        {
+            if (string.IsNullOrWhiteSpace(SearchClientText))
+                Clients = new ObservableCollection<Client>(_allClients);
+            else
+                Clients = new ObservableCollection<Client>(
+                    _allClients.Where(c => c.FullName.ToLower().Contains(SearchClientText.ToLower())));
         }
 
         private void Save(object parameter)
@@ -80,28 +112,28 @@ namespace Service.ViewModels
             if (string.IsNullOrWhiteSpace(EditingCar.Brand) || string.IsNullOrWhiteSpace(EditingCar.Model))
             {
                 ErrorMessage = "Заполните марку и модель автомобиля!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (EditingCar.OwnerId == 0)
             {
                 ErrorMessage = "Выберите владельца автомобиля!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(EditingCar.RegistrationNumber))
             {
                 ErrorMessage = "Введите государственный номер автомобиля!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!ValidationHelper.IsValidRussianLicensePlate(EditingCar.RegistrationNumber))
             {
                 ErrorMessage = "Некорректный формат государственного номера!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -110,14 +142,14 @@ namespace Service.ViewModels
                 if (!ValidationHelper.IsValidVIN(EditingCar.VIN))
                 {
                     ErrorMessage = "Некорректный VIN-номер! Должен содержать 17 символов.";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (_model.VinExists(EditingCar.VIN, _isEditMode ? EditingCar.Id : (int?)null))
                 {
                     ErrorMessage = "Автомобиль с таким VIN уже существует!";
-                    MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
             }
@@ -125,7 +157,7 @@ namespace Service.ViewModels
             if (_model.RegistrationNumberExists(EditingCar.RegistrationNumber, _isEditMode ? EditingCar.Id : (int?)null))
             {
                 ErrorMessage = "Автомобиль с таким государственным номером уже существует!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -135,17 +167,18 @@ namespace Service.ViewModels
                 {
                     _model.CreateCar(EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber,
                                    EditingCar.VIN, EditingCar.OwnerId);
-                    MessageBox.Show("Автомобиль успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Автомобиль успешно добавлен!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _model.EditCar(EditingCar.Id, EditingCar.Brand, EditingCar.Model, EditingCar.RegistrationNumber,
                                  EditingCar.VIN, EditingCar.OwnerId);
-                    MessageBox.Show("Автомобиль успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Автомобиль успешно обновлён!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 CarSaved?.Invoke(this, EventArgs.Empty);
 
+                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;
@@ -155,7 +188,7 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

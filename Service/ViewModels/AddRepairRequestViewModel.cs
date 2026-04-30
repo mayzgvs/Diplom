@@ -122,7 +122,7 @@ namespace Service.ViewModels
 
             EditingRepairRequest.PropertyChanged += EditingRepairRequest_PropertyChanged;
 
-            SaveCommand = new RelayCommand(Save);       
+            SaveCommand = new RelayCommand(Save);
             CancelEditCommand = new RelayCommand(Cancel);
             AddNewCarCommand = new RelayCommand(AddNewCar);
         }
@@ -192,21 +192,21 @@ namespace Service.ViewModels
             if (!string.IsNullOrEmpty(DateError))
             {
                 ErrorMessage = DateError;
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (EditingRepairRequest.CarId == 0)
             {
                 ErrorMessage = "Выберите автомобиль!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (SelectedService == null)
             {
                 ErrorMessage = "Выберите услугу!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -222,8 +222,7 @@ namespace Service.ViewModels
                         EditingRepairRequest.StatusId,
                         SelectedService.Id);
 
-                    SuccessMessage = "Заявка успешно добавлена!";
-                    MessageBox.Show("Заявка успешно добавлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Заявка успешно добавлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
@@ -236,19 +235,22 @@ namespace Service.ViewModels
                         EditingRepairRequest.StatusId,
                         SelectedService.Id);
 
-                    SuccessMessage = "Заявка успешно обновлена!";
-                    MessageBox.Show("Заявка успешно обновлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Заявка успешно обновлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 RepairRequestSaved?.Invoke(this, EventArgs.Empty);
 
+                // Закрываем окно после MessageBox
                 if (parameter is Window window)
+                {
                     window.DialogResult = true;
+                    window.Close();
+                }
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка при сохранении: {ex.Message}";
-                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

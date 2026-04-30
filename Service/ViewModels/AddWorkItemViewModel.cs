@@ -1,5 +1,6 @@
 ﻿using Service.Data;
 using Service.Models;
+using Service.Views;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -188,35 +189,35 @@ namespace Service.ViewModels
             if (SelectedEmployee == null)
             {
                 ErrorMessage = "Выберите сотрудника!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (SelectedStatus == null)
             {
                 ErrorMessage = "Выберите статус работы!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (!IsServiceSelected && !IsConsumableSelected)
             {
                 ErrorMessage = "Выберите услугу или расходный материал!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (IsServiceSelected && SelectedService == null)
             {
                 ErrorMessage = "Выберите услугу!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (IsConsumableSelected && SelectedConsumable == null)
             {
                 ErrorMessage = "Выберите расходный материал!";
-                MessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка заполнения", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -230,7 +231,7 @@ namespace Service.ViewModels
 
             if (costValue == 0)
             {
-                var result = MessageBox.Show("Стоимость работы равна 0. Продолжить?",
+                var result = CustomMessageBox.Show("Стоимость работы равна 0. Продолжить?",
                     "Предупреждение", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.No)
                     return;
@@ -245,17 +246,18 @@ namespace Service.ViewModels
                 {
                     _model.CreateWorkItem(_repairRequest.Id, SelectedEmployee?.Id, serviceId, consumableId,
                                         costValue, SelectedStatus.Id);
-                    MessageBox.Show("Работа успешно добавлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Работа успешно добавлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else
                 {
                     _model.EditWorkItem(_editingWorkItem.Id, _repairRequest.Id, SelectedEmployee?.Id,
                                       serviceId, consumableId, costValue, SelectedStatus.Id);
-                    MessageBox.Show("Работа успешно обновлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                    CustomMessageBox.Show("Работа успешно обновлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
 
                 WorkItemSaved?.Invoke(this, EventArgs.Empty);
 
+                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;
@@ -265,7 +267,7 @@ namespace Service.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Ошибка сохранения: {ex.Message}";
-                MessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show(ErrorMessage, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

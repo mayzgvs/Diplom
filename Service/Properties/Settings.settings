@@ -17,5 +17,14 @@
     <Setting Name="SmtpSenderName" Type="System.String" Scope="User">
       <Value Profile="(Default)">Автосервис</Value>
     </Setting>
+    <Setting Name="SmtpEnableSsl" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="SmtpUseDefaultCredentials" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="SmtpFromEmail" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
