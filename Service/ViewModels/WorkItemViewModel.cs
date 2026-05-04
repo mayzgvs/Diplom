@@ -57,7 +57,8 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            RepairRequests = new ObservableCollection<RepairRequest>(_model.GetRepairRequests());
+            RepairRequests = new ObservableCollection<RepairRequest>(
+                _model.GetRepairRequests().OrderByDescending(r => r.StartDate));
             OnPropertyChanged(nameof(RepairRequests));
         }
 
@@ -65,8 +66,8 @@ namespace Service.ViewModels
         {
             if (SelectedRepairRequest != null)
             {
-                var workItems = _model.GetWorkItemsByRequestId(SelectedRepairRequest.Id);
-
+                var workItems = _model.GetWorkItemsByRequestId(SelectedRepairRequest.Id)
+                    .OrderBy(w => w.ServiceName ?? w.ConsumableName);
                 WorkItems = new ObservableCollection<WorkItem>(workItems);
             }
             else

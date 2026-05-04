@@ -92,7 +92,8 @@ namespace Service.ViewModels
 
         private void LoadClients()
         {
-            _allClients = new ObservableCollection<Client>(_model.GetClients());
+            var clients = _model.GetClients();
+            _allClients = new ObservableCollection<Client>(clients.OrderBy(c => c.FullName));
             FilterClients();
         }
 

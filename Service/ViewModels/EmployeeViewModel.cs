@@ -54,7 +54,7 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            var list = _model.GetEmployees();
+            var list = _model.GetEmployees().OrderBy(e => e.LastName).ThenBy(e => e.FirstName);
             Employees = new ObservableCollection<Employee>(list);
             FilteredEmployees = new ObservableCollection<Employee>(list);
             OnPropertyChanged(nameof(Employees));

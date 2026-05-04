@@ -20,7 +20,6 @@ namespace Service.ViewModels
         public ObservableCollection<RepairRequest> FilteredRequests { get; private set; }
         public ObservableCollection<StatusRequest> Statuses { get; private set; }
 
-        // Специальная коллекция для фильтрации с дополнительным элементом "Все заявки"
         public ObservableCollection<StatusFilterItem> FilterStatuses { get; private set; }
 
         private RepairRequest _selectedRepairRequest;
@@ -42,7 +41,6 @@ namespace Service.ViewModels
             }
         }
 
-        // Изменяем тип свойства на StatusFilterItem
         private StatusFilterItem _selectedFilterStatus;
         public StatusFilterItem SelectedFilterStatus
         {
@@ -80,7 +78,7 @@ namespace Service.ViewModels
         {
             try
             {
-                var freshList = _model.GetRepairRequests();
+                var freshList = _model.GetRepairRequests().OrderByDescending(r => r.StartDate).ToList();
 
                 using (var context = new ApplicationContext())
                 {
@@ -102,11 +100,9 @@ namespace Service.ViewModels
                 RepairRequests = new ObservableCollection<RepairRequest>(freshList);
                 FilteredRequests = new ObservableCollection<RepairRequest>(freshList);
 
-                // Получаем реальные статусы из БД
                 var realStatuses = _model.GetStatuses();
                 Statuses = new ObservableCollection<StatusRequest>(realStatuses);
 
-                // Создаем коллекцию для фильтрации с элементом "Все заявки"
                 FilterStatuses = new ObservableCollection<StatusFilterItem>();
                 FilterStatuses.Add(new StatusFilterItem { Id = null, Name = "Все заявки" });
                 foreach (var status in realStatuses)
@@ -114,7 +110,6 @@ namespace Service.ViewModels
                     FilterStatuses.Add(new StatusFilterItem { Id = status.Id, Name = status.Name });
                 }
 
-                // Устанавливаем фильтр по умолчанию - "Все заявки"
                 SelectedFilterStatus = FilterStatuses.FirstOrDefault();
 
                 OnPropertyChanged(nameof(RepairRequests));
@@ -154,7 +149,6 @@ namespace Service.ViewModels
                     (r.ClientDisplayName?.ToLowerInvariant().Contains(search) == true));
             }
 
-            // Фильтрация по статусу с учетом "Все заявки" (когда Id == null)
             if (SelectedFilterStatus != null && SelectedFilterStatus.Id.HasValue)
             {
                 query = query.Where(r => r.StatusId == SelectedFilterStatus.Id.Value);
@@ -316,7 +310,6 @@ namespace Service.ViewModels
             var carInfo = $"{SelectedRepairRequest.Car.Brand} {SelectedRepairRequest.Car.Model} " +
                           $"({SelectedRepairRequest.Car.RegistrationNumber})";
 
-            // Используем новое окно подтверждения (лучше, чем было)
             var dialog = new SendNotificationView(client.FullName, client.Email, client.ContactNumber, carInfo);
             dialog.Owner = Application.Current.MainWindow;
 

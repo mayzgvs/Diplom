@@ -60,7 +60,7 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            var list = _model.GetClients();
+            var list = _model.GetClients().OrderBy(c => c.LastName).ThenBy(c => c.FirstName);
 
             Clients.Clear();
             FilteredClients.Clear();

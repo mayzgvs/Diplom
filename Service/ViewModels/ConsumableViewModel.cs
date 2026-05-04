@@ -75,8 +75,8 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            var list = _model.GetConsumables();
-            var categories = _model.GetCategories();
+            var list = _model.GetConsumables().OrderBy(c => c.Name);
+            var categories = _model.GetCategories().OrderBy(c => c.Name);
 
             Consumables.Clear();
             foreach (var consumable in list)

@@ -64,6 +64,9 @@
                                   SelectedValue="{Binding EditingRepairRequest.CarId, UpdateSourceTrigger=PropertyChanged}"
                                   SelectedValuePath="Id"
                                   DisplayMemberPath="RegistrationNumber"
+                                  IsTextSearchEnabled="True"
+                                  IsEditable="True"
+                                  StaysOpenOnEdit="True"
                                   ToolTip="Выберите автомобиль из списка"/>
                         <Button Grid.Column="1"
                                 Content="+"
@@ -123,6 +126,9 @@
                               ItemsSource="{Binding Services}"
                               SelectedItem="{Binding SelectedService, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               DisplayMemberPath="Name"
+                              IsTextSearchEnabled="True"
+                              IsEditable="True"
+                              StaysOpenOnEdit="True"
                               ToolTip="Выберите услугу из списка"/>
 
                     <!-- Стоимость -->
@@ -144,6 +150,9 @@
                               SelectedValue="{Binding EditingRepairRequest.StatusId, UpdateSourceTrigger=PropertyChanged}"
                               SelectedValuePath="Id"
                               DisplayMemberPath="Name"
+                              IsTextSearchEnabled="True"
+                              IsEditable="True"
+                              StaysOpenOnEdit="True"
                               ToolTip="Выберите статус из списка"/>
 
                     <!-- Пояснение -->

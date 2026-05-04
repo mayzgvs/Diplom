@@ -129,9 +129,9 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            Cars = new ObservableCollection<Car>(_model.GetCars());
-            Statuses = new ObservableCollection<StatusRequest>(_model.GetStatuses());
-            Services = new ObservableCollection<Data.Service>(GetServices());
+            Cars = new ObservableCollection<Car>(_model.GetCars().OrderBy(c => c.Brand).ThenBy(c => c.Model));
+            Statuses = new ObservableCollection<StatusRequest>(_model.GetStatuses().OrderBy(s => s.Name));
+            Services = new ObservableCollection<Data.Service>(GetServices().OrderBy(s => s.Name));
 
             OnPropertyChanged(nameof(Cars));
             OnPropertyChanged(nameof(Statuses));
@@ -240,7 +240,6 @@ namespace Service.ViewModels
 
                 RepairRequestSaved?.Invoke(this, EventArgs.Empty);
 
-                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;
@@ -266,7 +265,7 @@ namespace Service.ViewModels
             addCarView.ShowDialog();
 
             Cars.Clear();
-            foreach (var car in _model.GetCars())
+            foreach (var car in _model.GetCars().OrderBy(c => c.Brand).ThenBy(c => c.Model))
                 Cars.Add(car);
         }
     }

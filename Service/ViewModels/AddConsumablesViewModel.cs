@@ -103,7 +103,8 @@ namespace Service.ViewModels
 
         private void LoadCategories()
         {
-            _allCategories = new ObservableCollection<ConsumablesCategory>(_model.GetCategories());
+            var categories = _model.GetCategories();
+            _allCategories = new ObservableCollection<ConsumablesCategory>(categories.OrderBy(c => c.Name));
             FilterCategories();
         }
 

@@ -60,7 +60,7 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            var list = _model.GetCars();
+            var list = _model.GetCars().OrderBy(c => c.Brand).ThenBy(c => c.Model).ThenBy(c => c.RegistrationNumber);
 
             Cars.Clear();
             FilteredCars.Clear();

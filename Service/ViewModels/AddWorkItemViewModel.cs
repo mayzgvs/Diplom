@@ -140,10 +140,10 @@ namespace Service.ViewModels
 
         private void LoadData()
         {
-            Services = new ObservableCollection<Data.Service>(_model.GetServices());
-            Consumables = new ObservableCollection<Consumable>(_model.GetConsumables());
-            Employees = new ObservableCollection<Employee>(_model.GetEmployees());
-            WorkStatuses = new ObservableCollection<StatusWork>(_model.GetWorkStatuses());
+            Services = new ObservableCollection<Data.Service>(_model.GetServices().OrderBy(s => s.Name));
+            Consumables = new ObservableCollection<Consumable>(_model.GetConsumables().OrderBy(c => c.Name));
+            Employees = new ObservableCollection<Employee>(_model.GetEmployees().OrderBy(e => e.LastName).ThenBy(e => e.FirstName));
+            WorkStatuses = new ObservableCollection<StatusWork>(_model.GetWorkStatuses().OrderBy(s => s.Name));
         }
 
         private void InitializeValues()
@@ -257,7 +257,6 @@ namespace Service.ViewModels
 
                 WorkItemSaved?.Invoke(this, EventArgs.Empty);
 
-                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;

@@ -71,7 +71,8 @@
                                Foreground="#2C3E50"/>
 
                     <ComboBox Grid.Column="1"
-                              Style="{StaticResource ModernComboBox}"
+                              Style="{StaticResource TallComboBoxStyle}"
+                              ItemContainerStyle="{StaticResource TallComboBoxItemStyle}"
                               ItemsSource="{Binding RepairRequests}"
                               SelectedItem="{Binding SelectedRepairRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               ItemTemplate="{StaticResource RepairRequestTemplate}"

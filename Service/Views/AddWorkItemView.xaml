@@ -78,10 +78,13 @@
                             </Style>
                         </StackPanel.Style>
                         <TextBlock Text="Услуга" FontWeight="SemiBold" Foreground="#2C3E50" Margin="0,0,0,8"/>
-                        <ComboBox Style="{StaticResource ModernComboBoxPurple}"
+                        <ComboBox Style="{StaticResource ModernComboBox}"
                                   ItemsSource="{Binding Services}"
                                   SelectedItem="{Binding SelectedService, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  DisplayMemberPath="Name"/>
+                                  DisplayMemberPath="Name"
+                                  IsTextSearchEnabled="True"
+                                  IsEditable="True"
+                                  StaysOpenOnEdit="True"/>
                     </StackPanel>
 
                     <StackPanel>
@@ -96,10 +99,13 @@
                             </Style>
                         </StackPanel.Style>
                         <TextBlock Text="Расходный материал" FontWeight="SemiBold" Foreground="#2C3E50" Margin="0,0,0,8"/>
-                        <ComboBox Style="{StaticResource ModernComboBoxOrange}"
+                        <ComboBox Style="{StaticResource ModernComboBox}"
                                   ItemsSource="{Binding Consumables}"
                                   SelectedItem="{Binding SelectedConsumable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                  DisplayMemberPath="Name"/>
+                                  DisplayMemberPath="Name"
+                                  IsTextSearchEnabled="True"
+                                  IsEditable="True"
+                                  StaysOpenOnEdit="True"/>
                     </StackPanel>
 
                     <TextBlock Text="Сотрудник" FontWeight="SemiBold" Foreground="#2C3E50" Margin="0,0,0,8"/>
@@ -107,6 +113,9 @@
                               ItemsSource="{Binding Employees}"
                               SelectedItem="{Binding SelectedEmployee, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               DisplayMemberPath="FullName"
+                              IsTextSearchEnabled="True"
+                              IsEditable="True"
+                              StaysOpenOnEdit="True"
                               Margin="0,0,0,20"
                               ToolTip="Выберите сотрудника из списка"/>
 
@@ -125,6 +134,9 @@
                               ItemsSource="{Binding WorkStatuses}"
                               SelectedItem="{Binding SelectedStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               DisplayMemberPath="Name"
+                              IsTextSearchEnabled="True"
+                              IsEditable="True"
+                              StaysOpenOnEdit="True"
                               Margin="0,0,0,20"
                               ToolTip="Выберите статус из списка"/>
                 </StackPanel>

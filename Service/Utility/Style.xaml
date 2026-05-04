@@ -238,6 +238,45 @@
         <Setter Property="Margin" Value="0,2"/>
     </Style>
 
+    <Style TargetType="ComboBox" x:Key="TallComboBoxStyle">
+        <Setter Property="Height" Value="42"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Padding" Value="12,8"/>
+        <Setter Property="BorderBrush" Value="#E0E0E0"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Margin" Value="5"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Foreground" Value="#333333"/>
+        <Setter Property="Background" Value="White"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderBrush" Value="#2A3F54"/>
+                <Setter Property="BorderThickness" Value="2"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Стиль для элемента списка -->
+    <Style TargetType="ComboBoxItem" x:Key="TallComboBoxItemStyle">
+        <Setter Property="Height" Value="50"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Foreground" Value="#2C3E50"/>
+
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Setter Property="Background" Value="#F3E5F5"/>
+                <Setter Property="Foreground" Value="#9B59B6"/>
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#F0F0F0"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- ========== AddCarView ========== -->
     <Style TargetType="xctk:WatermarkTextBox" x:Key="ModernWatermarkTextBox">
         <Setter Property="Height" Value="38"/>
