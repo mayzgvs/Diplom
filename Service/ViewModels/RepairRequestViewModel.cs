@@ -1,6 +1,7 @@
 ﻿using Service.Data;
 using Service.Models;
 using Service.Services;
+using Service.Utility;
 using Service.Views;
 using System;
 using System.Collections.ObjectModel;
@@ -320,18 +321,9 @@ namespace Service.ViewModels
 
                 if (dialog.SendEmail && !string.IsNullOrWhiteSpace(client.Email))
                 {
-                    var subject = "Автомобиль готов к выдаче";
-                    var htmlBody = $@"
-                <html>
-                <body style='font-family: Arial, sans-serif;'>
-                    <h2 style='color: #3498DB;'>Уважаемый(ая) {client.FullName}!</h2>
-                    <p>Ваш автомобиль <strong>{carInfo}</strong> готов к выдаче.</p>
-                    <p>Ждем Вас в нашем автосервисе.</p>
-                    <br/>
-                    <hr/>
-                    <p style='color: #7F8C8D; font-size: 12px;'>Это сообщение отправлено автоматически.</p>
-                </body>
-                </html>";
+                    var subject = $"Автомобиль готов к выдаче - заказ № {SelectedRepairRequest.Id}";
+
+                    var htmlBody = GenerateBeautifulHtmlEmail(SelectedRepairRequest, client, carInfo);
 
                     emailSent = await new EmailService().SendEmailAsync(client.Email, subject, htmlBody);
                 }
@@ -354,6 +346,286 @@ namespace Service.ViewModels
                         "Внимание", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
+        }
+
+        private string GenerateBeautifulHtmlEmail(RepairRequest request, Client client, string carInfo)
+        {
+            var workItems = DbManager.GetWorkItemsByRequestId(request.Id);
+
+            decimal totalCost = 0;
+            var itemsHtml = new System.Text.StringBuilder();
+            int counter = 1;
+
+            if (workItems != null && workItems.Any())
+            {
+                foreach (var wi in workItems)
+                {
+                    string serviceName = wi.Service?.Name ?? wi.Consumable?.Name ?? "Работа";
+                    string employeeName = wi.Employee != null ? $"{wi.Employee.FirstName} {wi.Employee.LastName}" : "Не назначен";
+                    decimal cost = wi.Cost;
+                    totalCost += cost;
+
+                    itemsHtml.AppendLine($@"
+                <tr style='border-bottom: 1px solid #e0e0e0;'>
+                    <td style='padding: 10px; text-align: center;'>{counter++}</td>
+                    <td style='padding: 10px;'>{serviceName}</td>
+                    <td style='padding: 10px; text-align: center;'>1</td>
+                    <td style='padding: 10px; text-align: right;'>{cost:N2}</td>
+                </tr>");
+                }
+            }
+            else
+            {
+                totalCost = request.TotalCost;
+                itemsHtml.AppendLine($@"
+            <tr style='border-bottom: 1px solid #e0e0e0;'>
+                <td style='padding: 10px; text-align: center;'>1</td>
+                <td style='padding: 10px;'>Ремонт автомобиля {carInfo}</td>
+                <td style='padding: 10px; text-align: center;'>1</td>
+                <td style='padding: 10px; text-align: right;'>{totalCost:N2}</td>
+            </td>");
+            }
+
+            var paymentStatusClass = "badge-not-paid";
+            var paymentStatus = "Не оплачен";
+            
+            if (request.StatusId == 3 && totalCost > 0)
+            {
+                paymentStatusClass = "badge-paid";
+                paymentStatus = "Оплачен";
+            }
+
+            return $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>Автомобиль готов к выдаче - Заказ № {request.Id}</title>
+    <style>
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }}
+        .container {{
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }}
+        .header {{
+            background: linear-gradient(135deg, #27AE60 0%, #1E8449 100%);
+            color: white;
+            padding: 25px 30px;
+        }}
+        .header h1 {{
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }}
+        .header p {{
+            margin: 8px 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }}
+        .content {{
+            padding: 30px;
+        }}
+        .greeting {{
+            margin-bottom: 25px;
+            color: #2c3e50;
+            line-height: 1.6;
+        }}
+        .greeting strong {{
+            font-size: 16px;
+        }}
+        .info-block {{
+            margin-bottom: 30px;
+        }}
+        .info-title {{
+            font-weight: bold;
+            font-size: 16px;
+            color: #27AE60;
+            border-left: 4px solid #27AE60;
+            padding-left: 12px;
+            margin-bottom: 15px;
+        }}
+        .info-table {{
+            width: 100%;
+            border-collapse: collapse;
+            background: #f8f9fa;
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 14px;
+        }}
+        .info-table td {{
+            padding: 10px 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }}
+        .info-table td:first-child {{
+            font-weight: bold;
+            width: 35%;
+            background: #f0f2f5;
+        }}
+        .info-table tr:last-child td {{
+            border-bottom: none;
+        }}
+        .badge-paid {{
+            color: #27ae60;
+            font-weight: bold;
+        }}
+        .badge-not-paid {{
+            color: #e74c3c;
+            font-weight: bold;
+        }}
+        .items-table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 13px;
+        }}
+        .items-table th {{
+            background: #27AE60;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 13px;
+        }}
+        .items-table td {{
+            padding: 10px 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }}
+        .items-table tr:hover {{
+            background-color: #f5f5f5;
+        }}
+        .totals {{
+            text-align: right;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #e0e0e0;
+        }}
+        .totals p {{
+            margin: 5px 0;
+            font-size: 14px;
+        }}
+        .totals .grand-total {{
+            font-size: 18px;
+            font-weight: bold;
+            color: #27AE60;
+            margin-top: 10px;
+        }}
+        .footer {{
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 12px;
+            border-top: 1px solid #e0e0e0;
+        }}
+        @media (max-width: 768px) {{
+            .content {{
+                padding: 15px;
+            }}
+            .items-table {{
+                font-size: 11px;
+            }}
+            .items-table th,
+            .items-table td {{
+                padding: 6px 4px;
+            }}
+            .info-table td {{
+                padding: 8px 10px;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h1>✅ Ваш автомобиль готов к выдаче!</h1>
+            <p>Заказ-наряд № {request.Id} выполнен</p>
+        </div>
+        
+        <div class='content'>
+            <div class='greeting'>
+                <strong>Уважаемый(ая) {client.FullName}!</strong><br/><br/>
+                Сообщаем Вам, что ремонт Вашего автомобиля успешно завершен.
+            </div>
+
+            <div class='info-block'>
+                <div class='info-title'>Информация о заказе</div>
+                <table class='info-table'>
+                    <tr>
+                        <td>Номер заказ-наряда</td>
+                        <td><strong>№ {request.Id}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Дата оформления</td>
+                        <td>{request.StartDate:dd.MM.yyyy HH:mm}</td>
+                    </tr>
+                    <tr>
+                        <td>Автомобиль</td>
+                        <td><strong>{carInfo}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>Клиент</td>
+                        <td>{client.FullName}</td>
+                    </tr>
+                    <tr>
+                        <td>Контактный телефон</td>
+                        <td>{client.ContactNumber}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>{client.Email}</td>
+                    </tr>
+                    <tr>
+                        <td>Статус оплаты</td>
+                        <td class='{paymentStatusClass}'>{paymentStatus}</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class='info-block'>
+                <div class='info-title'>Выполненные работы</div>
+                <table class='items-table'>
+                    <thead>
+                        <tr>
+                            <th>№</th>
+                            <th>Наименование</th>
+                            <th>Кол-во</th>
+                            <th>Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {itemsHtml}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class='totals'>
+                <p class='grand-total'><strong>Итого к оплате:</strong> {totalCost:N2} ₽</p>
+            </div>
+
+            <div class='greeting'>
+                🚗 <strong>Ждем Вас в нашем автосервисе для получения автомобиля!</strong><br/><br/>
+                <strong>Режим работы:</strong> Пн-Пт: 9:00 - 20:00, Сб-Вс: 10:00 - 18:00<br/>
+                📞 <strong>Контакты:</strong> +7 (952) 724-14-21
+            </div>
+        </div>
+        
+        <div class='footer'>
+            <p>Это письмо сформировано автоматически. Пожалуйста, не отвечайте на него.</p>
+            <p>© {DateTime.Now.Year} Автосервис. Все права защищены.</p>
+        </div>
+    </div>
+</body>
+</html>";
         }
     }
     public class StatusFilterItem

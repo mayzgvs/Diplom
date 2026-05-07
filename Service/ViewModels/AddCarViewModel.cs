@@ -179,7 +179,6 @@ namespace Service.ViewModels
 
                 CarSaved?.Invoke(this, EventArgs.Empty);
 
-                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;

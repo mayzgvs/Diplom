@@ -107,7 +107,7 @@
                     CornerRadius="0,0,15,15" Padding="20,15">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Content="Сохранить" Width="110" Height="40" Margin="8,0"
-                            Command="{Binding SaveCommand}"
+                            Command="{Binding SaveCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=Window}}"
                             Background="#3498DB"
                             Foreground="White"
                             FontSize="13"

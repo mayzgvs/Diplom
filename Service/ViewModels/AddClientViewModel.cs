@@ -123,7 +123,6 @@ namespace Service.ViewModels
 
                 ClientSaved?.Invoke(this, EventArgs.Empty);
 
-                // Закрываем окно после MessageBox
                 if (parameter is Window window)
                 {
                     window.DialogResult = true;
