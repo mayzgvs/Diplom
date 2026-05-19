@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Service.Views;
+using System;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -9,6 +10,13 @@ namespace Service.ViewModels
 {
     public class SmtpSettingsViewModel : BaseViewModel
     {
+        private bool _isBusy;
+        public bool IsBusy
+        {
+            get => _isBusy;
+            set { _isBusy = value; OnPropertyChanged(); }
+        }
+
         public string SmtpHost
         {
             get => Properties.Settings.Default.SmtpHost;
@@ -71,67 +79,103 @@ namespace Service.ViewModels
         private void Save()
         {
             Properties.Settings.Default.Save();
-            MessageBox.Show("Настройки SMTP успешно сохранены!", "Сохранение",
+            CustomMessageBox.Show("Настройки SMTP успешно сохранены!", "Сохранение",
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        // Асинхронное тестирование SMTP с обработкой различных сценариев аутентификации
         private async Task TestConnectionAsync()
         {
+            if (IsBusy) return;
+            IsBusy = true;
+
             try
             {
-                string fromEmail = string.IsNullOrWhiteSpace(SmtpFromEmail) ? SmtpEmail : SmtpFromEmail;
+                // === СПЕЦИАЛЬНАЯ ПРОВЕРКА ПОРТА 587 ===
+                if (SmtpPort == 587 && !SmtpEnableSsl)
+                {
+                    var result = CustomMessageBox.Show(
+                        "Для порта 587 обычно требуется включить SSL/TLS (STARTTLS).\n\n" +
+                        "Включить автоматически?",
+                        "Рекомендация",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Question);
+
+                    if (result == MessageBoxResult.Yes)
+                    {
+                        SmtpEnableSsl = true;
+                        OnPropertyChanged(nameof(SmtpEnableSsl));
+                    }
+                }
 
                 if (string.IsNullOrWhiteSpace(SmtpHost))
                 {
-                    MessageBox.Show("Укажите SMTP сервер!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show("Укажите SMTP сервер!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
+
+                if (string.IsNullOrWhiteSpace(SmtpEmail))
+                {
+                    CustomMessageBox.Show("Укажите Email для входа!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                string fromEmail = string.IsNullOrWhiteSpace(SmtpFromEmail) ? SmtpEmail : SmtpFromEmail;
 
                 using (var smtpClient = new SmtpClient(SmtpHost, SmtpPort))
                 {
                     smtpClient.EnableSsl = SmtpEnableSsl;
-                    smtpClient.Timeout = 15000; // 15 секунд таймаут - важно, чтобы не зависнуть навсегда
+                    smtpClient.Timeout = 20000;
 
-                    // Выбор метода аутентификации в зависимости от настроек
-                    if (SmtpUseDefaultCredentials)
+                    // Явная установка учётных данных
+                    if (!SmtpUseDefaultCredentials &&
+                        !string.IsNullOrWhiteSpace(SmtpEmail) &&
+                        !string.IsNullOrWhiteSpace(SmtpPassword))
                     {
-                        // Вариант 1: использовать учётные данные Windows (для корпоративных Exchange)
-                        smtpClient.UseDefaultCredentials = true;
-                    }
-                    else if (!string.IsNullOrWhiteSpace(SmtpEmail) && !string.IsNullOrWhiteSpace(SmtpPassword))
-                    {
-                        // Вариант 2: явная аутентификация по логину/паролю (для Яндекса, Gmail, Mail.ru)
                         smtpClient.UseDefaultCredentials = false;
                         smtpClient.Credentials = new NetworkCredential(SmtpEmail, SmtpPassword);
+                    }
+                    else if (SmtpUseDefaultCredentials)
+                    {
+                        smtpClient.UseDefaultCredentials = true;
                     }
 
                     using (var mailMessage = new MailMessage())
                     {
-                        mailMessage.From = new MailAddress(fromEmail, SmtpSenderName);
+                        mailMessage.From = new MailAddress(fromEmail, SmtpSenderName ?? "Автосервис");
                         mailMessage.Subject = "Тест SMTP подключения";
-                        mailMessage.Body = "Если вы видите это письмо — настройка SMTP прошла успешно!";
+                        mailMessage.Body = "Тестовое письмо от автосервиса.\n\nЕсли вы видите это — настройка прошла успешно!";
                         mailMessage.IsBodyHtml = false;
                         mailMessage.To.Add(SmtpEmail);
 
-                        // Отправляем тестовое письмо самому себе для проверки
                         await smtpClient.SendMailAsync(mailMessage);
                     }
                 }
 
-                MessageBox.Show("✅ Подключение успешно!\nТестовое письмо отправлено на ваш адрес.",
+                CustomMessageBox.Show("✅ Подключение успешно!\nТестовое письмо отправлено.",
                     "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (SmtpException ex)
+            {
+                string message = $"Ошибка SMTP:\n{ex.Message}";
+                if (ex.StatusCode == SmtpStatusCode.BadCommandSequence)
+                {
+                    message += "\n\nВозможные причины:\n" +
+                               "• Неправильный пароль (используйте пароль приложения Яндекса)\n" +
+                               "• Для порта 587 обязательно должен быть включён SSL/TLS";
+                }
+                CustomMessageBox.Show(message, "Ошибка SMTP", MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"❌ Ошибка тестирования:\n\n{ex.Message}",
-                    "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                CustomMessageBox.Show($"Ошибка тестирования:\n{ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                IsBusy = false;
             }
         }
 
-        private void Cancel()
-        {
-            // Логика закрытия окна будет в code-behind
-        }
+        private void Cancel() { }
     }
 }

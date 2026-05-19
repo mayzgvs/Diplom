@@ -12,11 +12,25 @@ namespace Service.Views
             InitializeComponent();
             _viewModel = new SmtpSettingsViewModel();
             DataContext = _viewModel;
+
+            // Важное исправление: загружаем сохранённый пароль в PasswordBox
+            Loaded += SmtpSettingsWindow_Loaded;
+        }
+
+        private void SmtpSettingsWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(_viewModel.SmtpPassword))
+            {
+                pbPassword.Password = _viewModel.SmtpPassword;
+            }
         }
 
         private void pbPassword_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            _viewModel.SmtpPassword = pbPassword.Password;
+            if (DataContext is SmtpSettingsViewModel vm)
+            {
+                vm.SmtpPassword = pbPassword.Password;
+            }
         }
     }
 }

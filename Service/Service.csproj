@@ -205,6 +205,7 @@
     <Compile Include="Utility\DbManager.cs" />
     <Compile Include="Utility\EmailService.cs" />
     <Compile Include="Utility\Enums.cs" />
+    <Compile Include="Utility\InverseBoolConverter.cs" />
     <Compile Include="Utility\IsNullOrEmptyConverter.cs" />
     <Compile Include="Utility\NotificationService.cs" />
     <Compile Include="Utility\NullToVisibilityConverter.cs" />
