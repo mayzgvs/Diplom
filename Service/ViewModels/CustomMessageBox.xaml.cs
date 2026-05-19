@@ -125,9 +125,9 @@ namespace Service.Views
 
         // Перегрузка для вызова с владельцем
         public static MessageBoxResult Show(Window owner, string message,
-                                           string title = "Сообщение",
-                                           MessageBoxButton buttons = MessageBoxButton.OK,
-                                           MessageBoxImage icon = MessageBoxImage.None)
+                                   string title = "Сообщение",
+                                   MessageBoxButton buttons = MessageBoxButton.OK,
+                                   MessageBoxImage icon = MessageBoxImage.None)
         {
             var dlg = new CustomMessageBox(message, title, buttons, icon);
             dlg.Owner = owner;

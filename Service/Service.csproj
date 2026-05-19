@@ -208,7 +208,6 @@
     <Compile Include="Utility\IsNullOrEmptyConverter.cs" />
     <Compile Include="Utility\NotificationService.cs" />
     <Compile Include="Utility\NullToVisibilityConverter.cs" />
-    <Compile Include="Utility\PhoneTextBox.cs" />
     <Compile Include="Utility\SmsService.cs" />
     <Compile Include="Utility\StringEqualsConverter.cs" />
     <Compile Include="Utility\ValidationHelper.cs" />

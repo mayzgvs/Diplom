@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:Service.ViewModels"
         xmlns:views="clr-namespace:Service.Views"
         Title="Автосервис: управление сервисом"
-        Width="1300" Height="1006"
+        Width="1100" Height="800"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         AllowsTransparency="True"

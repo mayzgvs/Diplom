@@ -110,6 +110,9 @@ namespace Service.Services
             await SendManualNotificationAsync(request, true, true);
         }
 
+        // Генерация HTML-письма с помощью динамического объекта
+        // Используется dynamic для передачи сложной структуры данных в метод генерации HTML
+        // Это позволяет гибко формировать письмо без жёсткой привязки к типам
         private string GenerateHtmlEmail(dynamic data)
         {
             var itemsHtml = new StringBuilder();

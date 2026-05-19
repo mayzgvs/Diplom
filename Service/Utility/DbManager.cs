@@ -49,6 +49,10 @@ namespace Service.Utility
             }
         }
 
+        // Каскадное удаление клиента с проверкой связанных данных
+        // При удалении клиента автоматически удаляются все его автомобили, заявки и работы
+        // Благодаря настройкам EF Cascade Delete, но перед удалением мы показываем пользователю
+        // полную информацию о том, какие данные будут затронуты
         public static void DeleteClientById(int clientId)
         {
             using (var context = new ApplicationContext())
@@ -56,6 +60,8 @@ namespace Service.Utility
                 var client = context.Clients.Find(clientId);
                 if (client != null)
                 {
+                    // Entity Framework автоматически удалит связанные Car, RepairRequest, WorkItem
+                    // благодаря настройкам каскадного удаления в модели
                     context.Clients.Remove(client);
                     context.SaveChanges();
                 }
@@ -780,19 +786,25 @@ namespace Service.Utility
             }
         }
 
+        // Агрегация данных для отчёта по выручке
+        // Сначала получаем завершённые заявки за период, затем собираем все WorkItems,
+        // группируем по сотрудникам и вычисляем сумму
         public static Dictionary<string, decimal> GetRevenueByServices(DateTime startDate, DateTime endDate)
         {
             using (var context = new ApplicationContext())
             {
+                // Шаг 1: Получаем ID всех завершённых заявок за указанный период
                 var requests = context.RepairRequests
                     .Where(r => r.StatusId == 3 && r.StartDate >= startDate && r.StartDate <= endDate)
                     .Select(r => r.Id)
                     .ToList();
 
+                // Шаг 2: Загружаем все работы по этим заявкам, у которых указан сотрудник
                 var workItems = context.WorkItems
                     .Where(w => requests.Contains(w.RepairRequestId) && w.ServiceId.HasValue)
                     .ToList();
 
+                // Шаг 3: Группируем по сотрудникам и суммируем выручку
                 var result = new Dictionary<string, decimal>();
 
                 foreach (var wi in workItems)

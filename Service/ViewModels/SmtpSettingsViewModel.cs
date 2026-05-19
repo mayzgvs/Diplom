@@ -75,6 +75,7 @@ namespace Service.ViewModels
                 MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
+        // Асинхронное тестирование SMTP с обработкой различных сценариев аутентификации
         private async Task TestConnectionAsync()
         {
             try
@@ -90,14 +91,17 @@ namespace Service.ViewModels
                 using (var smtpClient = new SmtpClient(SmtpHost, SmtpPort))
                 {
                     smtpClient.EnableSsl = SmtpEnableSsl;
-                    smtpClient.Timeout = 15000;
+                    smtpClient.Timeout = 15000; // 15 секунд таймаут - важно, чтобы не зависнуть навсегда
 
+                    // Выбор метода аутентификации в зависимости от настроек
                     if (SmtpUseDefaultCredentials)
                     {
+                        // Вариант 1: использовать учётные данные Windows (для корпоративных Exchange)
                         smtpClient.UseDefaultCredentials = true;
                     }
                     else if (!string.IsNullOrWhiteSpace(SmtpEmail) && !string.IsNullOrWhiteSpace(SmtpPassword))
                     {
+                        // Вариант 2: явная аутентификация по логину/паролю (для Яндекса, Gmail, Mail.ru)
                         smtpClient.UseDefaultCredentials = false;
                         smtpClient.Credentials = new NetworkCredential(SmtpEmail, SmtpPassword);
                     }
@@ -110,6 +114,7 @@ namespace Service.ViewModels
                         mailMessage.IsBodyHtml = false;
                         mailMessage.To.Add(SmtpEmail);
 
+                        // Отправляем тестовое письмо самому себе для проверки
                         await smtpClient.SendMailAsync(mailMessage);
                     }
                 }
