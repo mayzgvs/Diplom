@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Service.Views;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -16,7 +17,7 @@ namespace Service.Services
 
                 var cleanedPhone = CleanPhoneNumber(phoneNumber);
 
-                MessageBox.Show($"ТЕСТОВАЯ SMS\n\n" +
+                CustomMessageBox.Show($"ТЕСТОВАЯ SMS\n\n" +
                                $"Номер: {cleanedPhone}\n" +
                                $"Сообщение: {message}\n\n" +
                                $"В реальной версии подключите SMS-шлюз (SMS.ru, SMSC и т.д.)",
@@ -28,7 +29,7 @@ namespace Service.Services
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка SMS: {ex.Message}", "Ошибка",
+                CustomMessageBox.Show($"Ошибка SMS: {ex.Message}", "Ошибка",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 return false;
             }

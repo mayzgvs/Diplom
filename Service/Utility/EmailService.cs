@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Service.Views;
+using System;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace Service.Services
 
                 if (string.IsNullOrWhiteSpace(host))
                 {
-                    MessageBox.Show("SMTP сервер не настроен.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    CustomMessageBox.Show("SMTP сервер не настроен.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return false;
                 }
 
@@ -64,13 +65,13 @@ namespace Service.Services
             }
             catch (SmtpException ex)
             {
-                MessageBox.Show($"Ошибка SMTP:\n{ex.Message}\nКод: {ex.StatusCode}",
+                CustomMessageBox.Show($"Ошибка SMTP:\n{ex.Message}\nКод: {ex.StatusCode}",
                     "Ошибка отправки", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка отправки Email:\n{ex.Message}",
+                CustomMessageBox.Show($"Ошибка отправки Email:\n{ex.Message}",
                     "Ошибка Email", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
